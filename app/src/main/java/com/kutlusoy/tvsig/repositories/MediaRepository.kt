@@ -42,7 +42,7 @@ class MediaRepository private constructor(private val context: Context) {
             val cached = getCachedPlaylist(key)
 
             if (!NetworkHelper.isNetworkAvailable(context)) {
-                return@withContext if (cached.isNotEmpty()) Result.Success(cached)
+                return@withContext if (cached.isNotEmpty()) Result.Success(OfflinePolicy.playable(cached) { isStored(it) })
                 else Result.Error(Exception(ERROR_OFFLINE))
             }
 
@@ -53,9 +53,14 @@ class MediaRepository private constructor(private val context: Context) {
                 Result.Success(files)
             } catch (e: Exception) {
                 Logger.e("Failed to load the playlist", e)
-                if (cached.isNotEmpty()) Result.Success(cached) else Result.Error(e)
+                if (cached.isNotEmpty()) Result.Success(OfflinePolicy.playable(cached) { isStored(it) }) else Result.Error(e)
             }
         }
+
+    /** The last known playlist, reduced to the files that are stored on the device. Empty when nothing can be played offline. */
+    suspend fun storedPlaylist(source: Source): List<MediaFile> = withContext(Dispatchers.IO) {
+        OfflinePolicy.storedOnly(getCachedPlaylist(sourceKey(source))) { isStored(it) }
+    }
 
     /** Lists the subfolders of a folder of the source, [path] is relative to the main folder. */
     suspend fun listSubfolders(source: Source, path: String): Result<List<String>> = withContext(Dispatchers.IO) {
@@ -123,8 +128,11 @@ class MediaRepository private constructor(private val context: Context) {
             try {
                 files.forEach { file ->
                     try {
-                        if (isRemoteChanged(file)) download(file, force = true)
-                        else if (!localFile(file).exists()) download(file, force = false)
+                        if (!isStored(file)) download(file, force = false)
+                        else if (needsUpdate(file)) {
+                            Logger.d("Updating ${file.name}")
+                            download(file, force = true)
+                        }
                     } catch (e: Exception) {
                         Logger.e("Sync failed for ${file.name}", e)
                     }
@@ -136,14 +144,31 @@ class MediaRepository private constructor(private val context: Context) {
         }
     }
 
+    /** Removes files that dropped out of the list, but only after a grace period, and leftovers of broken downloads. */
     private fun pruneUnused(files: List<MediaFile>) {
         val keep = files.map { localFile(it).name }.toSet()
+        val now = System.currentTimeMillis()
+        val editor = prefs.edit()
         mediaDir.listFiles()?.forEach { f ->
-            val stalePart = f.name.endsWith(PART_SUFFIX) &&
-                    System.currentTimeMillis() - f.lastModified() > STALE_PART_MS
-            if (stalePart || (!f.name.endsWith(PART_SUFFIX) && f.name !in keep)) f.delete()
+            when {
+                f.name.endsWith(PART_SUFFIX) -> if (now - f.lastModified() > STALE_PART_MS) f.delete()
+                f.name in keep -> editor.remove(unusedKey(f.name))
+                else -> {
+                    val since = prefs.getLong(unusedKey(f.name), 0L).takeIf { it > 0 }
+                    if (since == null) editor.putLong(unusedKey(f.name), now)
+                    else if (OfflinePolicy.shouldDelete(since, now)) {
+                        f.delete()
+                        editor.remove(unusedKey(f.name)).remove(KEY_META_PREFIX + f.nameWithoutExtension)
+                    }
+                }
+            }
         }
+        editor.apply()
     }
+
+    private fun unusedKey(fileName: String) = "unused_$fileName"
+
+    private fun isStored(file: MediaFile): Boolean = localFile(file).let { it.exists() && it.length() > 0 }
 
     private fun fetchSource(source: Source): List<MediaFile> =
         if (source.type == SourceType.DRIVE) fetchDrivePlaylist(source)
@@ -262,7 +287,12 @@ class MediaRepository private constructor(private val context: Context) {
             }
             if (target.exists()) target.delete()
             if (!part.renameTo(target)) throw Exception("Could not store ${file.name}")
-            prefs.edit().putString(metaKey(file), remoteSignature(file.url) ?: "").apply()
+            val info = try {
+                remoteInfo(file.url)
+            } catch (e: Exception) {
+                null
+            } ?: infoOf(connection, expected)
+            saveMeta(file, OfflinePolicy.FileMeta(info.marker, target.length(), System.currentTimeMillis()))
             target
         } finally {
             connection.disconnect()
@@ -270,25 +300,23 @@ class MediaRepository private constructor(private val context: Context) {
         }
     }
 
-    private fun isRemoteChanged(file: MediaFile): Boolean {
-        if (!localFile(file).exists()) return false
-        val stored = prefs.getString(metaKey(file), null) ?: return true
-        if (stored.isEmpty()) return false
-        return try {
-            val remote = remoteSignature(file.url)
-            remote != null && remote != stored
+    /** Compares the stored file with the server: size, change markers and the size of the file on the device. */
+    private fun needsUpdate(file: MediaFile): Boolean {
+        val local = localFile(file)
+        val meta = loadMeta(file)
+        val remote = try {
+            remoteInfo(file.url)
         } catch (e: Exception) {
-            false
+            null
         }
+        return OfflinePolicy.needsDownload(meta, if (local.exists()) local.length() else 0L, remote, System.currentTimeMillis())
     }
 
-    /** ETag, modification time and size from a HEAD request, or from a one byte range request. */
-    private fun remoteSignature(url: String): String? {
+    /** Size and change markers from a HEAD request, or from a one byte range request. Null when the server does not tell. */
+    private fun remoteInfo(url: String): OfflinePolicy.RemoteInfo? {
         val head = openConnection(url, method = "HEAD")
         try {
-            if (head.responseCode == HttpURLConnection.HTTP_OK) {
-                return signatureOf(head, head.contentLengthLong)
-            }
+            if (head.responseCode == HttpURLConnection.HTTP_OK) return infoOf(head, head.contentLengthLong)
         } finally {
             head.disconnect()
         }
@@ -298,9 +326,9 @@ class MediaRepository private constructor(private val context: Context) {
             return when (range.responseCode) {
                 HttpURLConnection.HTTP_PARTIAL -> {
                     val total = range.getHeaderField("Content-Range")?.substringAfter('/')?.toLongOrNull() ?: -1L
-                    signatureOf(range, total)
+                    infoOf(range, total)
                 }
-                HttpURLConnection.HTTP_OK -> signatureOf(range, range.contentLengthLong)
+                HttpURLConnection.HTTP_OK -> infoOf(range, range.contentLengthLong)
                 else -> null
             }
         } finally {
@@ -308,9 +336,18 @@ class MediaRepository private constructor(private val context: Context) {
         }
     }
 
-    private fun signatureOf(c: HttpURLConnection, length: Long): String =
-        listOf(c.getHeaderField("ETag"), c.getHeaderField("Last-Modified"), length.toString())
-            .joinToString("|") { it ?: "" }
+    private fun infoOf(c: HttpURLConnection, length: Long) =
+        OfflinePolicy.RemoteInfo.fromHeaders(length) { c.getHeaderField(it) }
+
+    private fun saveMeta(file: MediaFile, meta: OfflinePolicy.FileMeta) {
+        prefs.edit().putString(metaKey(file), gson.toJson(meta)).apply()
+    }
+
+    private fun loadMeta(file: MediaFile): OfflinePolicy.FileMeta? = try {
+        prefs.getString(metaKey(file), null)?.let { gson.fromJson(it, OfflinePolicy.FileMeta::class.java) }
+    } catch (e: Exception) {
+        null
+    }
 
     private fun openConnection(url: String, method: String = "GET", headers: Map<String, String> = emptyMap()): HttpURLConnection {
         var current = url
@@ -341,7 +378,7 @@ class MediaRepository private constructor(private val context: Context) {
     private fun localFile(file: MediaFile): File =
         File(mediaDir, "${sha1(file.url)}.${file.extension}")
 
-    private fun metaKey(file: MediaFile) = "meta_${sha1(file.url)}"
+    private fun metaKey(file: MediaFile) = KEY_META_PREFIX + sha1(file.url)
 
     private fun sha1(value: String): String =
         MessageDigest.getInstance("SHA-1").digest(value.toByteArray())
@@ -375,6 +412,7 @@ class MediaRepository private constructor(private val context: Context) {
         private const val MEDIA_DIR_NAME = "media"
         private const val PREFS_NAME = "media_cache"
         private const val KEY_PLAYLIST = "playlist"
+        private const val KEY_META_PREFIX = "meta_"
         private const val KEY_PLAYLIST_FOLDER = "playlist_folder"
         private const val PART_SUFFIX = ".part"
         private const val MAX_REDIRECTS = 5

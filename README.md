@@ -59,6 +59,24 @@ Supported files:
 - The server is checked every 15 minutes. Changed playlists and replaced files are picked up automatically.
 - All media are downloaded to the device. If the network or the server is down, the app keeps playing the last synchronized content.
 
+## Offline playback and up to date files
+
+All media are stored on the device, so the playback does not depend on the network.
+
+- **Start:** if media are stored, the playback starts at once from the device, without waiting for the server. The source is checked in the background and the playlist is replaced when it differs. This also holds when the network is up but the server or the internet is not reachable.
+- **Only what is complete:** without the source only the files that are stored completely are played. Files that are missing are skipped without delay.
+- **Network lost while running:** the playback continues. When the network is back, the source is checked again at once, otherwise every 15 minutes.
+- **First start without network and without stored media:** the app shows a message and tries again every 30 seconds.
+
+When the source is reachable, every stored file is compared with the server, not only by name:
+
+- the size on the server against the size that was recorded at the download
+- the change markers of the server (ETag, modification time, and the content hash where the server sends one)
+- the size of the file on the device against the recorded size, so a truncated or damaged file is fetched again
+- servers that send no change marker are checked by size, and small files (up to 20 MB) are downloaded again once a day
+
+A changed file is downloaded next to the old one and only replaces it when it is complete, so a broken download never destroys what is playing. A file that disappears from the source is kept on the device for three days before it is removed, so one incomplete answer of a server cannot empty the device.
+
 ## Settings
 
 The settings are made for remote controls (and can be filled in from a smartphone, see below): arrow keys move the focus, left and right change a value, OK confirms, and no touch or keyboard is needed except for typing the base URL. The PIN is entered on an on-screen number pad, so remotes without number keys work. The settings also show the app version, author and repository.
