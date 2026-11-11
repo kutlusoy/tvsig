@@ -42,6 +42,16 @@ keytool -genkeypair -v -keystore tvsig-release.jks -alias tvsig-release `
 
 Both work as one single line as well.
 
+If PowerShell reports that `keytool` is not recognized, the JDK is not installed or not in the path. Android Studio brings its own JDK, call `keytool` from there (adjust the path if you installed Android Studio somewhere else):
+
+```powershell
+$keytool = "C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe"
+& $keytool -genkeypair -v -keystore tvsig-release.jks -alias tvsig-release `
+  -keyalg RSA -keysize 4096 -sigalg SHA384withRSA -validity 50040
+```
+
+To find a `keytool.exe` on the computer: `Get-ChildItem "C:\Program Files" -Recurse -Filter keytool.exe -ErrorAction SilentlyContinue | Select-Object -First 5 FullName`. Without Android Studio, install a JDK instead: `winget install EclipseAdoptium.Temurin.17.JDK`, then open a new PowerShell window. The same call (`& $keytool ...`) is used for printing the fingerprint below.
+
 - `-validity 50040` is 137 years. The number is symbolic, Android only needs the certificate to outlive the app.
 - The keystore password and the key password MUST be long and unique. Store them in a password manager. When keytool asks for the key password, pressing Enter reuses the keystore password, which is fine here.
 - Keep at least two offline backups of `tvsig-release.jks` in different places. **If this file is lost, no update can be signed any more, and every user has to uninstall and reinstall the app.**
@@ -165,6 +175,7 @@ Google is introducing a verification of developers for apps installed on certifi
 | Message | Cause and fix |
 |---|---|
 | `The repository secret for ... is missing` | The secret name is misspelled or the secret is set as an environment secret. Check §3, names are case sensitive. |
+| `keytool` is not recognized (Windows) | No JDK in the path. Use the `keytool.exe` of Android Studio or install a JDK, see §2. |
 | `base64: invalid input` | The value of `TVSIG_KEYSTORE_BASE64` contains spaces or line breaks. Create it again as one line, see §3.1. |
 | `Keystore was tampered with, or password was incorrect` | `TVSIG_KEYSTORE_PASSWORD` is wrong. |
 | `Cannot recover key` | `TVSIG_KEY_PASSWORD` is wrong, or the key password differs from the keystore password and `TVSIG_KEY_PASSWORD` is not set. |
