@@ -20,11 +20,15 @@ The app is configured with two values:
 
 The media are loaded from `<Base URL>/<Subfolder>/`, here `https://example.com/signage/lobby-screen/`. Use a different subfolder per screen to give every device its own content.
 
-You do not have to type the subfolder: after entering the base URL, "Ordner auswählen" in the settings shows the subfolders of the server as a list. The list comes from the directory listing of the web server, or from a `folders.txt` in the base folder (one folder name per line) if the server does not allow directory listings. "Verbindung testen" checks the settings and reports how many images and videos were found.
+"Verbindung testen" in the settings checks the source and reports how many images and videos were found.
 
 ### Google Drive
 
-Instead of a web server, a publicly shared Google Drive folder ("Anyone with the link") can be used. Paste the folder link into the base URL, pick the subfolder from the list and you are done, there is no Google account and no API key. This relies on the public folder view of Google, which is not an official interface, see [doc/guideline-google-drive.md](doc/guideline-google-drive.md) for the setup and the limits.
+Instead of a web server, a publicly shared Google Drive folder ("Anyone with the link") can be used. In the settings, set the source to "Google Drive" and type the ID of the main folder, there is no Google account and no API key. This relies on the public folder view of Google, which is not an official interface, see [doc/guideline-google-drive.md](doc/guideline-google-drive.md) for the setup and the limits.
+
+### Choosing the folder
+
+Because a TV has no copy and paste, only the base URL (web server) or the ID of the main folder (Google Drive) is typed. "Ordner auswählen" then browses the folders level by level, up to five levels deep, and takes the chosen folder. Both sources work the same way. For a web server the list comes from the directory listing, or from a `folders.txt` (one folder name per line) in each folder if the server does not allow directory listings.
 
 ### Playlist
 

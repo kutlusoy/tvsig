@@ -2,7 +2,6 @@ package com.kutlusoy.tvsig
 
 import com.kutlusoy.tvsig.repositories.DriveSource
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -19,14 +18,6 @@ class DriveSourceTest {
         assertEquals(folderId, DriveSource.folderId("https://drive.google.com/embeddedfolderview?id=$folderId#list"))
         assertEquals(folderId, DriveSource.folderId(folderId))
         assertNull(DriveSource.folderId("https://drive.google.com/"))
-    }
-
-    @Test
-    fun recognizesDriveReferencesOnly() {
-        assertTrue(DriveSource.isDriveReference("https://drive.google.com/drive/folders/$folderId"))
-        assertTrue(DriveSource.isDriveReference(folderId))
-        assertFalse(DriveSource.isDriveReference("https://example.com/signage"))
-        assertFalse(DriveSource.isDriveReference("signage"))
     }
 
     @Test

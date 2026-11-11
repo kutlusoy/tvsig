@@ -14,6 +14,16 @@
         android:layout_marginBottom="@dimen/margin_small" />
 
     <TextView
+        android:id="@+id/folderPath"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="start"
+        android:maxLines="2"
+        android:textAppearance="@style/TextAppearance.TVSig.Body"
+        android:textColor="?attr/colorPrimary"
+        android:layout_marginBottom="@dimen/margin_xsmall" />
+
+    <TextView
         android:id="@+id/folderStatus"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

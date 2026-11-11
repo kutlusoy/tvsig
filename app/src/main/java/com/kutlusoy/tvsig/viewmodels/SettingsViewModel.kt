@@ -28,8 +28,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     val testStatus: StateFlow<String> = _testStatus.asStateFlow()
 
     private fun loadCurrentSettings() = AppSettings(
+        sourceType = preferenceHelper.getSourceType(),
         baseUrl = preferenceHelper.getBaseUrl(),
         subfolder = preferenceHelper.getSubfolder(),
+        driveId = preferenceHelper.getDriveId(),
+        drivePath = preferenceHelper.getDrivePath(),
         slideDelay = preferenceHelper.getSlideDelay(),
         transition = preferenceHelper.getTransition(),
         orientation = preferenceHelper.getOrientation(),
@@ -38,8 +41,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     )
 
     fun updateSettings(
+        sourceType: Int? = null,
         baseUrl: String? = null,
         subfolder: String? = null,
+        driveId: String? = null,
+        drivePath: String? = null,
         slideDelay: Int? = null,
         transition: Int? = null,
         orientation: Int? = null,
@@ -48,8 +54,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     ) {
         val current = _settings.value
         _settings.value = current.copy(
+            sourceType = sourceType ?: current.sourceType,
             baseUrl = baseUrl ?: current.baseUrl,
             subfolder = subfolder ?: current.subfolder,
+            driveId = driveId ?: current.driveId,
+            drivePath = drivePath ?: current.drivePath,
             slideDelay = slideDelay ?: current.slideDelay,
             transition = transition ?: current.transition,
             orientation = orientation ?: current.orientation,
@@ -61,8 +70,11 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun saveSettings() {
         val s = _settings.value
         with(preferenceHelper) {
+            setSourceType(s.sourceType)
             setBaseUrl(s.baseUrl)
             setSubfolder(s.subfolder)
+            setDriveId(s.driveId)
+            setDrivePath(s.drivePath)
             setSlideDelay(s.slideDelay)
             setTransition(s.transition)
             setOrientation(s.orientation)
@@ -81,13 +93,14 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun testConnection() {
         val s = _settings.value
         val app = getApplication<Application>()
-        if (s.baseUrl.isBlank()) {
+        val source = s.toSource()
+        if (!source.isConfigured) {
             _testStatus.value = app.getString(R.string.test_no_url)
             return
         }
         _testStatus.value = app.getString(R.string.test_running)
         viewModelScope.launch {
-            _testStatus.value = when (val result = repository.testConnection(s.baseUrl, s.subfolder)) {
+            _testStatus.value = when (val result = repository.testConnection(source)) {
                 is Result.Success -> {
                     val files = result.data
                     app.getString(R.string.test_ok, files.size, files.count { it.isImage() }, files.count { it.isVideo() })

@@ -72,13 +72,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _presentationState.value = PresentationState.Loading
             _currentMedia.value = null
 
-            val baseUrl = preferenceHelper.getBaseUrl()
-            if (baseUrl.isBlank()) {
+            val source = preferenceHelper.getSource()
+            if (!source.isConfigured) {
                 _presentationState.value = PresentationState.Error(string(R.string.error_no_base_url))
                 return@launch
             }
 
-            when (val result = repository.loadPlaylist(baseUrl, preferenceHelper.getSubfolder())) {
+            when (val result = repository.loadPlaylist(source)) {
                 is Result.Success -> {
                     consecutiveFailures = 0
                     _presentationState.value = PresentationState.Success(result.data, 0)
@@ -97,10 +97,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private suspend fun refreshPlaylist() {
         val state = _presentationState.value as? PresentationState.Success ?: return
-        val baseUrl = preferenceHelper.getBaseUrl()
-        if (baseUrl.isBlank()) return
+        val source = preferenceHelper.getSource()
+        if (!source.isConfigured) return
 
-        val result = repository.loadPlaylist(baseUrl, preferenceHelper.getSubfolder())
+        val result = repository.loadPlaylist(source)
         if (result is Result.Success && result.data.map { it.url } != state.files.map { it.url }) {
             Logger.d("Playlist changed, reloading")
             _presentationState.value = PresentationState.Success(result.data, 0)

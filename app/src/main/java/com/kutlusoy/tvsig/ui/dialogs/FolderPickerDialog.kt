@@ -12,22 +12,32 @@ import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.DialogFolderPickerBinding
+import com.kutlusoy.tvsig.models.FolderPath
 import com.kutlusoy.tvsig.models.Result
+import com.kutlusoy.tvsig.models.Source
 import com.kutlusoy.tvsig.repositories.MediaRepository
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-/** Lets the user pick a subfolder of the base URL from a list, no typing needed. */
+/** Browses the folders of the source level by level, up to five levels deep, and returns the chosen path. */
 class FolderPickerDialog : DialogFragment() {
+
+    private sealed class Item {
+        object Use : Item()
+        object Up : Item()
+        data class Folder(val name: String) : Item()
+    }
 
     private var _binding: DialogFolderPickerBinding? = null
     private val binding get() = _binding!!
 
-    private var baseUrl = ""
-    private var current = ""
+    private var source: Source? = null
+    private var path = ""
     private var onSelected: ((String) -> Unit)? = null
+    private var loadJob: Job? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -50,34 +60,81 @@ class FolderPickerDialog : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnCancel.setOnClickListener { dismissAllowingStateLoss() }
-        binding.folderStatus.setText(R.string.folder_picker_loading)
+        binding.folderList.setOnItemClickListener { _, _, position, _ ->
+            when (val item = binding.folderList.adapter.getItem(position) as Item) {
+                Item.Use -> {
+                    onSelected?.invoke(path)
+                    dismissAllowingStateLoss()
+                }
+                Item.Up -> {
+                    val previous = FolderPath.name(path)
+                    path = FolderPath.parent(path)
+                    load(selectName = previous)
+                }
+                is Item.Folder -> {
+                    path = FolderPath.child(path, item.name)
+                    load()
+                }
+            }
+        }
+        load()
+    }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            when (val result = MediaRepository.getInstance(requireContext()).listSubfolders(baseUrl)) {
-                is Result.Success -> showFolders(result.data)
+    private fun load(selectName: String? = null) {
+        val currentSource = source ?: return
+        binding.folderPath.text = FolderPath.display(path, getString(R.string.folder_picker_root))
+        binding.folderStatus.setText(R.string.folder_picker_loading)
+        binding.folderList.visibility = View.INVISIBLE
+
+        loadJob?.cancel()
+        loadJob = viewLifecycleOwner.lifecycleScope.launch {
+            val atMaxDepth = FolderPath.depth(path) >= FolderPath.MAX_DEPTH
+            val folders = if (atMaxDepth) {
+                Result.Success(emptyList())
+            } else {
+                MediaRepository.getInstance(requireContext()).listSubfolders(currentSource, path)
+            }
+            when (folders) {
+                is Result.Success -> {
+                    binding.folderStatus.text = when {
+                        atMaxDepth -> getString(R.string.folder_picker_max_depth, FolderPath.MAX_DEPTH)
+                        folders.data.isEmpty() -> getString(R.string.folder_picker_empty)
+                        else -> ""
+                    }
+                    showItems(folders.data, selectName)
+                }
                 is Result.Error -> {
                     binding.folderStatus.text = getString(
                         R.string.folder_picker_error,
-                        result.exception.message ?: result.exception.javaClass.simpleName
+                        folders.exception.message ?: folders.exception.javaClass.simpleName
                     )
-                    binding.btnCancel.requestFocus()
+                    showItems(emptyList(), selectName)
                 }
                 else -> {}
             }
         }
     }
 
-    private fun showFolders(folders: List<String>) {
-        binding.folderStatus.text = if (folders.isEmpty()) getString(R.string.folder_picker_empty) else ""
-        val entries = listOf(getString(R.string.folder_picker_root)) + folders
+    private fun showItems(folders: List<String>, selectName: String?) {
+        val items = mutableListOf<Item>(Item.Use)
+        if (FolderPath.depth(path) > 0) items.add(Item.Up)
+        folders.forEach { items.add(Item.Folder(it)) }
+
         binding.folderList.apply {
-            adapter = ArrayAdapter(requireContext(), R.layout.item_folder, entries)
-            visibility = View.VISIBLE
-            setOnItemClickListener { _, _, position, _ ->
-                onSelected?.invoke(if (position == 0) "" else folders[position - 1])
-                dismissAllowingStateLoss()
+            adapter = object : ArrayAdapter<Item>(requireContext(), R.layout.item_folder, items) {
+                override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+                    val view = super.getView(position, convertView, parent) as android.widget.TextView
+                    view.text = when (val item = getItem(position)) {
+                        Item.Use -> getString(R.string.folder_picker_use)
+                        Item.Up -> getString(R.string.folder_picker_up)
+                        is Item.Folder -> getString(R.string.folder_picker_folder, item.name)
+                        null -> ""
+                    }
+                    return view
+                }
             }
-            setSelection(folders.indexOf(current) + 1)
+            visibility = View.VISIBLE
+            setSelection(items.indexOfFirst { it is Item.Folder && it.name == selectName }.takeIf { it >= 0 } ?: 0)
             requestFocus()
         }
     }
@@ -90,11 +147,11 @@ class FolderPickerDialog : DialogFragment() {
     companion object {
         private const val TAG = "FolderPickerDialog"
 
-        fun show(fragmentManager: FragmentManager, baseUrl: String, current: String, onSelected: (String) -> Unit) {
+        fun show(fragmentManager: FragmentManager, source: Source, onSelected: (String) -> Unit) {
             try {
                 FolderPickerDialog().apply {
-                    this.baseUrl = baseUrl
-                    this.current = current
+                    this.source = source
+                    this.path = ""
                     this.onSelected = onSelected
                 }.show(fragmentManager, TAG)
             } catch (e: Exception) {

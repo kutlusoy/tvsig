@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.kutlusoy.tvsig.models.FolderPath
+import com.kutlusoy.tvsig.models.Source
+import com.kutlusoy.tvsig.models.SourceType
 import com.kutlusoy.tvsig.models.TransitionType
 
 class PreferenceHelper private constructor(context: Context) {
@@ -11,6 +14,9 @@ class PreferenceHelper private constructor(context: Context) {
     companion object {
         private const val KEY_BASE_URL = "base_url"
         private const val KEY_SUBFOLDER = "subfolder"
+        private const val KEY_SOURCE_TYPE = "source_type"
+        private const val KEY_DRIVE_ID = "drive_id"
+        private const val KEY_DRIVE_PATH = "drive_path"
         private const val KEY_SLIDE_DELAY = "slide_delay"
         private const val KEY_ORIENTATION = "orientation"
         private const val KEY_TRANSITION = "transition"
@@ -47,8 +53,31 @@ class PreferenceHelper private constructor(context: Context) {
     fun getSubfolder(): String = preferences.getString(KEY_SUBFOLDER, "") ?: ""
 
     fun setSubfolder(subfolder: String) {
-        preferences.edit { putString(KEY_SUBFOLDER, subfolder.trim()) }
+        preferences.edit { putString(KEY_SUBFOLDER, FolderPath.normalize(subfolder)) }
     }
+
+    fun getSourceType(): Int = preferences.getInt(KEY_SOURCE_TYPE, SourceType.WEB.id)
+
+    fun setSourceType(id: Int) {
+        preferences.edit { putInt(KEY_SOURCE_TYPE, id) }
+    }
+
+    fun getDriveId(): String = preferences.getString(KEY_DRIVE_ID, "") ?: ""
+
+    fun setDriveId(id: String) {
+        preferences.edit { putString(KEY_DRIVE_ID, id.trim()) }
+    }
+
+    fun getDrivePath(): String = preferences.getString(KEY_DRIVE_PATH, "") ?: ""
+
+    fun setDrivePath(path: String) {
+        preferences.edit { putString(KEY_DRIVE_PATH, FolderPath.normalize(path)) }
+    }
+
+    /** The configured source, web server or Google Drive. */
+    fun getSource(): Source =
+        if (SourceType.fromId(getSourceType()) == SourceType.DRIVE) Source(SourceType.DRIVE, getDriveId(), getDrivePath())
+        else Source(SourceType.WEB, getBaseUrl(), getSubfolder())
 
     fun getSlideDelay(): Int = preferences.getInt(KEY_SLIDE_DELAY, DEFAULT_SLIDE_DELAY)
 

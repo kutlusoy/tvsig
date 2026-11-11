@@ -12,13 +12,6 @@ object DriveSource {
     private val ENTRY_START = Regex("""id="entry-($ID{10,})"""")
     private val ENTRY_TITLE = Regex("""flip-entry-title[^>]*>(.*?)</div>""", RegexOption.DOT_MATCHES_ALL)
 
-    fun isDriveReference(base: String): Boolean {
-        val text = base.trim()
-        return text.contains("drive.google.com", ignoreCase = true) ||
-                text.contains("docs.google.com/drive", ignoreCase = true) ||
-                RAW_ID.matches(text)
-    }
-
     /** Accepts a folder link in any of the usual forms, or the bare folder ID. */
     fun folderId(base: String): String? {
         val text = base.trim()

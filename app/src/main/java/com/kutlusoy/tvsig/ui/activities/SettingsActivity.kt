@@ -12,6 +12,7 @@ import com.kutlusoy.tvsig.BuildConfig
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.ActivitySettingsBinding
 import com.kutlusoy.tvsig.models.Constants
+import com.kutlusoy.tvsig.models.SourceType
 import com.kutlusoy.tvsig.ui.dialogs.ChangePinDialog
 import com.kutlusoy.tvsig.ui.dialogs.FolderPickerDialog
 import com.kutlusoy.tvsig.utils.OrientationHelper
@@ -24,6 +25,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()
+    private var bindingFields = false
 
     private val delayOptions = listOf(3, 5, 8, 10, 15, 20, 30, 45, 60, 90, 120, 180, 300)
     private val orientationOptions: List<Int> by lazy {
@@ -56,10 +58,20 @@ class SettingsActivity : AppCompatActivity() {
         val settings = viewModel.settings.value
 
         with(binding) {
-            baseUrlInput.setText(settings.baseUrl)
-            subfolderInput.setText(settings.subfolder)
-            baseUrlInput.doAfterTextChanged { viewModel.updateSettings(baseUrl = it.toString()) }
-            subfolderInput.doAfterTextChanged { viewModel.updateSettings(subfolder = it.toString()) }
+            sourceRow.setOptions(listOf(getString(R.string.source_web), getString(R.string.source_drive)), settings.sourceType)
+            sourceRow.onSelectionChanged = {
+                viewModel.updateSettings(sourceType = it)
+                bindSourceFields()
+            }
+            bindSourceFields()
+            baseUrlInput.doAfterTextChanged {
+                if (bindingFields) return@doAfterTextChanged
+                if (isDrive()) viewModel.updateSettings(driveId = it.toString()) else viewModel.updateSettings(baseUrl = it.toString())
+            }
+            subfolderInput.doAfterTextChanged {
+                if (bindingFields) return@doAfterTextChanged
+                if (isDrive()) viewModel.updateSettings(drivePath = it.toString()) else viewModel.updateSettings(subfolder = it.toString())
+            }
 
             delayRow.setOptions(delayOptions.map { getString(R.string.seconds_format, it) }, nearestDelayIndex(settings.slideDelay))
             delayRow.onSelectionChanged = { viewModel.updateSettings(slideDelay = delayOptions[it]) }
@@ -80,11 +92,11 @@ class SettingsActivity : AppCompatActivity() {
             themeRow.onSelectionChanged = { viewModel.updateSettings(isDarkMode = it == 1) }
 
             btnPickFolder.setOnClickListener {
-                val current = viewModel.settings.value
-                if (current.baseUrl.isBlank()) {
+                val source = viewModel.settings.value.toSource()
+                if (!source.isConfigured) {
                     Toast.makeText(this@SettingsActivity, R.string.test_no_url, Toast.LENGTH_SHORT).show()
                 } else {
-                    FolderPickerDialog.show(supportFragmentManager, current.baseUrl, current.subfolder) { folder ->
+                    FolderPickerDialog.show(supportFragmentManager, source) { folder ->
                         subfolderInput.setText(folder)
                     }
                 }
@@ -127,6 +139,23 @@ class SettingsActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun isDrive() = SourceType.fromId(viewModel.settings.value.sourceType) == SourceType.DRIVE
+
+    /** Shows the fields of the chosen source, web server and Google Drive keep their own values. */
+    private fun bindSourceFields() {
+        val settings = viewModel.settings.value
+        val drive = isDrive()
+        bindingFields = true
+        with(binding) {
+            baseUrlLayout.hint = getString(if (drive) R.string.settings_drive_id else R.string.settings_base_url)
+            baseUrlLayout.helperText = getString(if (drive) R.string.settings_drive_id_helper else R.string.settings_base_url_helper)
+            subfolderLayout.helperText = getString(R.string.settings_folder_helper)
+            baseUrlInput.setText(if (drive) settings.driveId else settings.baseUrl)
+            subfolderInput.setText(if (drive) settings.drivePath else settings.subfolder)
+        }
+        bindingFields = false
     }
 
     private fun nearestDelayIndex(seconds: Int): Int =

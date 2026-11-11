@@ -341,7 +341,7 @@ class MainActivity : AppCompatActivity() {
         ensureForegroundService()
         player?.play()
 
-        val before = preferenceHelper.getBaseUrl() + "|" + preferenceHelper.getSubfolder()
+        val before = preferenceHelper.getSource().toString()
         if (before != lastSource) {
             val firstResume = lastSource == null
             lastSource = before

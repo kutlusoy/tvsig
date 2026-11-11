@@ -27,8 +27,15 @@
     <string name="error_pins_dont_match">PINs stimmen nicht überein</string>
 
     <string name="settings_title">Einstellungen</string>
-    <string name="settings_base_url">Basis-URL oder Google-Drive-Ordnerlink</string>
-    <string name="settings_subfolder">Unterordner</string>
+    <string name="settings_base_url">Basis-URL des Webservers</string>
+    <string name="settings_base_url_helper">z. B. https://example.com/signage</string>
+    <string name="settings_drive_id">ID des Drive-Hauptordners</string>
+    <string name="settings_drive_id_helper">Die ID steht im Ordnerlink hinter /folders/</string>
+    <string name="settings_source_type">Art der Quelle</string>
+    <string name="source_web">Webserver</string>
+    <string name="source_drive">Google Drive</string>
+    <string name="settings_folder_helper">Mit „Ordner auswählen“ aus einer Liste wählbar</string>
+    <string name="settings_subfolder">Ordner (Pfad)</string>
     <string name="settings_delay">Anzeigedauer pro Bild</string>
     <string name="arrow_left">‹</string>
     <string name="arrow_right">›</string>
@@ -41,8 +48,12 @@
     <string name="settings_pick_folder">Ordner auswählen</string>
     <string name="folder_picker_title">Ordner wählen</string>
     <string name="folder_picker_loading">Lade Ordner…</string>
-    <string name="folder_picker_root">(Hauptordner verwenden)</string>
-    <string name="folder_picker_empty">Keine Unterordner gefunden. Es wird der Hauptordner verwendet.</string>
+    <string name="folder_picker_root">Hauptordner</string>
+    <string name="folder_picker_use">✓  Diesen Ordner verwenden</string>
+    <string name="folder_picker_up">↑  Eine Ebene höher</string>
+    <string name="folder_picker_folder">›  %s</string>
+    <string name="folder_picker_empty">Keine weiteren Unterordner</string>
+    <string name="folder_picker_max_depth">Größte Tiefe erreicht (%d Ebenen)</string>
     <string name="folder_picker_error">Ordner konnten nicht geladen werden: %s</string>
     <string name="settings_test_connection">Verbindung testen</string>
     <string name="test_running">Teste…</string>

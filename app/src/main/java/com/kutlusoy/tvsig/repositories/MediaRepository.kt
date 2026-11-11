@@ -4,8 +4,11 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kutlusoy.tvsig.models.Constants
+import com.kutlusoy.tvsig.models.FolderPath
 import com.kutlusoy.tvsig.models.MediaFile
 import com.kutlusoy.tvsig.models.Result
+import com.kutlusoy.tvsig.models.Source
+import com.kutlusoy.tvsig.models.SourceType
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.NetworkHelper
 import kotlinx.coroutines.CoroutineScope
@@ -30,14 +33,12 @@ class MediaRepository private constructor(private val context: Context) {
     private val syncMutex = Mutex()
     private val mediaDir = File(context.filesDir, MEDIA_DIR_NAME).apply { mkdirs() }
     private val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val driveFolderIds = java.util.concurrent.ConcurrentHashMap<String, String>()
 
-    /**
-     * Resolves the playlist of `<baseUrl>/<subfolder>/`. Falls back to the last known
-     * playlist when the server cannot be reached.
-     */
-    suspend fun loadPlaylist(baseUrl: String, subfolder: String): Result<List<MediaFile>> =
+    /** Resolves the playlist of the source. Falls back to the last known playlist when it cannot be reached. */
+    suspend fun loadPlaylist(source: Source): Result<List<MediaFile>> =
         withContext(Dispatchers.IO) {
-            val key = sourceKey(baseUrl, subfolder)
+            val key = sourceKey(source)
             val cached = getCachedPlaylist(key)
 
             if (!NetworkHelper.isNetworkAvailable(context)) {
@@ -46,7 +47,7 @@ class MediaRepository private constructor(private val context: Context) {
             }
 
             try {
-                val files = fetchSource(baseUrl, subfolder)
+                val files = fetchSource(source)
                 savePlaylist(key, files)
                 startBackgroundSync(files)
                 Result.Success(files)
@@ -56,18 +57,20 @@ class MediaRepository private constructor(private val context: Context) {
             }
         }
 
-    /** Lists the subfolders of the base URL, from folders.txt or the directory listing of the web server. */
-    suspend fun listSubfolders(baseUrl: String): Result<List<String>> = withContext(Dispatchers.IO) {
+    /** Lists the subfolders of a folder of the source, [path] is relative to the main folder. */
+    suspend fun listSubfolders(source: Source, path: String): Result<List<String>> = withContext(Dispatchers.IO) {
         if (!NetworkHelper.isNetworkAvailable(context)) {
             return@withContext Result.Error(Exception(ERROR_OFFLINE))
         }
         try {
-            if (DriveSource.isDriveReference(baseUrl)) {
-                val baseId = DriveSource.folderId(baseUrl) ?: throw Exception(ERROR_DRIVE_LINK)
-                val folders = driveEntries(baseId).filter { it.isFolder }.map { it.name }.sortedBy { it.lowercase() }
-                return@withContext Result.Success(folders)
+            if (source.type == SourceType.DRIVE) {
+                val baseId = DriveSource.folderId(source.base) ?: throw Exception(ERROR_DRIVE_LINK)
+                val folderId = resolveDriveFolder(baseId, path)
+                val folders = driveEntries(folderId).filter { it.isFolder }
+                folders.forEach { driveFolderIds["$baseId/${FolderPath.child(path, it.name)}"] = it.id }
+                return@withContext Result.Success(folders.map { it.name }.sortedBy { it.lowercase() })
             }
-            val folderUrl = buildFolderUrl(baseUrl, "")
+            val folderUrl = buildFolderUrl(source.base, path)
             val folderFile = httpGetText(folderUrl + Constants.FOLDERS_FILE_NAME, allowNotFound = true)
             val folders = if (folderFile != null) {
                 parseFolderFile(folderFile)
@@ -81,13 +84,13 @@ class MediaRepository private constructor(private val context: Context) {
     }
 
     /** Reads the playlist without caching, used by the connection test in the settings. */
-    suspend fun testConnection(baseUrl: String, subfolder: String): Result<List<MediaFile>> =
+    suspend fun testConnection(source: Source): Result<List<MediaFile>> =
         withContext(Dispatchers.IO) {
             if (!NetworkHelper.isNetworkAvailable(context)) {
                 return@withContext Result.Error(Exception(ERROR_OFFLINE))
             }
             try {
-                Result.Success(fetchSource(baseUrl, subfolder))
+                Result.Success(fetchSource(source))
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -142,9 +145,9 @@ class MediaRepository private constructor(private val context: Context) {
         }
     }
 
-    private fun fetchSource(baseUrl: String, subfolder: String): List<MediaFile> =
-        if (DriveSource.isDriveReference(baseUrl)) fetchDrivePlaylist(baseUrl, subfolder)
-        else fetchPlaylist(buildFolderUrl(baseUrl, subfolder))
+    private fun fetchSource(source: Source): List<MediaFile> =
+        if (source.type == SourceType.DRIVE) fetchDrivePlaylist(source)
+        else fetchPlaylist(buildFolderUrl(source.base, source.path))
 
     private fun driveEntries(folderId: String): List<DriveSource.Entry> {
         val html = httpGetText(DriveSource.listUrl(folderId), allowNotFound = false)
@@ -152,18 +155,24 @@ class MediaRepository private constructor(private val context: Context) {
         return DriveSource.parseListing(html).ifEmpty { throw Exception(ERROR_DRIVE_FOLDER) }
     }
 
-    private fun resolveDriveFolder(baseId: String, subfolder: String): String {
+    /** Walks down the folder names, remembering the IDs that were already seen. */
+    private fun resolveDriveFolder(baseId: String, path: String): String {
         var id = baseId
-        for (name in subfolder.split('/').map { it.trim() }.filter { it.isNotEmpty() }) {
-            id = driveEntries(id).firstOrNull { it.isFolder && it.name.equals(name, ignoreCase = true) }?.id
-                ?: throw Exception("Subfolder not found: $name")
+        var walked = ""
+        for (name in FolderPath.segments(path)) {
+            walked = FolderPath.child(walked, name)
+            id = driveFolderIds["$baseId/$walked"] ?: run {
+                val folder = driveEntries(id).firstOrNull { it.isFolder && it.name.equals(name, ignoreCase = true) }
+                    ?: throw Exception("Subfolder not found: $name")
+                folder.id.also { driveFolderIds["$baseId/$walked"] = it }
+            }
         }
         return id
     }
 
-    private fun fetchDrivePlaylist(baseUrl: String, subfolder: String): List<MediaFile> {
-        val baseId = DriveSource.folderId(baseUrl) ?: throw Exception(ERROR_DRIVE_LINK)
-        val files = driveEntries(resolveDriveFolder(baseId, subfolder))
+    private fun fetchDrivePlaylist(source: Source): List<MediaFile> {
+        val baseId = DriveSource.folderId(source.base) ?: throw Exception(ERROR_DRIVE_LINK)
+        val files = driveEntries(resolveDriveFolder(baseId, source.path))
             .filter { !it.isFolder && MediaFile.isSupported(it.name) }
             .sortedBy { it.name.lowercase() }
             .map { MediaFile(it.name, DriveSource.downloadUrl(it.id)) }
@@ -171,9 +180,9 @@ class MediaRepository private constructor(private val context: Context) {
         return files
     }
 
-    private fun sourceKey(baseUrl: String, subfolder: String): String =
-        if (DriveSource.isDriveReference(baseUrl)) "drive:${DriveSource.folderId(baseUrl)}/${subfolder.trim()}"
-        else buildFolderUrl(baseUrl, subfolder)
+    private fun sourceKey(source: Source): String =
+        if (source.type == SourceType.DRIVE) "drive:${DriveSource.folderId(source.base)}/${FolderPath.normalize(source.path)}"
+        else buildFolderUrl(source.base, source.path)
 
     private fun fetchPlaylist(folderUrl: String): List<MediaFile> {
         val playlistText = httpGetText(folderUrl + Constants.PLAYLIST_FILE_NAME, allowNotFound = true)
