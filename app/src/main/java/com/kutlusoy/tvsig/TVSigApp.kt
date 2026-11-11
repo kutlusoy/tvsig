@@ -28,11 +28,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.system.exitProcess
 
-class TvSigApp : Application() {
+class TVSigApp : Application() {
 
     companion object {
-        private lateinit var instance: TvSigApp
-        fun getInstance(): TvSigApp = instance
+        private lateinit var instance: TVSigApp
+        fun getInstance(): TVSigApp = instance
         fun getAppContext(): Context = instance.applicationContext
         private const val RESTART_DELAY = 5000L
         private const val MEMORY_CHECK_INTERVAL = 900000L
@@ -168,7 +168,7 @@ class TvSigApp : Application() {
         super.onTerminate()
     }
 
-    class AppLifecycleHandler(private val app: TvSigApp) :
+    class AppLifecycleHandler(private val app: TVSigApp) :
         Application.ActivityLifecycleCallbacks,
         ComponentCallbacks2 {
 

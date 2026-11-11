@@ -2,7 +2,7 @@
 -keepattributes SourceFile,LineNumberTable
 
 -keep class com.kutlusoy.tvsig.models.** { *; }
--keep class com.kutlusoy.tvsig.TvSigApp { *; }
+-keep class com.kutlusoy.tvsig.TVSigApp { *; }
 -keep class com.kutlusoy.tvsig.services.** { *; }
 
 -keepclassmembers class * {

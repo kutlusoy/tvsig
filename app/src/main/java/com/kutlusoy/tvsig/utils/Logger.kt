@@ -4,7 +4,7 @@ import android.util.Log
 import com.kutlusoy.tvsig.BuildConfig
 
 object Logger {
-    private const val TAG = "TvSig"
+    private const val TAG = "TVSig"
     private const val MAX_LOG_SIZE = 2000
     private var logCount = 0
 

@@ -16,7 +16,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/settings_title"
-            android:textAppearance="@style/TextAppearance.TvSig.Headline"
+            android:textAppearance="@style/TextAppearance.TVSig.Headline"
             android:layout_marginBottom="@dimen/margin_large" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -85,7 +85,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_orientation"
-                    android:textAppearance="@style/TextAppearance.TvSig.Body"
+                    android:textAppearance="@style/TextAppearance.TVSig.Body"
                     android:layout_marginBottom="@dimen/margin_small" />
 
                 <RadioGroup
@@ -145,7 +145,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_theme"
-                    android:textAppearance="@style/TextAppearance.TvSig.Body"
+                    android:textAppearance="@style/TextAppearance.TVSig.Body"
                     android:layout_marginBottom="@dimen/margin_small" />
 
                 <RadioGroup
@@ -187,12 +187,12 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/settings_pin"
-                    android:textAppearance="@style/TextAppearance.TvSig.Body"
+                    android:textAppearance="@style/TextAppearance.TVSig.Body"
                     android:layout_marginBottom="@dimen/margin_small" />
 
                 <Button
                     android:id="@+id/btnChangePin"
-                    style="@style/Widget.TvSig.Button"
+                    style="@style/Widget.TVSig.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/button_change_pin" />
@@ -202,7 +202,7 @@
 
         <Button
             android:id="@+id/btnClearCache"
-            style="@style/Widget.TvSig.Button.Secondary"
+            style="@style/Widget.TVSig.Button.Secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/cache_clear"
@@ -218,7 +218,7 @@
 
             <Button
                 android:id="@+id/btnCancel"
-                style="@style/Widget.TvSig.Button.Tertiary"
+                style="@style/Widget.TVSig.Button.Tertiary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/margin_medium"
@@ -226,7 +226,7 @@
 
             <Button
                 android:id="@+id/btnSave"
-                style="@style/Widget.TvSig.Button"
+                style="@style/Widget.TVSig.Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/button_save" />
@@ -238,7 +238,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_xlarge"
             android:gravity="center"
-            android:textAppearance="@style/TextAppearance.TvSig.Body"
+            android:textAppearance="@style/TextAppearance.TVSig.Body"
             android:alpha="0.85" />
 
     </LinearLayout>

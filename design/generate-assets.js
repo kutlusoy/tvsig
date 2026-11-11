@@ -24,7 +24,7 @@ const page = (w, h, body, background = 'transparent') =>
   `display:flex;align-items:center;justify-content:center;font-family:Inter,sans-serif">${body}</body></html>`;
 
 const wordmark = (size) =>
-  `<span style="font-size:${size}px;font-weight:300;letter-spacing:${-size * 0.02}px;color:${TEXT_COLOR};line-height:1">TvSig</span>`;
+  `<span style="font-size:${size}px;font-weight:300;letter-spacing:${-size * 0.02}px;color:${TEXT_COLOR};line-height:1">TVSig</span>`;
 
 const lockup = (logoWidth, textSize, gap) =>
   `<div style="display:flex;align-items:center;gap:${gap}px">${logo(logoWidth)}${wordmark(textSize)}</div>`;

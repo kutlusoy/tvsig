@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/pin_enter"
-        android:textAppearance="@style/TextAppearance.TvSig.Title"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
         android:layout_marginBottom="@dimen/margin_large" />
 
     <LinearLayout
@@ -23,7 +23,7 @@
 
         <EditText
             android:id="@+id/pinDigit1"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"
@@ -31,7 +31,7 @@
 
         <EditText
             android:id="@+id/pinDigit2"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"
@@ -39,7 +39,7 @@
 
         <EditText
             android:id="@+id/pinDigit3"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"
@@ -47,7 +47,7 @@
 
         <EditText
             android:id="@+id/pinDigit4"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"
@@ -63,7 +63,7 @@
 
         <Button
             android:id="@+id/btnExit"
-            style="@style/Widget.TvSig.Button.Tertiary"
+            style="@style/Widget.TVSig.Button.Tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_medium"
@@ -71,7 +71,7 @@
 
         <Button
             android:id="@+id/btnCancel"
-            style="@style/Widget.TvSig.Button.Tertiary"
+            style="@style/Widget.TVSig.Button.Tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_medium"

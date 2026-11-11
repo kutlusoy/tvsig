@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity() {
         try {
             val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
             wakeLock?.takeIf { it.isHeld }?.release()
-            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TvSig:WakeLock")
+            wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "TVSig:WakeLock")
             wakeLock?.acquire(24 * 60 * 60 * 1000L)
         } catch (e: Exception) {
             Logger.e("Error acquiring wakelock", e)

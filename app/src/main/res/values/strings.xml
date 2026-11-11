@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TvSig Signage</string>
-    <string name="app_creator">TvSig</string>
+    <string name="app_name">TVSig</string>
+    <string name="app_creator">TVSig</string>
     <string name="app_contact">info@tvsig.at</string>
 
     <string name="pin_enter">PIN eingeben</string>
@@ -61,8 +61,8 @@ Bitte über die Zurück-Taste und die PIN die Einstellungen öffnen.</string>
     <string name="error_load_failed">Medien konnten nicht geladen werden: %s</string>
     <string name="error_no_playable_media">Keine abspielbaren Medien gefunden</string>
 
-    <string name="foreground_service_notification_title">TvSig Signage läuft</string>
+    <string name="foreground_service_notification_title">TVSig Signage läuft</string>
     <string name="foreground_service_notification_text">Signage wird im Hintergrund ausgeführt</string>
-    <string name="foreground_service_channel_name">TvSig Signage Service</string>
-    <string name="foreground_service_channel_description">Hält die TvSig Signage App am Laufen</string>
+    <string name="foreground_service_channel_name">TVSig Signage Service</string>
+    <string name="foreground_service_channel_description">Hält die TVSig Signage App am Laufen</string>
 </resources>

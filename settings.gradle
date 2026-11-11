@@ -18,5 +18,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "TvSig"
+rootProject.name = "TVSig"
 include ':app'

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.TvSig" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.TVSig" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_variant</item>
         <item name="colorOnPrimary">@color/text_primary_light</item>
@@ -32,7 +32,7 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="elevation">0dp</item>
     </style>
-    <style name="Theme.TvSig.Splash" parent="Theme.TvSig">
+    <style name="Theme.TVSig.Splash" parent="Theme.TVSig">
         <item name="android:windowBackground">?android:attr/colorBackground</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowFullscreen">true</item>

@@ -44,7 +44,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:padding="@dimen/margin_large"
-        android:textAppearance="@style/TextAppearance.TvSig.Headline"
+        android:textAppearance="@style/TextAppearance.TVSig.Headline"
         android:visibility="gone"
         android:background="@color/background_light"
         app:layout_constraintBottom_toBottomOf="parent"

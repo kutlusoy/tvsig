@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.TvSig" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.TVSig" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_dark</item>
         <item name="colorPrimaryVariant">@color/primary_variant_dark</item>
         <item name="colorOnPrimary">@color/button_text_on_primary</item>

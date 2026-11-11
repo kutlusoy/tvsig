@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/pin_current"
-        android:textAppearance="@style/TextAppearance.TvSig.Title"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
         android:layout_marginBottom="@dimen/margin_medium" />
 
     <LinearLayout
@@ -23,28 +23,28 @@
 
         <EditText
             android:id="@+id/currentPinDigit1"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/currentPinDigit2"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/currentPinDigit3"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/currentPinDigit4"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
@@ -54,7 +54,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/pin_new"
-        android:textAppearance="@style/TextAppearance.TvSig.Title"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
         android:layout_marginBottom="@dimen/margin_medium" />
 
     <LinearLayout
@@ -66,28 +66,28 @@
 
         <EditText
             android:id="@+id/newPinDigit1"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/newPinDigit2"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/newPinDigit3"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/newPinDigit4"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
@@ -97,7 +97,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/pin_confirm_new"
-        android:textAppearance="@style/TextAppearance.TvSig.Title"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
         android:layout_marginBottom="@dimen/margin_medium" />
 
     <LinearLayout
@@ -109,28 +109,28 @@
 
         <EditText
             android:id="@+id/confirmPinDigit1"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/confirmPinDigit2"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/confirmPinDigit3"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
 
         <EditText
             android:id="@+id/confirmPinDigit4"
-            style="@style/Widget.TvSig.PinEntry"
+            style="@style/Widget.TVSig.PinEntry"
             android:inputType="numberPassword"
             android:maxLength="1"
             android:background="@drawable/selector_pin_input"/>
@@ -144,7 +144,7 @@
 
         <Button
             android:id="@+id/btnCancel"
-            style="@style/Widget.TvSig.Button.Tertiary"
+            style="@style/Widget.TVSig.Button.Tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/margin_medium"
@@ -152,7 +152,7 @@
 
         <Button
             android:id="@+id/btnSave"
-            style="@style/Widget.TvSig.Button"
+            style="@style/Widget.TVSig.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/button_save" />

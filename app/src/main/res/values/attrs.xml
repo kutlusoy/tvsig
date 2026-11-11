@@ -4,7 +4,7 @@
     <attr name="overlayColor" format="color|reference" />
     <attr name="colorBackground" format="color" />
 
-    <declare-styleable name="Widget.TvSig">
+    <declare-styleable name="Widget.TVSig">
         <attr name="android:background" />
         <attr name="android:textColor" />
         <attr name="android:textSize" />

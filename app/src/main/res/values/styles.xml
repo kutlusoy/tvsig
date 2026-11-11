@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Widget.TvSig" parent="@android:style/Widget">
+    <style name="Widget.TVSig" parent="@android:style/Widget">
         <item name="android:textColor">?attr/colorOnSurface</item>
         <item name="android:background">?attr/colorSurface</item>
     </style>
 
-    <style name="TextAppearance.TvSig.Headline" parent="TextAppearance.MaterialComponents.Headline5">
+    <style name="TextAppearance.TVSig.Headline" parent="TextAppearance.MaterialComponents.Headline5">
         <item name="android:textSize">@dimen/text_size_headline</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="TextAppearance.TvSig.Title" parent="TextAppearance.MaterialComponents.Subtitle1">
+    <style name="TextAppearance.TVSig.Title" parent="TextAppearance.MaterialComponents.Subtitle1">
         <item name="android:textSize">@dimen/text_size_title</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="TextAppearance.TvSig.Body" parent="TextAppearance.MaterialComponents.Body1">
+    <style name="TextAppearance.TVSig.Body" parent="TextAppearance.MaterialComponents.Body1">
         <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="TextAppearance.TvSig.Caption" parent="TextAppearance.MaterialComponents.Caption">
+    <style name="TextAppearance.TVSig.Caption" parent="TextAppearance.MaterialComponents.Caption">
         <item name="android:textSize">@dimen/text_size_caption</item>
         <item name="android:textColor">?attr/colorOnSurface</item>
     </style>
 
-    <style name="Widget.TvSig.Button" parent="Widget.MaterialComponents.Button">
+    <style name="Widget.TVSig.Button" parent="Widget.MaterialComponents.Button">
         <item name="android:minHeight">40dp</item>
         <item name="android:minWidth">100dp</item>
         <item name="android:padding">8dp</item>
@@ -37,22 +37,22 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
-    <style name="Widget.TvSig.Button.Secondary" parent="Widget.TvSig.Button">
+    <style name="Widget.TVSig.Button.Secondary" parent="Widget.TVSig.Button">
         <item name="backgroundTint">?attr/colorPrimaryVariant</item>
         <item name="android:textColor">@color/button_text_on_variant</item>
     </style>
 
-    <style name="Widget.TvSig.Button.Tertiary" parent="Widget.TvSig.Button">
+    <style name="Widget.TVSig.Button.Tertiary" parent="Widget.TVSig.Button">
         <item name="backgroundTint">?attr/colorSecondaryVariant</item>
         <item name="android:textColor">@color/button_text_on_tertiary</item>
     </style>
 
-    <style name="Widget.TvSig.Button.Exit" parent="Widget.TvSig.Button">
+    <style name="Widget.TVSig.Button.Exit" parent="Widget.TVSig.Button">
         <item name="backgroundTint">?attr/colorSecondary</item>
         <item name="android:textColor">?attr/colorOnSecondary</item>
     </style>
 
-    <style name="Widget.TvSig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
+    <style name="Widget.TVSig.Button.Text" parent="Widget.MaterialComponents.Button.TextButton">
         <item name="android:minHeight">40dp</item>
         <item name="android:minWidth">100dp</item>
         <item name="android:textColor">?attr/colorPrimary</item>
@@ -61,7 +61,7 @@
         <item name="rippleColor">@color/scrim</item>
     </style>
 
-    <style name="Widget.TvSig.PinEntry" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="Widget.TVSig.PinEntry" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:layout_width">@dimen/pin_digit_size</item>
         <item name="android:layout_height">@dimen/pin_digit_size</item>
         <item name="android:layout_margin">@dimen/pin_digit_spacing</item>
@@ -70,18 +70,18 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
-    <style name="Widget.TvSig.SettingsItem" parent="Widget.MaterialComponents.TextView">
+    <style name="Widget.TVSig.SettingsItem" parent="Widget.MaterialComponents.TextView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:paddingStart">@dimen/margin_medium</item>
         <item name="android:paddingEnd">@dimen/margin_medium</item>
         <item name="android:paddingTop">@dimen/margin_small</item>
         <item name="android:paddingBottom">@dimen/margin_small</item>
-        <item name="android:textAppearance">@style/TextAppearance.TvSig.Body</item>
+        <item name="android:textAppearance">@style/TextAppearance.TVSig.Body</item>
         <item name="android:elevation">0dp</item>
     </style>
 
-    <style name="Widget.TvSig.WebView" parent="Widget.TvSig">
+    <style name="Widget.TVSig.WebView" parent="Widget.TVSig">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">match_parent</item>
         <item name="android:background">?attr/colorSurface</item>

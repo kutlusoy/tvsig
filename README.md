@@ -1,6 +1,6 @@
-<p align="center"><img src="doc/logo.png" alt="TvSig" width="280"></p>
+<p align="center"><img src="doc/logo.png" alt="TVSig" width="280"></p>
 
-# TvSig
+# TVSig
 
 Digital signage app for Android phones, tablets and Android TV. It plays images and videos from a folder on your own web server. There is no Google account, no Google Drive and no license check.
 

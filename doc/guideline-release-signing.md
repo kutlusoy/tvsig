@@ -1,4 +1,4 @@
-# TvSig: Release Signing and GitHub Secrets
+# TVSig: Release Signing and GitHub Secrets
 
 - **Version:** 0.1 (draft)
 - **Date:** November 11, 2026

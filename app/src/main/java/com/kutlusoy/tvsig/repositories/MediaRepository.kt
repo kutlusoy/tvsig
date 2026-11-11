@@ -216,7 +216,7 @@ class MediaRepository private constructor(private val context: Context) {
                 connectTimeout = Constants.CONNECT_TIMEOUT_MS
                 readTimeout = Constants.READ_TIMEOUT_MS
                 instanceFollowRedirects = false
-                setRequestProperty("User-Agent", "TvSig")
+                setRequestProperty("User-Agent", "TVSig")
             }
             val code = connection.responseCode
             val location = connection.getHeaderField("Location")
