@@ -54,6 +54,10 @@ import java.io.File
 import kotlin.system.exitProcess
 
 class MainActivity : AppCompatActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.kutlusoy.tvsig.utils.DisplayScale.wrap(newBase))
+    }
+
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private val preferenceHelper by lazy { PreferenceHelper.getInstance(this) }
@@ -82,6 +86,7 @@ class MainActivity : AppCompatActivity() {
         initPlayer()
         setupOrientation()
         observeViewModel()
+        binding.statusText.setOnClickListener { showPinDialog() }
 
         acquireWakeLock()
         ensureForegroundService()
@@ -126,6 +131,7 @@ class MainActivity : AppCompatActivity() {
                         stopPlayback()
                         binding.statusText.text = state.message
                         binding.statusText.visible()
+                        openSettingsOnFirstStart()
                     }
                 }
             }
@@ -135,6 +141,23 @@ class MainActivity : AppCompatActivity() {
             viewModel.currentMedia.collect { media ->
                 if (media == null) return@collect
                 if (media.file.isVideo()) playVideo(media) else showImage(media)
+            }
+        }
+    }
+
+    /** Nothing is set up yet on the very first start, so lead the way into the settings. */
+    private fun openSettingsOnFirstStart() {
+        if (preferenceHelper.getSource().isConfigured || preferenceHelper.wasSetupShown()) return
+        preferenceHelper.setSetupShown()
+        startActivity(Intent(this, SettingsActivity::class.java))
+    }
+
+    private fun showPinDialog() {
+        PinDialog.show(supportFragmentManager) { enteredPin ->
+            if (viewModel.verifyPin(enteredPin)) {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            } else {
+                Toast.makeText(this, R.string.pin_incorrect, Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -375,13 +398,7 @@ class MainActivity : AppCompatActivity() {
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
         return when (keyCode) {
             KeyEvent.KEYCODE_BACK -> {
-                PinDialog.show(supportFragmentManager) { enteredPin ->
-                    if (viewModel.verifyPin(enteredPin)) {
-                        startActivity(Intent(this, SettingsActivity::class.java))
-                    } else {
-                        Toast.makeText(this, R.string.pin_incorrect, Toast.LENGTH_SHORT).show()
-                    }
-                }
+                showPinDialog()
                 true
             }
             KeyEvent.KEYCODE_DPAD_RIGHT -> { viewModel.moveToNextFile(); true }

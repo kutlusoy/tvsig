@@ -23,6 +23,10 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 class SettingsActivity : AppCompatActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.kutlusoy.tvsig.utils.DisplayScale.wrap(newBase))
+    }
+
 
     private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()

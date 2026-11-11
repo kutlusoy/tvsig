@@ -25,6 +25,7 @@ class PreferenceHelper private constructor(context: Context) {
         private const val KEY_CLEAR_CACHE = "clear_cache"
         private const val KEY_EXIT_REQUESTED = "exit_requested"
         private const val KEY_BATTERY_PROMPTED = "battery_prompted"
+        private const val KEY_SETUP_SHOWN = "setup_shown"
         private const val KEY_CRASH_TIMES = "crash_times"
 
         private const val DEFAULT_SLIDE_DELAY = 10
@@ -129,6 +130,12 @@ class PreferenceHelper private constructor(context: Context) {
 
     fun setExitRequested(requested: Boolean) {
         preferences.edit(commit = true) { putBoolean(KEY_EXIT_REQUESTED, requested) }
+    }
+
+    fun wasSetupShown(): Boolean = preferences.getBoolean(KEY_SETUP_SHOWN, false)
+
+    fun setSetupShown() {
+        preferences.edit { putBoolean(KEY_SETUP_SHOWN, true) }
     }
 
     fun wasBatteryPromptShown(): Boolean = preferences.getBoolean(KEY_BATTERY_PROMPTED, false)

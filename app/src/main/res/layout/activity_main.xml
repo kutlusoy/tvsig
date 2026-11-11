@@ -53,17 +53,22 @@
 
     <TextView
         android:id="@+id/statusText"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_large"
+        android:background="@drawable/bg_row"
+        android:clickable="true"
+        android:focusable="true"
         android:gravity="center"
         android:padding="@dimen/margin_large"
-        android:textAppearance="@style/TextAppearance.TVSig.Headline"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
+        android:textColor="?attr/colorOnSurface"
         android:visibility="gone"
-        android:background="@color/background_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintWidth_max="900dp" />
 
     <View
         android:id="@+id/dialogOverlay"

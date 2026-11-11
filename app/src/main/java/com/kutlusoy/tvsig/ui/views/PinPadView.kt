@@ -2,11 +2,11 @@ package com.kutlusoy.tvsig.ui.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.widget.Button
-import android.widget.GridLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import com.kutlusoy.tvsig.R
@@ -19,6 +19,7 @@ class PinPadView @JvmOverloads constructor(
 ) : LinearLayout(context, attrs) {
 
     private val dots = TextView(context)
+    private val keys = mutableListOf<Button>()
     private val pin = StringBuilder()
 
     var onPinComplete: ((String) -> Unit)? = null
@@ -28,19 +29,25 @@ class PinPadView @JvmOverloads constructor(
         gravity = Gravity.CENTER_HORIZONTAL
 
         dots.apply {
-            textSize = 40f
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimension(R.dimen.pin_dots_size))
             gravity = Gravity.CENTER
             letterSpacing = 0.3f
             setTextColor(resolveColor(com.google.android.material.R.attr.colorOnSurface))
         }
         addView(dots, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT).apply {
-            bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_medium)
+            bottomMargin = resources.getDimensionPixelSize(R.dimen.margin_xsmall)
         })
 
-        val grid = GridLayout(context).apply { columnCount = 3 }
-        val keys = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", KEY_BACK, "0", KEY_CLEAR)
-        keys.forEach { label -> grid.addView(createKey(label)) }
-        addView(grid)
+        listOf(
+            listOf("1", "2", "3"),
+            listOf("4", "5", "6"),
+            listOf("7", "8", "9"),
+            listOf(KEY_BACK, "0", KEY_CLEAR)
+        ).forEach { labels ->
+            val row = LinearLayout(context).apply { orientation = HORIZONTAL }
+            labels.forEach { label -> row.addView(createKey(label)) }
+            addView(row, LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT))
+        }
         updateDots()
     }
 
@@ -50,17 +57,15 @@ class PinPadView @JvmOverloads constructor(
     }
 
     fun focusFirstKey() {
-        (getChildAt(1) as GridLayout).getChildAt(0).requestFocus()
+        keys.firstOrNull()?.requestFocus()
     }
 
     private fun createKey(label: String): Button {
+        val size = resources.getDimensionPixelSize(R.dimen.pin_key_size)
+        val margin = resources.getDimensionPixelSize(R.dimen.pin_key_margin)
         val key = LayoutInflater.from(context).inflate(R.layout.view_pin_key, this, false) as Button
         key.text = label
-        key.layoutParams = GridLayout.LayoutParams().apply {
-            width = resources.getDimensionPixelSize(R.dimen.pin_key_size)
-            height = resources.getDimensionPixelSize(R.dimen.pin_key_size)
-            setMargins(6, 6, 6, 6)
-        }
+        key.layoutParams = LayoutParams(size, size).apply { setMargins(margin, margin, margin, margin) }
         key.setOnClickListener {
             when (label) {
                 KEY_BACK -> backspace()
@@ -68,6 +73,7 @@ class PinPadView @JvmOverloads constructor(
                 else -> append(label[0])
             }
         }
+        keys.add(key)
         return key
     }
 
@@ -103,7 +109,7 @@ class PinPadView @JvmOverloads constructor(
     }
 
     private fun resolveColor(attr: Int): Int {
-        val value = android.util.TypedValue()
+        val value = TypedValue()
         context.theme.resolveAttribute(attr, value, true)
         return value.data
     }

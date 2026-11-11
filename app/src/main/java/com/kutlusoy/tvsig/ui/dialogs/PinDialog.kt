@@ -33,7 +33,7 @@ class PinDialog : DialogFragment() {
     ): View {
         _binding = DialogPinBinding.inflate(inflater, container, false)
         val orientation = PreferenceHelper.getInstance(inflater.context).getOrientation()
-        return OrientationHelper.wrapDialogView(inflater.context, binding.root, orientation)
+        return OrientationHelper.wrapDialogView(inflater.context, binding.root, orientation, maxWidthDp = 520)
     }
 
     override fun onStart() {

@@ -3,8 +3,6 @@ package com.kutlusoy.tvsig.utils
 import android.app.Activity
 import android.content.Context
 import android.content.pm.ActivityInfo
-import android.content.pm.PackageManager
-import android.content.res.Configuration
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -54,9 +52,5 @@ object OrientationHelper {
         return rotationLayout
     }
 
-    fun isTvDevice(context: Context): Boolean {
-        val uiMode = context.resources.configuration.uiMode
-        return (uiMode and Configuration.UI_MODE_TYPE_MASK) == Configuration.UI_MODE_TYPE_TELEVISION ||
-                context.packageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)
-    }
+    fun isTvDevice(context: Context): Boolean = DisplayScale.isTvLike(context)
 }

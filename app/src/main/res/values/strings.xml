@@ -109,8 +109,9 @@
     <string name="msg_settings_saved">Einstellungen gespeichert</string>
     <string name="msg_restart_required">Bitte App neu starten</string>
 
-    <string name="error_no_base_url">Keine Basis-URL festgelegt.
-Bitte über die Zurück-Taste und die PIN die Einstellungen öffnen.</string>
+    <string name="error_no_base_url">Es ist noch keine Quelle eingerichtet.
+
+Zurück-Taste drücken oder hier tippen, die PIN eingeben und die Einstellungen öffnen.</string>
     <string name="error_load_failed">Medien konnten nicht geladen werden: %s</string>
     <string name="error_no_playable_media">Keine abspielbaren Medien gefunden</string>
 

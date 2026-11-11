@@ -15,6 +15,10 @@ import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 
 class SplashActivity : AppCompatActivity() {
+    override fun attachBaseContext(newBase: android.content.Context) {
+        super.attachBaseContext(com.kutlusoy.tvsig.utils.DisplayScale.wrap(newBase))
+    }
+
 
     private lateinit var binding: ActivitySplashBinding
     private val splashDelay = 3000L

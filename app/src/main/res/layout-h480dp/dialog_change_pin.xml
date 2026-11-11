@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog"
+    android:padding="@dimen/dialog_padding">
+
+    <TextView
+        android:id="@+id/pinStepTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/pin_current"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
+        android:layout_marginBottom="@dimen/margin_small" />
+
+    <TextView
+        android:id="@+id/pinStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:minHeight="28dp"
+        android:textAppearance="@style/TextAppearance.TVSig.Caption"
+        android:textColor="?attr/colorError"
+        android:layout_marginBottom="@dimen/margin_small" />
+
+    <com.kutlusoy.tvsig.ui.views.PinPadView
+        android:id="@+id/pinPad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        style="@style/Widget.TVSig.Button.Tertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:text="@string/button_cancel" />
+</LinearLayout>

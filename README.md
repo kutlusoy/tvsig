@@ -74,6 +74,10 @@ Press the back key (or the back button of a TV remote) and enter the PIN. The de
 
 On a TV remote, left and right skip to the previous or next item.
 
+### Phones and TVs
+
+The app tells the two apart: TVs, TV boxes and every device without a touchscreen count as TVs. On a TV the interface gets the same size on every screen (a layout of 960 by 540 dp, with safe margins), whatever density the device reports, so a 720p box, a 1080p TV and a 4K TV look alike. On phones and tablets the density of the system is kept and the dialogs switch to a compact side by side layout when the screen is low, for example a phone in landscape. On the first start without a source the settings open by themselves, and the message on the player screen can be tapped to open the PIN dialog.
+
 ### Rotated screens
 
 For a TV mounted upright or upside down, pick 90, 180 or 270 degrees in the settings. The app locks the system to landscape and lays out the content for the rotated screen (so a portrait layout fills an upright TV). The settings screen and the PIN dialogs rotate the same way. If the picture is upside down, choose the opposite angle (90 or 270).

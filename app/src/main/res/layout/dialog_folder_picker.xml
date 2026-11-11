@@ -33,7 +33,7 @@
     <ListView
         android:id="@+id/folderList"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
+        android:layout_height="@dimen/folder_list_height"
         android:divider="@android:color/transparent"
         android:dividerHeight="6dp"
         android:drawSelectorOnTop="true"
