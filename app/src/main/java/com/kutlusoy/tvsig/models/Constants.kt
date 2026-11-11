@@ -9,6 +9,7 @@ object Constants {
     const val MIN_SLIDE_DELAY_SECONDS = 3
     const val REFRESH_INTERVAL_MS = 15 * 60 * 1000L
     const val RETRY_INTERVAL_MS = 30 * 1000L
+    const val STALL_TIMEOUT_MS = 3 * 60 * 60 * 1000L
 
     const val CONNECT_TIMEOUT_MS = 15000
     const val READ_TIMEOUT_MS = 30000

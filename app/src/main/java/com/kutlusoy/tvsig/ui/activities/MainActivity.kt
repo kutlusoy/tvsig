@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -27,6 +28,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import com.kutlusoy.tvsig.TVSigApp
 import com.kutlusoy.tvsig.databinding.ActivityMainBinding
 import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.models.CurrentMedia
@@ -62,9 +64,15 @@ class MainActivity : AppCompatActivity() {
     private var shownImagePath: String? = null
     private var shownImageModified = 0L
 
+    private companion object {
+        const val WATCHDOG_INTERVAL_MS = 15_000L
+        const val STALLED_CHECKS_LIMIT = 4
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
+        preferenceHelper.setExitRequested(false)
         setupSystemUI()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -76,6 +84,7 @@ class MainActivity : AppCompatActivity() {
         acquireWakeLock()
         ensureForegroundService()
         startKeepAliveTask()
+        startPlaybackWatchdog()
     }
 
     @OptIn(UnstableApi::class)
@@ -257,6 +266,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Skips a video that stands still for a minute, for example after a decoder or storage problem. */
+    private fun startPlaybackWatchdog() {
+        lifecycleScope.launch {
+            var lastPosition = -1L
+            var stalledChecks = 0
+            while (true) {
+                delay(WATCHDOG_INTERVAL_MS)
+                val current = player
+                val watching = current != null && transitioner.currentView === binding.videoContainer &&
+                        current.playWhenReady && lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)
+                if (!watching || current == null) {
+                    stalledChecks = 0
+                    lastPosition = -1L
+                    continue
+                }
+                val position = current.currentPosition
+                stalledChecks = if (position == lastPosition && current.playbackState != Player.STATE_ENDED) stalledChecks + 1 else 0
+                lastPosition = position
+                if (stalledChecks >= STALLED_CHECKS_LIMIT) {
+                    Logger.w("Video stalled, skipping")
+                    stalledChecks = 0
+                    viewModel.onPlaybackFailed()
+                }
+            }
+        }
+    }
+
     private fun startKeepAliveTask() {
         keepAliveJob = lifecycleScope.launch {
             while (true) {
@@ -328,9 +364,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun exit() {
-        wakeLock?.release()
-        stopService(Intent(this, ForegroundService::class.java))
-        finish()
+        (application as TVSigApp).requestExit()
+        wakeLock?.takeIf { it.isHeld }?.release()
+        finishAndRemoveTask()
         exitProcess(0)
     }
 

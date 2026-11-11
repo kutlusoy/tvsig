@@ -20,6 +20,7 @@ import com.kutlusoy.tvsig.services.ForegroundService
 import com.kutlusoy.tvsig.ui.activities.MainActivity
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.PreferenceHelper
+import com.kutlusoy.tvsig.utils.RestartBackoff
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -34,9 +35,13 @@ class TVSigApp : Application() {
         private lateinit var instance: TVSigApp
         fun getInstance(): TVSigApp = instance
         fun getAppContext(): Context = instance.applicationContext
-        private const val RESTART_DELAY = 5000L
         private const val MEMORY_CHECK_INTERVAL = 900000L
         private const val MEM_THRESHOLD_MB = 800
+
+        @Volatile
+        private var resumedActivities = 0
+
+        val isUiVisible: Boolean get() = resumedActivities > 0
     }
 
     private val appScope = CoroutineScope(Dispatchers.Default + Job())
@@ -45,7 +50,8 @@ class TVSigApp : Application() {
     private val exceptionHandler = Thread.UncaughtExceptionHandler { thread, throwable ->
         try {
             Logger.e("Fatal Exception", throwable)
-            restartApplication()
+            val crashes = PreferenceHelper.getInstance(this).recordCrash(System.currentTimeMillis(), RestartBackoff.CRASH_WINDOW_MS)
+            restartApplication(RestartBackoff.delayMs(crashes))
         } catch (e: Exception) {
             Logger.e("Error in crash handler", e)
             defaultExceptionHandler?.uncaughtException(thread, throwable)
@@ -85,32 +91,28 @@ class TVSigApp : Application() {
         }
     }
 
-    private fun restartApplication() {
+    private fun restartApplication(delayMs: Long) {
         try {
-            ensureForegroundService()
-
             val intent = Intent(this, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                putExtra("restart", true)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
             }
             val pendingIntent = PendingIntent.getActivity(
                 this, 0, intent, PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
             )
-
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setAndAllowWhileIdle(
-                AlarmManager.RTC_WAKEUP,
-                System.currentTimeMillis() + RESTART_DELAY,
-                pendingIntent
-            )
-
-            android.os.Handler(mainLooper).postDelayed({
-                Process.killProcess(Process.myPid())
-                exitProcess(10)
-            }, 1000)
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + delayMs, pendingIntent)
         } catch (e: Exception) {
-            Logger.e("Error restarting application", e)
+            Logger.e("Error scheduling the restart", e)
+        } finally {
+            Process.killProcess(Process.myPid())
+            exitProcess(10)
         }
+    }
+
+    /** Stops the service and the app for good, until the user starts it again. */
+    fun requestExit() {
+        PreferenceHelper.getInstance(this).setExitRequested(true)
+        stopService(Intent(this, ForegroundService::class.java))
     }
 
     private fun startMemoryMonitoring() {
@@ -128,6 +130,7 @@ class TVSigApp : Application() {
     }
 
     private fun ensureForegroundService() {
+        if (PreferenceHelper.getInstance(this).isExitRequested()) return
         try {
             val serviceIntent = Intent(this, ForegroundService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -142,7 +145,9 @@ class TVSigApp : Application() {
 
     private fun requestBatteryOptimizationExemption() {
         val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        if (!powerManager.isIgnoringBatteryOptimizations(packageName)) {
+        val preferences = PreferenceHelper.getInstance(this)
+        if (!powerManager.isIgnoringBatteryOptimizations(packageName) && !preferences.wasBatteryPromptShown()) {
+            preferences.setBatteryPromptShown()
             try {
                 val intent = Intent().apply {
                     action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
@@ -174,12 +179,15 @@ class TVSigApp : Application() {
 
         override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
         override fun onActivityStarted(activity: Activity) {}
-        override fun onActivityPaused(activity: Activity) {}
+        override fun onActivityPaused(activity: Activity) {
+            resumedActivities = (resumedActivities - 1).coerceAtLeast(0)
+        }
         override fun onActivityStopped(activity: Activity) {}
         override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
         override fun onActivityDestroyed(activity: Activity) {}
 
         override fun onActivityResumed(activity: Activity) {
+            resumedActivities++
             app.ensureForegroundService()
         }
 

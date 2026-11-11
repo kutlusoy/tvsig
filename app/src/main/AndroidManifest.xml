@@ -38,7 +38,7 @@
             android:exported="true"
             android:theme="@style/Theme.TVSig.Splash"
             android:launchMode="singleTask"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|navigation"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|navigation|uiMode|density|fontScale|locale|layoutDirection|smallestScreenSize"
             android:keepScreenOn="true"
             android:hardwareAccelerated="true"
             android:excludeFromRecents="false"
@@ -58,7 +58,7 @@
             android:name=".ui.activities.MainActivity"
             android:exported="false"
             android:launchMode="singleTask"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|navigation"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|navigation|uiMode|density|fontScale|locale|layoutDirection|smallestScreenSize"
             android:theme="@style/Theme.TVSig"
             android:keepScreenOn="true"
             android:hardwareAccelerated="true"
@@ -70,7 +70,7 @@
         </activity>
         <activity
             android:name=".ui.activities.SettingsActivity"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode|density|fontScale|locale|layoutDirection|smallestScreenSize"
             android:theme="@style/Theme.TVSig" />
         <service
             android:name=".services.ForegroundService"

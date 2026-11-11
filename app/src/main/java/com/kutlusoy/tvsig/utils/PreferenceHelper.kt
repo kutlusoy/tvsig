@@ -17,6 +17,9 @@ class PreferenceHelper private constructor(context: Context) {
         private const val KEY_DARK_MODE = "dark_mode"
         private const val KEY_PIN = "pin"
         private const val KEY_CLEAR_CACHE = "clear_cache"
+        private const val KEY_EXIT_REQUESTED = "exit_requested"
+        private const val KEY_BATTERY_PROMPTED = "battery_prompted"
+        private const val KEY_CRASH_TIMES = "crash_times"
 
         private const val DEFAULT_SLIDE_DELAY = 10
         private const val DEFAULT_PIN = "0000"
@@ -93,4 +96,24 @@ class PreferenceHelper private constructor(context: Context) {
         }
     }
 
+    fun isExitRequested(): Boolean = preferences.getBoolean(KEY_EXIT_REQUESTED, false)
+
+    fun setExitRequested(requested: Boolean) {
+        preferences.edit(commit = true) { putBoolean(KEY_EXIT_REQUESTED, requested) }
+    }
+
+    fun wasBatteryPromptShown(): Boolean = preferences.getBoolean(KEY_BATTERY_PROMPTED, false)
+
+    fun setBatteryPromptShown() {
+        preferences.edit { putBoolean(KEY_BATTERY_PROMPTED, true) }
+    }
+
+    /** Records a crash and returns how many crashes happened inside the recent window. */
+    fun recordCrash(now: Long, windowMs: Long): Int {
+        val times = (preferences.getString(KEY_CRASH_TIMES, "") ?: "")
+            .split(',').mapNotNull { it.toLongOrNull() }
+            .filter { now - it < windowMs } + now
+        preferences.edit(commit = true) { putString(KEY_CRASH_TIMES, times.joinToString(",")) }
+        return times.size
+    }
 }

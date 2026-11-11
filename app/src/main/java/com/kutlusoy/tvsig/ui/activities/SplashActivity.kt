@@ -24,6 +24,7 @@ class SplashActivity : AppCompatActivity() {
         enableEdgeToEdge()
 
         super.onCreate(savedInstanceState)
+        preferenceHelper.setExitRequested(false)
 
         setupSystemUI()
 

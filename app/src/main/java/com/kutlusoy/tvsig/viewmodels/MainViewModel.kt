@@ -1,6 +1,7 @@
 package com.kutlusoy.tvsig.viewmodels
 
 import android.app.Application
+import android.os.SystemClock
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kutlusoy.tvsig.R
@@ -37,6 +38,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private var retryJob: Job? = null
     private var tokenCounter = 0L
     private var consecutiveFailures = 0
+    private var lastShownAt = SystemClock.elapsedRealtime()
 
     init {
         loadPlaylist()
@@ -58,6 +60,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             while (true) {
                 delay(Constants.REFRESH_INTERVAL_MS)
                 refreshPlaylist()
+                reloadIfStalled()
             }
         }
     }
@@ -105,6 +108,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /** Last resort: when nothing was shown for hours, start over. */
+    private fun reloadIfStalled() {
+        val state = _presentationState.value as? PresentationState.Success ?: return
+        val loopingVideo = state.files.size == 1 && state.files[0].isVideo()
+        if (!loopingVideo && SystemClock.elapsedRealtime() - lastShownAt > Constants.STALL_TIMEOUT_MS) {
+            Logger.w("Playback stalled, reloading the playlist")
+            loadPlaylist()
+        }
+    }
+
     private fun scheduleRetry() {
         retryJob?.cancel()
         retryJob = viewModelScope.launch {
@@ -121,6 +134,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         showJob = viewModelScope.launch {
             when (val result = repository.ensureLocal(file)) {
                 is Result.Success -> {
+                    lastShownAt = SystemClock.elapsedRealtime()
                     _currentMedia.value = CurrentMedia(file, result.data.absolutePath, ++tokenCounter)
                     prefetchNext(state)
                 }

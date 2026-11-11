@@ -23,6 +23,7 @@ class ServiceRestarter : BroadcastReceiver() {
 
     private fun startServices(context: Context) {
         try {
+            PreferenceHelper.getInstance(context).setExitRequested(false)
             val serviceIntent = Intent(context, ForegroundService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 context.startForegroundService(serviceIntent)

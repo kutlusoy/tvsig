@@ -17,7 +17,7 @@ import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
-import kotlin.system.exitProcess
+import com.kutlusoy.tvsig.ui.activities.MainActivity
 
 class PinDialog : DialogFragment() {
 
@@ -93,8 +93,7 @@ class PinDialog : DialogFragment() {
         }
 
         binding.btnExit.setOnClickListener {
-            activity?.finish()
-            exitProcess(0)
+            (activity as? MainActivity)?.exit()
         }
     }
 
