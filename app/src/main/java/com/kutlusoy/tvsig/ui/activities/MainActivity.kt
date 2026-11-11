@@ -13,6 +13,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
@@ -28,6 +29,7 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
+import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.TVSigApp
 import com.kutlusoy.tvsig.databinding.ActivityMainBinding
 import com.kutlusoy.tvsig.models.Constants
@@ -376,6 +378,8 @@ class MainActivity : AppCompatActivity() {
                 PinDialog.show(supportFragmentManager) { enteredPin ->
                     if (viewModel.verifyPin(enteredPin)) {
                         startActivity(Intent(this, SettingsActivity::class.java))
+                    } else {
+                        Toast.makeText(this, R.string.pin_incorrect, Toast.LENGTH_SHORT).show()
                     }
                 }
                 true

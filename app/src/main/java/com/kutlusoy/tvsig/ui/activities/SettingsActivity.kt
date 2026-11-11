@@ -1,187 +1,144 @@
 package com.kutlusoy.tvsig.ui.activities
 
 import android.os.Bundle
-import android.view.View
-import android.widget.AdapterView
-import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
+import com.kutlusoy.tvsig.BuildConfig
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.ActivitySettingsBinding
+import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.ui.dialogs.ChangePinDialog
-import com.kutlusoy.tvsig.utils.Logger
+import com.kutlusoy.tvsig.ui.dialogs.FolderPickerDialog
 import com.kutlusoy.tvsig.utils.OrientationHelper
+import com.kutlusoy.tvsig.utils.PreferenceHelper
 import com.kutlusoy.tvsig.viewmodels.SettingsViewModel
 import kotlinx.coroutines.launch
+import kotlin.math.abs
 
 class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()
-    private var isUpdatingFromViewModel = false
+
+    private val delayOptions = listOf(3, 5, 8, 10, 15, 20, 30, 45, 60, 90, 120, 180, 300)
+    private val orientationOptions: List<Int> by lazy {
+        val all = listOf(
+            OrientationHelper.ORIENTATION_AUTO,
+            OrientationHelper.ORIENTATION_LANDSCAPE,
+            OrientationHelper.ORIENTATION_90,
+            OrientationHelper.ORIENTATION_180,
+            OrientationHelper.ORIENTATION_270
+        )
+        if (OrientationHelper.isTvDevice(this)) all.drop(1) else all
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
-
         super.onCreate(savedInstanceState)
         binding = ActivitySettingsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        applyOrientation(PreferenceHelper.getInstance(this).getOrientation())
 
         setupViews()
         setupObservers()
-
-        setupOrientation()
     }
 
-    private fun setupOrientation() {
-        val preferenceHelper = com.kutlusoy.tvsig.utils.PreferenceHelper.getInstance(this)
-        val orientation = preferenceHelper.getOrientation()
+    private fun applyOrientation(orientation: Int) {
         OrientationHelper.setOrientation(this, orientation)
-        Logger.d("SettingsActivity: Applied orientation setting: $orientation (without view rotation)")
     }
 
     private fun setupViews() {
+        val settings = viewModel.settings.value
+
         with(binding) {
-            baseUrlInput.doAfterTextChanged { text ->
-                viewModel.updateSettings(baseUrl = text.toString())
+            baseUrlInput.setText(settings.baseUrl)
+            subfolderInput.setText(settings.subfolder)
+            baseUrlInput.doAfterTextChanged { viewModel.updateSettings(baseUrl = it.toString()) }
+            subfolderInput.doAfterTextChanged { viewModel.updateSettings(subfolder = it.toString()) }
+
+            delayRow.setOptions(delayOptions.map { getString(R.string.seconds_format, it) }, nearestDelayIndex(settings.slideDelay))
+            delayRow.onSelectionChanged = { viewModel.updateSettings(slideDelay = delayOptions[it]) }
+
+            transitionRow.setOptions(resources.getStringArray(R.array.transition_options).toList(), settings.transition)
+            transitionRow.onSelectionChanged = { viewModel.updateSettings(transition = it) }
+
+            val orientationLabels = orientationOptions.map { orientationLabel(it) }
+            val orientationIndex = orientationOptions.indexOf(settings.orientation).takeIf { it >= 0 } ?: 0
+            orientationRow.setOptions(orientationLabels, orientationIndex)
+            orientationRow.onSelectionChanged = {
+                val orientation = orientationOptions[it]
+                viewModel.updateSettings(orientation = orientation)
+                applyOrientation(orientation)
             }
 
-            subfolderInput.doAfterTextChanged { text ->
-                viewModel.updateSettings(subfolder = text.toString())
-            }
+            themeRow.setOptions(listOf(getString(R.string.theme_light), getString(R.string.theme_dark)), if (settings.isDarkMode) 1 else 0)
+            themeRow.onSelectionChanged = { viewModel.updateSettings(isDarkMode = it == 1) }
 
-            delayInput.doAfterTextChanged { text ->
-                text?.toString()?.toIntOrNull()?.let { delay ->
-                    viewModel.updateSettings(slideDelay = delay)
-                }
-            }
-
-            transitionSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    if (!isUpdatingFromViewModel && position != viewModel.settings.value.transition) {
-                        viewModel.updateSettings(transition = position)
+            btnPickFolder.setOnClickListener {
+                val current = viewModel.settings.value
+                if (current.baseUrl.isBlank()) {
+                    Toast.makeText(this@SettingsActivity, R.string.test_no_url, Toast.LENGTH_SHORT).show()
+                } else {
+                    FolderPickerDialog.show(supportFragmentManager, current.baseUrl, current.subfolder) { folder ->
+                        subfolderInput.setText(folder)
                     }
                 }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
-
-            orientationGroup.setOnCheckedChangeListener { _, checkedId ->
-                if (isUpdatingFromViewModel) {
-                    return@setOnCheckedChangeListener
-                }
-
-                val orientation = when (checkedId) {
-                    R.id.orientationAuto -> OrientationHelper.ORIENTATION_AUTO
-                    R.id.orientationLandscape -> OrientationHelper.ORIENTATION_LANDSCAPE
-                    R.id.orientation90 -> OrientationHelper.ORIENTATION_90
-                    R.id.orientation180 -> OrientationHelper.ORIENTATION_180
-                    R.id.orientation270 -> OrientationHelper.ORIENTATION_270
-                    else -> OrientationHelper.ORIENTATION_LANDSCAPE
-                }
-                viewModel.updateSettings(orientation = orientation)
-
-                OrientationHelper.setOrientation(this@SettingsActivity, orientation)
-            }
-
-            themeGroup.setOnCheckedChangeListener { _, checkedId ->
-                if (isUpdatingFromViewModel) {
-                    return@setOnCheckedChangeListener
-                }
-
-                val isDarkMode = checkedId == R.id.themeDark
-                viewModel.updateSettings(isDarkMode = isDarkMode)
-            }
-
+            btnTestConnection.setOnClickListener { viewModel.testConnection() }
             btnChangePin.setOnClickListener {
-                showChangePinDialog()
+                ChangePinDialog.show(supportFragmentManager, viewModel::verifyCurrentPin) { newPin ->
+                    viewModel.updateSettings(pin = newPin)
+                    Toast.makeText(this@SettingsActivity, getString(R.string.pin_changed), Toast.LENGTH_SHORT).show()
+                }
             }
-
             btnClearCache.setOnClickListener {
                 viewModel.requestCacheClear()
                 finish()
             }
+            btnCancel.setOnClickListener { finish() }
+            btnSave.setOnClickListener { viewModel.saveSettings() }
 
-            btnCancel.setOnClickListener {
-                finish()
-            }
-
-            btnSave.setOnClickListener {
-                viewModel.saveSettings()
-            }
-
-            developerInfo.text = getString(R.string.app_creator_footer,
-                getString(R.string.app_creator),
-                getString(R.string.app_contact))
+            aboutText.text = listOf(
+                getString(R.string.about_version, BuildConfig.VERSION_NAME, BuildConfig.VERSION_CODE),
+                getString(R.string.about_author, getString(R.string.about_author_name)),
+                getString(R.string.about_repo, getString(R.string.about_repo_url)),
+                getString(R.string.about_license),
+                getString(R.string.about_contact, getString(R.string.app_contact))
+            ).joinToString("\n")
         }
     }
 
     private fun setupObservers() {
         lifecycleScope.launch {
-            viewModel.settings.collect { settings ->
-                try {
-                    with(binding) {
-                        if (baseUrlInput.text.toString() != settings.baseUrl) {
-                            baseUrlInput.setText(settings.baseUrl)
-                        }
-
-                        if (subfolderInput.text.toString() != settings.subfolder) {
-                            subfolderInput.setText(settings.subfolder)
-                        }
-
-                        if (delayInput.text.toString() != settings.slideDelay.toString()) {
-                            delayInput.setText(settings.slideDelay.toString())
-                        }
-
-                        isUpdatingFromViewModel = true
-                        transitionSpinner.setSelection(settings.transition)
-                        isUpdatingFromViewModel = false
-
-                        val orientationButton = when (settings.orientation) {
-                            OrientationHelper.ORIENTATION_AUTO -> R.id.orientationAuto
-                            OrientationHelper.ORIENTATION_LANDSCAPE -> R.id.orientationLandscape
-                            OrientationHelper.ORIENTATION_90 -> R.id.orientation90
-                            OrientationHelper.ORIENTATION_180 -> R.id.orientation180
-                            OrientationHelper.ORIENTATION_270 -> R.id.orientation270
-                            else -> R.id.orientationLandscape
-                        }
-                        isUpdatingFromViewModel = true
-                        orientationGroup.check(orientationButton)
-                        isUpdatingFromViewModel = false
-
-                        isUpdatingFromViewModel = true
-                        themeGroup.check(if (settings.isDarkMode) R.id.themeDark else R.id.themeLight)
-                        isUpdatingFromViewModel = false
-
-                        if (OrientationHelper.isTvDevice(this@SettingsActivity)) {
-                            orientationAuto.isEnabled = false
-                            orientationGroup.findViewById<RadioButton>(R.id.orientationAuto)?.isEnabled = false
-                        }
-                    }
-                } catch (e: Exception) {
-                    Logger.e("Error updating settings UI", e)
-                }
-            }
+            viewModel.testStatus.collect { binding.testStatus.text = it }
         }
-
         lifecycleScope.launch {
             viewModel.saveResult.collect { saved ->
                 if (saved == true) {
+                    AppCompatDelegate.setDefaultNightMode(
+                        if (viewModel.settings.value.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
+                    )
                     finish()
                 }
             }
         }
     }
 
-    private fun showChangePinDialog() {
-        ChangePinDialog.show(supportFragmentManager) { newPin ->
-            viewModel.updateSettings(pin = newPin)
-            Toast.makeText(this, getString(R.string.pin_changed), Toast.LENGTH_SHORT).show()
+    private fun nearestDelayIndex(seconds: Int): Int =
+        delayOptions.indices.minByOrNull { abs(delayOptions[it] - seconds.coerceAtLeast(Constants.MIN_SLIDE_DELAY_SECONDS)) } ?: 0
+
+    private fun orientationLabel(orientation: Int): String = getString(
+        when (orientation) {
+            OrientationHelper.ORIENTATION_AUTO -> R.string.orientation_auto
+            OrientationHelper.ORIENTATION_90 -> R.string.orientation_90
+            OrientationHelper.ORIENTATION_180 -> R.string.orientation_180
+            OrientationHelper.ORIENTATION_270 -> R.string.orientation_270
+            else -> R.string.orientation_landscape
         }
-    }
+    )
 }

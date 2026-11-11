@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -11,54 +10,22 @@
         android:id="@+id/pinDialogTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="@string/pin_enter"
         android:textAppearance="@style/TextAppearance.TVSig.Title"
-        android:layout_marginBottom="@dimen/margin_large" />
+        android:layout_marginBottom="@dimen/margin_medium" />
 
-    <LinearLayout
+    <com.kutlusoy.tvsig.ui.views.PinPadView
+        android:id="@+id/pinPad"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="horizontal">
-
-        <EditText
-            android:id="@+id/pinDigit1"
-            style="@style/Widget.TVSig.PinEntry"
-            android:inputType="numberPassword"
-            android:maxLength="1"
-            android:background="@drawable/selector_pin_input"
-            android:importantForAccessibility="no"/>
-
-        <EditText
-            android:id="@+id/pinDigit2"
-            style="@style/Widget.TVSig.PinEntry"
-            android:inputType="numberPassword"
-            android:maxLength="1"
-            android:background="@drawable/selector_pin_input"
-            android:importantForAccessibility="no"/>
-
-        <EditText
-            android:id="@+id/pinDigit3"
-            style="@style/Widget.TVSig.PinEntry"
-            android:inputType="numberPassword"
-            android:maxLength="1"
-            android:background="@drawable/selector_pin_input"
-            android:importantForAccessibility="no"/>
-
-        <EditText
-            android:id="@+id/pinDigit4"
-            style="@style/Widget.TVSig.PinEntry"
-            android:inputType="numberPassword"
-            android:maxLength="1"
-            android:background="@drawable/selector_pin_input"
-            android:importantForAccessibility="no"/>
-    </LinearLayout>
+        android:layout_gravity="center_horizontal" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="@dimen/margin_large"
+        android:layout_marginTop="@dimen/margin_medium"
         android:gravity="end">
 
         <Button
@@ -74,9 +41,6 @@
             style="@style/Widget.TVSig.Button.Tertiary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/margin_medium"
             android:text="@string/button_cancel" />
-
     </LinearLayout>
-
 </LinearLayout>

@@ -20,4 +20,5 @@
     <color name="dialog_overlay">#99000000</color>
 
     <color name="transparent">#00000000</color>
+    <color name="row_stroke">#66808080</color>
 </resources>

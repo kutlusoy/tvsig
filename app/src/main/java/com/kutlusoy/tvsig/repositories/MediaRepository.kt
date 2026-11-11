@@ -56,6 +56,38 @@ class MediaRepository private constructor(private val context: Context) {
             }
         }
 
+    /** Lists the subfolders of the base URL, from folders.txt or the directory listing of the web server. */
+    suspend fun listSubfolders(baseUrl: String): Result<List<String>> = withContext(Dispatchers.IO) {
+        if (!NetworkHelper.isNetworkAvailable(context)) {
+            return@withContext Result.Error(Exception(ERROR_OFFLINE))
+        }
+        try {
+            val folderUrl = buildFolderUrl(baseUrl, "")
+            val folderFile = httpGetText(folderUrl + Constants.FOLDERS_FILE_NAME, allowNotFound = true)
+            val folders = if (folderFile != null) {
+                parseFolderFile(folderFile)
+            } else {
+                parseFolderListing(httpGetText(folderUrl, allowNotFound = false) ?: throw Exception(ERROR_LISTING), folderUrl)
+            }
+            Result.Success(folders)
+        } catch (e: Exception) {
+            Result.Error(e)
+        }
+    }
+
+    /** Reads the playlist without caching, used by the connection test in the settings. */
+    suspend fun testConnection(baseUrl: String, subfolder: String): Result<List<MediaFile>> =
+        withContext(Dispatchers.IO) {
+            if (!NetworkHelper.isNetworkAvailable(context)) {
+                return@withContext Result.Error(Exception(ERROR_OFFLINE))
+            }
+            try {
+                Result.Success(fetchPlaylist(buildFolderUrl(baseUrl, subfolder)))
+            } catch (e: Exception) {
+                Result.Error(e)
+            }
+        }
+
     /** Returns the local copy of a file, downloading it first when it is missing. */
     suspend fun ensureLocal(file: MediaFile): Result<File> = withContext(Dispatchers.IO) {
         val local = localFile(file)
@@ -280,9 +312,45 @@ class MediaRepository private constructor(private val context: Context) {
             }
 
         fun buildFolderUrl(baseUrl: String, subfolder: String): String {
-            val base = baseUrl.trim().trimEnd('/')
+            var base = baseUrl.trim().trimEnd('/')
+            if (base.isNotEmpty() && !base.contains("://")) base = "https://$base"
             val sub = subfolder.trim().trim('/')
-            return if (sub.isEmpty()) "$base/" else "$base/$sub/"
+            return if (sub.isEmpty()) "${encodeUrl(base)}/" else "${encodeUrl(base)}/${encodeUrl(sub)}/"
         }
+
+        /** Percent-encodes characters that are not allowed in a URL and keeps existing escapes. */
+        fun encodeUrl(value: String): String {
+            val allowed = "-._~!$&'()*+,;=:@/%"
+            val out = StringBuilder()
+            for (ch in value) {
+                if (ch.isLetterOrDigit() && ch.code < 128 || ch in allowed) {
+                    out.append(ch)
+                } else {
+                    ch.toString().toByteArray(Charsets.UTF_8).forEach { out.append("%%%02X".format(it)) }
+                }
+            }
+            return out.toString()
+        }
+
+        fun parseFolderFile(text: String): List<String> =
+            text.lineSequence()
+                .map { it.trim().trimEnd('/') }
+                .filter { it.isNotEmpty() && !it.startsWith("#") }
+                .distinct()
+                .toList()
+
+        /** Subfolders of a server generated directory index: links that end with a slash, one level below the folder. */
+        fun parseFolderListing(html: String, folderUrl: String): List<String> =
+            HREF_REGEX.findAll(html)
+                .map { it.groupValues[1].trim() }
+                .filter { it.isNotEmpty() && !it.startsWith("?") && !it.startsWith("#") && it.substringBefore('?').endsWith("/") }
+                .mapNotNull { runCatching { URI(folderUrl).resolve(it.replace(" ", "%20")).toString() }.getOrNull() }
+                .filter { it.startsWith(folderUrl) }
+                .map { it.removePrefix(folderUrl).trimEnd('/') }
+                .filter { it.isNotEmpty() && !it.contains('/') && !it.startsWith(".") }
+                .map { URLDecoder.decode(it.replace("+", "%2B"), "UTF-8") }
+                .distinct()
+                .sortedBy { it.lowercase() }
+                .toList()
     }
 }

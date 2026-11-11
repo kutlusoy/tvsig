@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_dialog"
+    android:padding="@dimen/dialog_padding">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/folder_picker_title"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
+        android:layout_marginBottom="@dimen/margin_small" />
+
+    <TextView
+        android:id="@+id/folderStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TVSig.Caption"
+        android:layout_marginBottom="@dimen/margin_small" />
+
+    <ListView
+        android:id="@+id/folderList"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="6dp"
+        android:drawSelectorOnTop="true"
+        android:listSelector="@drawable/bg_list_selector"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnCancel"
+        style="@style/Widget.TVSig.Button.Tertiary"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:text="@string/button_cancel" />
+</LinearLayout>

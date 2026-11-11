@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <TextView
+        android:id="@+id/optionTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.TVSig.Body" />
+
+    <TextView
+        android:id="@+id/optionPrevious"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/arrow_left"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="32sp"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/optionValue"
+        android:layout_width="260dp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textAppearance="@style/TextAppearance.TVSig.Title"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/optionNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/arrow_right"
+        android:textColor="?attr/colorPrimary"
+        android:textSize="32sp"
+        android:importantForAccessibility="no" />
+</merge>

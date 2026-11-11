@@ -20,6 +20,8 @@ The app is configured with two values:
 
 The media are loaded from `<Base URL>/<Subfolder>/`, here `https://example.com/signage/lobby-screen/`. Use a different subfolder per screen to give every device its own content.
 
+You do not have to type the subfolder: after entering the base URL, "Ordner auswählen" in the settings shows the subfolders of the server as a list. The list comes from the directory listing of the web server, or from a `folders.txt` in the base folder (one folder name per line) if the server does not allow directory listings. "Verbindung testen" checks the settings and reports how many images and videos were found.
+
 ### Playlist
 
 The app builds the playlist in one of two ways:
@@ -45,6 +47,8 @@ Supported files:
 - All media are downloaded to the device. If the network or the server is down, the app keeps playing the last synchronized content.
 
 ## Settings
+
+The settings are made for remote controls: arrow keys move the focus, left and right change a value, OK confirms, and no touch or keyboard is needed except for typing the base URL. The PIN is entered on an on-screen number pad, so remotes without number keys work. The settings also show the app version, author and repository.
 
 Press the back key (or the back button of a TV remote) and enter the PIN. The default PIN is `0000`; change it in the settings.
 

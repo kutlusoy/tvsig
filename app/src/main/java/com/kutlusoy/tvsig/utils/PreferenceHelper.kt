@@ -72,7 +72,7 @@ class PreferenceHelper private constructor(context: Context) {
         }
     }
 
-    fun isDarkMode(): Boolean = preferences.getBoolean(KEY_DARK_MODE, false)
+    fun isDarkMode(): Boolean = preferences.getBoolean(KEY_DARK_MODE, true)
 
     fun setDarkMode(enabled: Boolean) {
         preferences.edit {

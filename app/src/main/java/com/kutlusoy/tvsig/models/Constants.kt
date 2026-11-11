@@ -2,6 +2,7 @@ package com.kutlusoy.tvsig.models
 
 object Constants {
     const val PLAYLIST_FILE_NAME = "playlist.txt"
+    const val FOLDERS_FILE_NAME = "folders.txt"
 
     const val PIN_LENGTH = 4
     const val PIN_DIALOG_TIMEOUT_MS = 20000L

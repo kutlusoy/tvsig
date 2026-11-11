@@ -36,10 +36,10 @@ object OrientationHelper {
     }
 
     /** Wraps a dialog view so it rotates like the activities; the dialog window must be full screen. */
-    fun wrapDialogView(context: Context, view: View, orientation: Int): RotationLayout {
+    fun wrapDialogView(context: Context, view: View, orientation: Int, maxWidthDp: Int = DIALOG_MAX_WIDTH_DP): RotationLayout {
         (view.parent as? ViewGroup)?.removeView(view)
         return RotationLayout(context).apply {
-            maxContentWidth = (DIALOG_MAX_WIDTH_DP * context.resources.displayMetrics.density).toInt()
+            maxContentWidth = (maxWidthDp * context.resources.displayMetrics.density).toInt()
             rotationDegrees = rotationDegrees(orientation)
             addView(view, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         }

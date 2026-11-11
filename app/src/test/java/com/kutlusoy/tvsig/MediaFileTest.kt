@@ -32,4 +32,40 @@ class MediaFileTest {
         assertEquals("https://h.com/s/lobby/", MediaRepository.buildFolderUrl(" https://h.com/s ", "lobby"))
         assertEquals("https://h.com/", MediaRepository.buildFolderUrl("https://h.com", ""))
     }
+
+    @Test
+    fun assumesHttpsWhenTheSchemeIsMissing() {
+        assertEquals("https://h.com/s/lobby/", MediaRepository.buildFolderUrl("h.com/s", "lobby"))
+        assertEquals("http://192.168.1.5/tv/", MediaRepository.buildFolderUrl("http://192.168.1.5", "tv"))
+    }
+
+    @Test
+    fun encodesFolderNamesWithSpacesAndUmlauts() {
+        assertEquals("https://h.com/s/My%20Folder/", MediaRepository.buildFolderUrl("https://h.com/s", "My Folder"))
+        assertEquals("https://h.com/s/B%C3%BCro/", MediaRepository.buildFolderUrl("https://h.com/s", "B\u00FCro"))
+        assertEquals("https://h.com/s/My%20Folder/", MediaRepository.buildFolderUrl("https://h.com/s", "My%20Folder"))
+    }
+
+    @Test
+    fun listsOnlyDirectSubfoldersFromAnIndexPage() {
+        val html = """
+            <a href="?C=N;O=D">Name</a>
+            <a href="/signage/">Parent Directory</a>
+            <a href="lobby/">lobby/</a>
+            <a href="Empfang%20Nord/">Empfang Nord/</a>
+            <a href="B%C3%BCro/">B&uuml;ro/</a>
+            <a href="lobby/deep/">deep</a>
+            <a href="photo.jpg">photo.jpg</a>
+            <a href="../">../</a>
+        """.trimIndent()
+        assertEquals(
+            listOf("B\u00FCro", "Empfang Nord", "lobby"),
+            MediaRepository.parseFolderListing(html, "https://h.com/signage/")
+        )
+    }
+
+    @Test
+    fun parsesAFolderFile() {
+        assertEquals(listOf("a", "b c"), MediaRepository.parseFolderFile("# folders\na/\n\nb c\na"))
+    }
 }
