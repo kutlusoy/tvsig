@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <style name="Theme.TvSig" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand colors -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryVariant">@color/primary_variant</item>
         <item name="colorOnPrimary">@color/text_primary_light</item>
@@ -9,34 +8,27 @@
         <item name="colorSecondaryVariant">@color/tertiary</item>
         <item name="colorOnSecondary">@color/text_primary_light</item>
 
-        <!-- Status bar and navigation -->
         <item name="android:statusBarColor">@color/transparent</item>
         <item name="android:navigationBarColor">@color/transparent</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
 
-        <!-- Background colors -->
         <item name="android:colorBackground">@color/background_light</item>
         <item name="colorSurface">@color/surface_light</item>
         <item name="colorOnBackground">@color/text_primary_light</item>
         <item name="colorOnSurface">@color/text_primary_light</item>
 
-        <!-- Error colors -->
         <item name="colorError">@color/error_light</item>
         <item name="colorOnError">@color/text_primary_light</item>
 
-        <!-- Text colors -->
         <item name="android:textColorPrimary">@color/text_primary_light</item>
         <item name="android:textColorSecondary">@color/text_secondary_light</item>
 
-        <!-- Custom attributes -->
         <item name="dialogBackground">@color/surface_light</item>
         <item name="overlayColor">@color/scrim</item>
 
-        <!-- Ripple/Hover effect für besseren Kontrast -->
         <item name="colorControlHighlight">@color/ripple_light</item>
 
-        <!-- Remove shadows -->
         <item name="android:windowContentOverlay">@null</item>
         <item name="elevation">0dp</item>
     </style>

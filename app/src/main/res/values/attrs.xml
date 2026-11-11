@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Custom theme attributes -->
     <attr name="dialogBackground" format="color|reference" />
     <attr name="overlayColor" format="color|reference" />
     <attr name="colorBackground" format="color" />
 
-    <!-- Custom styles -->
     <declare-styleable name="Widget.TvSig">
         <attr name="android:background" />
         <attr name="android:textColor" />

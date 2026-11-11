@@ -59,5 +59,4 @@
         android:background="@color/dialog_overlay"
         android:visibility="gone" />
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>

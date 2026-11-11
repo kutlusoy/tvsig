@@ -12,7 +12,6 @@
         android:orientation="vertical"
         android:padding="@dimen/margin_medium">
 
-        <!-- Header -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +19,6 @@
             android:textAppearance="@style/TextAppearance.TvSig.Headline"
             android:layout_marginBottom="@dimen/margin_large" />
 
-        <!-- Base URL -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/baseUrlLayout"
             android:layout_width="match_parent"
@@ -37,7 +35,6 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Subfolder -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/subfolderLayout"
             android:layout_width="match_parent"
@@ -54,7 +51,6 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Anzeigedauer -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/delayLayout"
             android:layout_width="match_parent"
@@ -71,7 +67,6 @@
                 android:maxLines="1" />
         </com.google.android.material.textfield.TextInputLayout>
 
-        <!-- Bildschirmausrichtung -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -132,7 +127,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Theme Auswahl -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -175,7 +169,6 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- PIN Ändern -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -207,7 +200,6 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- Cache Aktionen -->
         <Button
             android:id="@+id/btnClearCache"
             style="@style/Widget.TvSig.Button.Secondary"
@@ -217,7 +209,6 @@
             android:drawableStart="@drawable/ic_clear_cache"
             android:drawablePadding="@dimen/margin_small" />
 
-        <!-- Aktions-Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -241,7 +232,6 @@
                 android:text="@string/button_save" />
         </LinearLayout>
 
-        <!-- Developer Info -->
         <TextView
             android:id="@+id/developerInfo"
             android:layout_width="match_parent"

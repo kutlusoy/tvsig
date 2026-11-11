@@ -1,18 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- App Info -->
     <string name="app_name">TvSig Signage</string>
     <string name="app_creator">TvSig</string>
     <string name="app_contact">info@tvsig.at</string>
 
-    <!-- PIN -->
     <string name="pin_enter">PIN eingeben</string>
     <string name="pin_confirm">PIN bestätigen</string>
     <string name="pin_incorrect">Falsche PIN</string>
     <string name="pin_default">0000</string>
     <string name="button_exit">Beenden</string>
 
-    <!-- PIN Settings -->
     <string name="settings_pin">PIN-Code</string>
     <string name="button_change_pin">PIN ändern</string>
     <string name="pin_changed">PIN wurde erfolgreich geändert</string>
@@ -22,7 +19,6 @@
     <string name="error_invalid_pin">Ungültige PIN</string>
     <string name="error_pins_dont_match">PINs stimmen nicht überein</string>
 
-    <!-- Settings -->
     <string name="settings_title">Einstellungen</string>
     <string name="settings_base_url">Basis-URL (z. B. https://example.com/signage)</string>
     <string name="settings_subfolder">Unterordner</string>
@@ -30,7 +26,6 @@
     <string name="settings_orientation">Bildschirmausrichtung</string>
     <string name="settings_theme">App-Theme</string>
 
-    <!-- Orientation Options -->
     <string name="orientation_auto">Automatisch (nur Mobile)</string>
     <string name="orientation_landscape">Querformat</string>
     <string name="orientation_portrait">Hochformat</string>
@@ -38,17 +33,14 @@
     <string name="orientation_180">180° gedreht</string>
     <string name="orientation_270">270° gedreht</string>
 
-    <!-- Theme Options -->
     <string name="theme_light">Hell</string>
     <string name="theme_dark">Dunkel</string>
 
-    <!-- Cache -->
     <string name="cache_clear">Cache leeren</string>
     <string name="cache_clearing">Cache wird geleert</string>
     <string name="cache_cleared">Cache wurde geleert</string>
     <string name="cache_restart_required">Neustart erforderlich</string>
 
-    <!-- Dialog Buttons -->
     <string name="button_ok">OK</string>
     <string name="button_cancel">Abbrechen</string>
     <string name="button_save">Speichern</string>
@@ -58,20 +50,17 @@
 
     <string name="app_creator_footer">App by %1$s\n%2$s</string>
 
-    <!-- Messages -->
     <string name="msg_loading">Laden…</string>
     <string name="msg_no_connection">Keine Internetverbindung</string>
     <string name="msg_error_loading">Fehler beim Laden</string>
     <string name="msg_settings_saved">Einstellungen gespeichert</string>
     <string name="msg_restart_required">Bitte App neu starten</string>
 
-    <!-- Error Messages -->
     <string name="error_no_base_url">Keine Basis-URL festgelegt.
 Bitte über die Zurück-Taste und die PIN die Einstellungen öffnen.</string>
     <string name="error_load_failed">Medien konnten nicht geladen werden: %s</string>
     <string name="error_no_playable_media">Keine abspielbaren Medien gefunden</string>
 
-    <!-- Foreground Service -->
     <string name="foreground_service_notification_title">TvSig Signage läuft</string>
     <string name="foreground_service_notification_text">Signage wird im Hintergrund ausgeführt</string>
     <string name="foreground_service_channel_name">TvSig Signage Service</string>

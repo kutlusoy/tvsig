@@ -1,51 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Brand Colors -->
-    <color name="primary">#1b8387</color>         <!-- Java -->
-    <color name="primary_variant">#facd60</color> <!-- Goldenrod -->
-    <color name="secondary">#e74645</color>       <!-- Cinnabar -->
-    <color name="tertiary">#fb7756</color>        <!-- Bittersweet -->
-
-    <!-- Light Theme Colors -->
+    <color name="primary">#1b8387</color>    <color name="primary_variant">#facd60</color>    <color name="secondary">#e74645</color>    <color name="tertiary">#fb7756</color>
     <color name="background_light">#FFFFFF</color>
     <color name="surface_light">#FFFFFF</color>
     <color name="error_light">#FFB4AB</color>
     <color name="text_primary_light">#1C1B1F</color>
     <color name="text_secondary_light">#49454F</color>
 
-    <!-- Dark Theme Colors -->
-    <color name="background_dark">#000000</color>        <!-- Komplett Schwarz -->
-    <color name="surface_dark">#000000</color>           <!-- Komplett Schwarz -->
-    <color name="dialog_dark">#1C1B1F</color>            <!-- Dunkles Grau für Dialoge (heller als Hintergrund) -->
-    <color name="error_dark">#56FFB4AB</color>
-    <color name="text_primary_dark">#FFFFFF</color>      <!-- Reines Weiß für maximalen Kontrast -->
-    <color name="text_secondary_dark">#E0E0E0</color>    <!-- Helles Grau für sekundären Text -->
-
-    <!-- Dark Mode - Aufgehellte interaktive Farben für besseren Kontrast -->
-    <color name="primary_dark">#4DB8BC</color>           <!-- Helleres Türkis -->
-    <color name="primary_variant_dark">#FFE082</color>   <!-- Helleres Gold -->
-    <color name="secondary_dark">#EF5350</color>         <!-- Helleres Rot -->
-    <color name="tertiary_dark">#FF8A65</color>          <!-- Helleres Orange -->
-
-    <!-- Button Text Colors für optimalen Kontrast -->
-    <color name="button_text_on_primary">#FFFFFF</color>       <!-- Weiß auf Türkis/Dunkelgrün -->
-    <color name="button_text_on_secondary">#FFFFFF</color>     <!-- Weiß auf Rot -->
-    <color name="button_text_on_tertiary">#FFFFFF</color>      <!-- Weiß auf Orange -->
-    <color name="button_text_on_variant">#000000</color>       <!-- Schwarz auf Gelb -->
-
-    <!-- Ripple/Hover Colors für hohen Kontrast -->
-    <color name="ripple_light">#33000000</color>               <!-- Dunkles Ripple für Light Mode -->
-    <color name="ripple_dark">#66FFFFFF</color>                <!-- Helles Ripple für Dark Mode -->
-
-    <!-- Status Colors -->
+    <color name="background_dark">#000000</color>    <color name="surface_dark">#000000</color>    <color name="dialog_dark">#1C1B1F</color>    <color name="error_dark">#56FFB4AB</color>
+    <color name="text_primary_dark">#FFFFFF</color>    <color name="text_secondary_dark">#E0E0E0</color>
+    <color name="primary_dark">#4DB8BC</color>    <color name="primary_variant_dark">#FFE082</color>    <color name="secondary_dark">#EF5350</color>    <color name="tertiary_dark">#FF8A65</color>
+    <color name="button_text_on_primary">#FFFFFF</color>    <color name="button_text_on_secondary">#FFFFFF</color>    <color name="button_text_on_tertiary">#FFFFFF</color>    <color name="button_text_on_variant">#000000</color>
+    <color name="ripple_light">#33000000</color>    <color name="ripple_dark">#66FFFFFF</color>
     <color name="success">#1b8387</color>
     <color name="warning">#facd60</color>
     <color name="error">#e74645</color>
 
-    <!-- Overlay Colors -->
     <color name="scrim">#62000000</color>
     <color name="dialog_overlay">#99000000</color>
 
-    <!-- Transparent -->
     <color name="transparent">#00000000</color>
 </resources>
