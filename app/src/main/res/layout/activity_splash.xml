@@ -12,7 +12,7 @@
         android:layout_height="270dp"
         android:contentDescription="@string/app_name"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_banner_foreground"
+        android:src="@drawable/splash_logo"
         app:layout_constraintBottom_toTopOf="@+id/splashWebsite"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

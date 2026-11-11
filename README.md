@@ -1,3 +1,5 @@
+<p align="center"><img src="doc/logo.png" alt="TvSig" width="280"></p>
+
 # TvSig
 
 Digital signage app for Android phones, tablets and Android TV. It plays images and videos from a folder on your own web server. There is no Google account, no Google Drive and no license check.
@@ -118,6 +120,17 @@ git push origin v0.0.1
 ## Background operation
 
 The app is built for 24/7 operation: it runs a foreground service, keeps the screen on, starts on boot and restarts itself after a crash. On some devices you have to allow auto start and disable battery optimization manually.
+
+## Graphics
+
+All icons, banners and the splash logo are generated from `design/TVSig_icon.svg`. To change the logo, replace the SVG and run:
+
+```bash
+npm install playwright
+node design/generate-assets.js
+```
+
+The script writes the launcher icons (adaptive, monochrome and legacy), the Android TV banner, the splash logo, the notification icon, the store icon and the repository graphics (`doc/logo.png`, `doc/social-preview.png`). The social preview image can be uploaded in the repository settings under "Social preview".
 
 ## License
 
