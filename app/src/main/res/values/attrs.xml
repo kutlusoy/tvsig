@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="dialogBackground" format="color|reference" />
+    <attr name="overlayColor" format="color|reference" />
+    <attr name="colorBackground" format="color" />
+
+    <declare-styleable name="Widget.TVSig">
+        <attr name="android:background" />
+        <attr name="android:textColor" />
+        <attr name="android:textSize" />
+        <attr name="android:padding" />
+        <attr name="android:layout_margin" />
+    </declare-styleable>
+
+    <declare-styleable name="OptionRow">
+        <attr name="optionTitle" format="string" />
+    </declare-styleable>
+</resources>

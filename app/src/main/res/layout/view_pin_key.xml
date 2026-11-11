@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.TVSig.Button.PinKey"
+    android:layout_width="@dimen/pin_key_size"
+    android:layout_height="@dimen/pin_key_size"
+    android:layout_margin="6dp" />

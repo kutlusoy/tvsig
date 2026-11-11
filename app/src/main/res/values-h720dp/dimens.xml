@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="pin_key_size">72dp</dimen>
+    <dimen name="qr_size">280dp</dimen>
+    <dimen name="folder_list_height">360dp</dimen>
+</resources>

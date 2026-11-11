@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#1b8387</color>    <color name="primary_variant">#facd60</color>    <color name="secondary">#e74645</color>    <color name="tertiary">#fb7756</color>
+    <color name="background_light">#FFFFFF</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="error_light">#FFB4AB</color>
+    <color name="text_primary_light">#1C1B1F</color>
+    <color name="text_secondary_light">#49454F</color>
+
+    <color name="background_dark">#000000</color>    <color name="surface_dark">#000000</color>    <color name="dialog_dark">#1C1B1F</color>    <color name="error_dark">#56FFB4AB</color>
+    <color name="text_primary_dark">#FFFFFF</color>    <color name="text_secondary_dark">#E0E0E0</color>
+    <color name="primary_dark">#4DB8BC</color>    <color name="primary_variant_dark">#FFE082</color>    <color name="secondary_dark">#EF5350</color>    <color name="tertiary_dark">#FF8A65</color>
+    <color name="button_text_on_primary">#FFFFFF</color>    <color name="button_text_on_secondary">#FFFFFF</color>    <color name="button_text_on_tertiary">#FFFFFF</color>    <color name="button_text_on_variant">#000000</color>
+    <color name="ripple_light">#33000000</color>    <color name="ripple_dark">#66FFFFFF</color>
+    <color name="success">#1b8387</color>
+    <color name="warning">#facd60</color>
+    <color name="error">#e74645</color>
+
+    <color name="scrim">#62000000</color>
+    <color name="dialog_overlay">#99000000</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="row_stroke">#66808080</color>
+</resources>

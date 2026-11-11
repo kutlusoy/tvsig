@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="dialog_padding">24dp</dimen>
+    <dimen name="pin_key_size">60dp</dimen>
+    <dimen name="pin_key_margin">5dp</dimen>
+    <dimen name="pin_dots_size">36sp</dimen>
+    <dimen name="qr_size">240dp</dimen>
+    <dimen name="folder_list_height">260dp</dimen>
+</resources>
