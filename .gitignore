@@ -5,3 +5,4 @@ local.properties
 app/signing/
 *.keystore
 *.jks
+!app/debug.keystore

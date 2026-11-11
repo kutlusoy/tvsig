@@ -32,6 +32,12 @@ android {
     }
 
     signingConfigs {
+        debug {
+            storeFile file('debug.keystore')
+            storePassword 'android'
+            keyAlias 'tvsig-debug'
+            keyPassword 'android'
+        }
         release {
             def propsFile = file('signing/release.properties')
             if (propsFile.exists()) {
@@ -62,6 +68,7 @@ android {
         }
 
         debug {
+            signingConfig = signingConfigs.debug
             buildConfigField "boolean", "ENABLE_LOGGING", "true"
             buildConfigField "boolean", "ENABLE_CRASH_REPORTING", "false"
 
