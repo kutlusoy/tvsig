@@ -147,9 +147,45 @@ git push origin v0.0.1
 | `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` | Ask once to be excluded from battery optimization |
 | `SYSTEM_ALERT_WINDOW` | Optional: if "Display over other apps" is allowed in the Android settings, the app can open itself after a reboot on Android 10 and newer |
 
-## Background operation
+## Continuous operation
 
-The app is built for 24/7 operation: it runs a foreground service, keeps the screen on, starts on boot and restarts itself after a crash. On some devices you have to allow auto start and disable battery optimization manually.
+TVSig is built to run around the clock without anyone touching the device.
+
+### What the app does
+
+- **Foreground service:** keeps the app process alive and shows a quiet notification. It restarts itself when the system stops it.
+- **Screen and wake lock:** the screen stays on and the device stays awake while the app runs.
+- **Start after a reboot or an update:** the app starts on its own after the device boots and after the app was updated.
+- **Watchdog:** if the player screen disappears (Home key, another window, the app was closed by the system), the service brings it back after about 20 seconds. This does not apply while the screen is off.
+- **Crash recovery:** after a crash the app restarts. The waiting time doubles with every crash inside ten minutes (3 seconds up to 2 minutes), so a defect cannot cause a restart storm.
+- **Stalled playback:** a video that stands still for a minute is skipped, and a playlist that shows nothing for three hours is loaded again.
+- **No network:** the media are stored on the device and keep playing. The source is checked every 15 minutes, and again as soon as the network is back.
+- **Memory:** large images are scaled down to the screen, the next item is prepared in advance, and memory is trimmed when the system asks for it.
+
+### What you should set up on the device
+
+The system can still decide to stop an app, especially on cheap TV boxes and phones with aggressive power saving. Do these once per device:
+
+1. **Make TVSig the home app.** In the Android settings choose TVSig as the default home screen (on Android TV: Settings, Apps, Special app access or Default apps, Home screen). The system then starts the player by itself after the Home key or a restart of the launcher.
+2. **Turn off battery optimization.** The app asks once on the first start, if you declined: Settings, Apps, TVSig, Battery, Unrestricted (the wording differs by vendor).
+3. **Allow "Display over other apps".** Settings, Apps, Special app access, Display over other apps, TVSig. Without it Android 10 and newer can refuse to open the player from the background after a reboot.
+4. **Allow auto start** on devices of vendors with their own power manager (for example Xiaomi, Huawei, Oppo, Vivo, Samsung "sleeping apps"): add TVSig to the allowed or protected apps.
+5. **Never put the device to sleep.** Turn off sleep timers and screen savers, and keep the device on a permanent power supply.
+6. **Keep the system current and the storage free.** A nearly full storage can stop downloads.
+
+### Leaving the app on purpose
+
+Press the back key, enter the PIN and choose "Beenden". This stops the app and its service for good, so the watchdog does not bring it back. It runs again after you start TVSig yourself or after the next reboot.
+
+### If a device still stops
+
+| Observation | What to check |
+|---|---|
+| The app is gone after some hours | Battery optimization and the vendor's auto start list (steps 2 and 4) |
+| The screen goes black or dim | Sleep timer, screen saver and "turn off the display" options of the vendor |
+| After a reboot the player does not show up | "Display over other apps" (step 3) and TVSig as home app (step 1) |
+| The picture freezes | Check the video file on another device. A video that cannot be decoded is skipped, a short note in the message line appears only when no file at all can be played |
+| Everything stops when the network is lost | Update to the current version. Media are cached, only the first start needs the source once |
 
 ## Graphics
 
