@@ -39,6 +39,7 @@ import com.kutlusoy.tvsig.models.TransitionType
 import com.kutlusoy.tvsig.services.ForegroundService
 import com.kutlusoy.tvsig.ui.dialogs.PinDialog
 import com.kutlusoy.tvsig.ui.views.StageTransitioner
+import com.kutlusoy.tvsig.utils.BackdropBlur
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
@@ -67,6 +68,18 @@ class MainActivity : AppCompatActivity() {
     private var imageTimerJob: Job? = null
     private var keepAliveJob: Job? = null
     private var lastSource: String? = null
+    private var shownVideoPath: String? = null
+
+    /** An image stage shows the picture fitted, with a blurred copy of it filling the rest of the screen. */
+    private class ImageStage(val container: View, val fit: ImageView, val blur: ImageView) {
+        fun clear() {
+            fit.setImageBitmap(null)
+            blur.setImageBitmap(null)
+        }
+    }
+
+    private val stageA by lazy { ImageStage(binding.imageStageA, binding.imageFitA, binding.imageBlurA) }
+    private val stageB by lazy { ImageStage(binding.imageStageB, binding.imageFitB, binding.imageBlurB) }
     private var shownImagePath: String? = null
     private var shownImageModified = 0L
 
@@ -169,26 +182,31 @@ class MainActivity : AppCompatActivity() {
 
     private fun showImage(media: CurrentMedia) {
         imageTimerJob?.cancel()
+        shownVideoPath = null
         imageTimerJob = lifecycleScope.launch {
             val displayMs = preferenceHelper.getSlideDelay()
                 .coerceAtLeast(Constants.MIN_SLIDE_DELAY_SECONDS) * 1000L
             val modified = File(media.path).lastModified()
+            val stageAspect = stageAspect()
 
             val unchanged = isSinglePlaylist() &&
-                    transitioner.currentView is ImageView &&
+                    (transitioner.currentView === stageA.container || transitioner.currentView === stageB.container) &&
                     media.path == shownImagePath && modified == shownImageModified
             if (!unchanged) {
-                val bitmap = withContext(Dispatchers.IO) { decodeImage(media.path) }
-                if (bitmap == null) {
+                val images = withContext(Dispatchers.IO) {
+                    decodeImage(media.path)?.let { it to BackdropBlur.create(it, stageAspect) }
+                }
+                if (images == null) {
                     Logger.e("Could not decode image: ${media.path}")
                     viewModel.onPlaybackFailed()
                     return@launch
                 }
-                val target = if (transitioner.currentView === binding.imageViewA) binding.imageViewB else binding.imageViewA
-                target.setImageBitmap(bitmap)
+                val target = if (transitioner.currentView === stageA.container) stageB else stageA
+                target.fit.setImageBitmap(images.first)
+                target.blur.setImageBitmap(images.second)
                 shownImagePath = media.path
                 shownImageModified = modified
-                transitioner.show(target, transitionType(), ::onViewHidden)
+                transitioner.show(target.container, transitionType(), ::onViewHidden)
             }
 
             viewModel.onPlaybackStarted()
@@ -200,7 +218,14 @@ class MainActivity : AppCompatActivity() {
     private fun playVideo(media: CurrentMedia) {
         imageTimerJob?.cancel()
         shownImagePath = null
+        shownVideoPath = media.path
+        binding.videoBlur.setImageBitmap(null)
         transitioner.show(binding.videoContainer, transitionType(), ::onViewHidden)
+        val stageAspect = stageAspect()
+        lifecycleScope.launch {
+            val backdrop = withContext(Dispatchers.IO) { BackdropBlur.fromVideo(media.path, stageAspect) }
+            if (backdrop != null && shownVideoPath == media.path) binding.videoBlur.setImageBitmap(backdrop)
+        }
 
         player?.apply {
             repeatMode = if (isSinglePlaylist()) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_OFF
@@ -210,10 +235,18 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /** Width to height of the playback area, in the rotated layout when the screen is turned. */
+    private fun stageAspect(): Float =
+        if (binding.root.height > 0) binding.root.width.toFloat() / binding.root.height else 0f
+
     private fun onViewHidden(view: View) {
         when {
-            view is ImageView -> view.setImageBitmap(null)
-            view === binding.videoContainer -> player?.stop()
+            view === stageA.container -> stageA.clear()
+            view === stageB.container -> stageB.clear()
+            view === binding.videoContainer -> {
+                player?.stop()
+                binding.videoBlur.setImageBitmap(null)
+            }
         }
     }
 
@@ -222,10 +255,12 @@ class MainActivity : AppCompatActivity() {
         transitioner.reset()
         player?.stop()
         shownImagePath = null
+        shownVideoPath = null
         binding.videoContainer.gone()
-        listOf(binding.imageViewA, binding.imageViewB).forEach {
-            it.gone()
-            it.setImageBitmap(null)
+        binding.videoBlur.setImageBitmap(null)
+        listOf(stageA, stageB).forEach {
+            it.container.gone()
+            it.clear()
         }
     }
 

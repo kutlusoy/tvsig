@@ -53,6 +53,7 @@ Supported files:
 - Images are shown for the configured duration (minimum 3 seconds), videos are played to the end.
 - The playlist loops endlessly. Files that cannot be played are skipped, and when none of them works the app shows a message and tries again after 30 seconds.
 - The next file is downloaded in advance, so there is no pause between two items.
+- Images and videos are shown completely, fitted into the screen. Where the content does not fill the screen, the empty area is filled with a very strongly blurred, mirrored continuation of the same picture (for videos of one frame of it), so the borders hardly show.
 - Photos are shown in the right orientation (EXIF), large images are scaled down to the screen to save memory.
 - Only the file types listed above are played. Other files in the folder are ignored.
 - The server is checked every 15 minutes. Changed playlists and replaced files are picked up automatically.
