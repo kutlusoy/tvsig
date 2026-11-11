@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.TvSig" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Primary brand colors - Aufgehellt für besseren Kontrast im Dark Mode -->
+        <item name="colorPrimary">@color/primary_dark</item>
+        <item name="colorPrimaryVariant">@color/primary_variant_dark</item>
+        <item name="colorOnPrimary">@color/button_text_on_primary</item>
+        <item name="colorSecondary">@color/secondary_dark</item>
+        <item name="colorSecondaryVariant">@color/tertiary_dark</item>
+        <item name="colorOnSecondary">@color/button_text_on_secondary</item>
+
+        <!-- Status bar and navigation -->
+        <item name="android:statusBarColor">@color/transparent</item>
+        <item name="android:navigationBarColor">@color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/background_dark</item>
+        <item name="colorSurface">@color/surface_dark</item>
+        <item name="colorOnBackground">@color/text_primary_dark</item>
+        <item name="colorOnSurface">@color/text_primary_dark</item>
+
+        <!-- Error colors -->
+        <item name="colorError">@color/error_dark</item>
+        <item name="colorOnError">@color/text_primary_dark</item>
+
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">@color/text_primary_dark</item>
+        <item name="android:textColorSecondary">@color/text_secondary_dark</item>
+
+        <!-- Custom attributes -->
+        <item name="dialogBackground">@color/dialog_dark</item>
+        <item name="overlayColor">@color/scrim</item>
+
+        <!-- Ripple/Hover effect für besseren Kontrast im Dark Mode -->
+        <item name="colorControlHighlight">@color/ripple_dark</item>
+
+        <!-- Remove shadows -->
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="elevation">0dp</item>
+    </style>
+</resources>

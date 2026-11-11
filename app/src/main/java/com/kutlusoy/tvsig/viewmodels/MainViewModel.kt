@@ -1,0 +1,176 @@
+package com.kutlusoy.tvsig.viewmodels
+
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import com.kutlusoy.tvsig.R
+import com.kutlusoy.tvsig.models.Constants
+import com.kutlusoy.tvsig.models.CurrentMedia
+import com.kutlusoy.tvsig.models.MediaFile
+import com.kutlusoy.tvsig.models.PresentationState
+import com.kutlusoy.tvsig.models.Result
+import com.kutlusoy.tvsig.repositories.MediaRepository
+import com.kutlusoy.tvsig.utils.CacheManager
+import com.kutlusoy.tvsig.utils.Logger
+import com.kutlusoy.tvsig.utils.NetworkHelper
+import com.kutlusoy.tvsig.utils.PreferenceHelper
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.launch
+
+class MainViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val repository = MediaRepository.getInstance(application)
+    private val preferenceHelper = PreferenceHelper.getInstance(application)
+
+    private val _presentationState = MutableStateFlow<PresentationState>(PresentationState.Loading)
+    val presentationState: StateFlow<PresentationState> = _presentationState.asStateFlow()
+
+    private val _currentMedia = MutableStateFlow<CurrentMedia?>(null)
+    val currentMedia: StateFlow<CurrentMedia?> = _currentMedia.asStateFlow()
+
+    private var showJob: Job? = null
+    private var retryJob: Job? = null
+    private var tokenCounter = 0L
+    private var consecutiveFailures = 0
+
+    init {
+        loadPlaylist()
+        startRefreshLoop()
+        observeNetwork()
+    }
+
+    private fun observeNetwork() {
+        viewModelScope.launch {
+            NetworkHelper.observeNetworkState(getApplication()).drop(1).collect { online ->
+                if (!online) return@collect
+                if (_presentationState.value is PresentationState.Error) loadPlaylist() else refreshPlaylist()
+            }
+        }
+    }
+
+    private fun startRefreshLoop() {
+        viewModelScope.launch {
+            while (true) {
+                delay(Constants.REFRESH_INTERVAL_MS)
+                refreshPlaylist()
+            }
+        }
+    }
+
+    fun loadPlaylist() {
+        retryJob?.cancel()
+        viewModelScope.launch {
+            _presentationState.value = PresentationState.Loading
+            _currentMedia.value = null
+
+            val baseUrl = preferenceHelper.getBaseUrl()
+            if (baseUrl.isBlank()) {
+                _presentationState.value = PresentationState.Error(string(R.string.error_no_base_url))
+                return@launch
+            }
+
+            when (val result = repository.loadPlaylist(baseUrl, preferenceHelper.getSubfolder())) {
+                is Result.Success -> {
+                    consecutiveFailures = 0
+                    _presentationState.value = PresentationState.Success(result.data, 0)
+                    showCurrent()
+                }
+                is Result.Error -> {
+                    _presentationState.value = PresentationState.Error(
+                        string(R.string.error_load_failed, result.exception.message ?: "")
+                    )
+                    scheduleRetry()
+                }
+                else -> {}
+            }
+        }
+    }
+
+    private suspend fun refreshPlaylist() {
+        val state = _presentationState.value as? PresentationState.Success ?: return
+        val baseUrl = preferenceHelper.getBaseUrl()
+        if (baseUrl.isBlank()) return
+
+        val result = repository.loadPlaylist(baseUrl, preferenceHelper.getSubfolder())
+        if (result is Result.Success && result.data.map { it.url } != state.files.map { it.url }) {
+            Logger.d("Playlist changed, reloading")
+            _presentationState.value = PresentationState.Success(result.data, 0)
+            showCurrent()
+        }
+    }
+
+    private fun scheduleRetry() {
+        retryJob?.cancel()
+        retryJob = viewModelScope.launch {
+            delay(Constants.RETRY_INTERVAL_MS)
+            loadPlaylist()
+        }
+    }
+
+    private fun showCurrent() {
+        val state = _presentationState.value as? PresentationState.Success ?: return
+        val file = state.files[state.currentIndex]
+
+        showJob?.cancel()
+        showJob = viewModelScope.launch {
+            when (val result = repository.ensureLocal(file)) {
+                is Result.Success -> {
+                    consecutiveFailures = 0
+                    _currentMedia.value = CurrentMedia(file, result.data.absolutePath, ++tokenCounter)
+                }
+                is Result.Error -> {
+                    Logger.e("Skipping ${file.name}: ${result.exception.message}")
+                    onFileFailed(state.files)
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun onPlaybackFailed() {
+        val state = _presentationState.value as? PresentationState.Success ?: return
+        onFileFailed(state.files)
+    }
+
+    private fun onFileFailed(files: List<MediaFile>) {
+        consecutiveFailures++
+        if (consecutiveFailures >= files.size) {
+            consecutiveFailures = 0
+            _currentMedia.value = null
+            _presentationState.value = PresentationState.Error(string(R.string.error_no_playable_media))
+            scheduleRetry()
+        } else {
+            moveToNextFile()
+        }
+    }
+
+    fun moveToNextFile() = moveBy(1)
+
+    fun moveToPreviousFile() = moveBy(-1)
+
+    private fun moveBy(step: Int) {
+        val state = _presentationState.value as? PresentationState.Success ?: return
+        val size = state.files.size
+        if (size == 0) return
+        _presentationState.value = state.copy(currentIndex = (state.currentIndex + step + size) % size)
+        showCurrent()
+    }
+
+    fun verifyPin(enteredPin: String) = enteredPin == preferenceHelper.getPin()
+
+    fun clearCacheIfRequested() {
+        if (!preferenceHelper.isCacheClearRequested()) return
+        preferenceHelper.setCacheClearRequest(false)
+        viewModelScope.launch {
+            CacheManager.getInstance(getApplication()).clearCache()
+            loadPlaylist()
+        }
+    }
+
+    private fun string(resId: Int, vararg args: Any): String = getApplication<Application>().getString(resId, *args)
+}
