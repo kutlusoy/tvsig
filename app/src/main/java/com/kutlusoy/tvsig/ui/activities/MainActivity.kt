@@ -4,11 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Bundle
 import android.os.PowerManager
 import android.view.KeyEvent
+import android.view.View
 import android.view.WindowManager
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.OptIn
@@ -24,10 +28,13 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import com.kutlusoy.tvsig.databinding.ActivityMainBinding
+import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.models.CurrentMedia
 import com.kutlusoy.tvsig.models.PresentationState
+import com.kutlusoy.tvsig.models.TransitionType
 import com.kutlusoy.tvsig.services.ForegroundService
 import com.kutlusoy.tvsig.ui.dialogs.PinDialog
+import com.kutlusoy.tvsig.ui.views.StageTransitioner
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
@@ -46,10 +53,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val viewModel: MainViewModel by viewModels()
     private val preferenceHelper by lazy { PreferenceHelper.getInstance(this) }
+    private val transitioner = StageTransitioner()
     private var player: ExoPlayer? = null
     private var wakeLock: PowerManager.WakeLock? = null
     private var imageTimerJob: Job? = null
     private var keepAliveJob: Job? = null
+    private var lastSource: String? = null
+    private var shownImagePath: String? = null
+    private var shownImageModified = 0L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -81,7 +92,10 @@ class MainActivity : AppCompatActivity() {
 
                 addListener(object : Player.Listener {
                     override fun onPlaybackStateChanged(playbackState: Int) {
-                        if (playbackState == Player.STATE_ENDED) viewModel.moveToNextFile()
+                        when (playbackState) {
+                            Player.STATE_READY -> viewModel.onPlaybackStarted()
+                            Player.STATE_ENDED -> viewModel.moveToNextFile()
+                        }
                     }
 
                     override fun onPlayerError(error: PlaybackException) {
@@ -96,8 +110,7 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             viewModel.presentationState.collect { state ->
                 when (state) {
-                    is PresentationState.Loading -> binding.statusText.gone()
-                    is PresentationState.Success -> binding.statusText.gone()
+                    is PresentationState.Loading, is PresentationState.Success -> binding.statusText.gone()
                     is PresentationState.Error -> {
                         stopPlayback()
                         binding.statusText.text = state.message
@@ -115,35 +128,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun transitionType() = TransitionType.fromId(preferenceHelper.getTransition())
+
+    private fun isSinglePlaylist() =
+        (viewModel.presentationState.value as? PresentationState.Success)?.files?.size == 1
+
     private fun showImage(media: CurrentMedia) {
         imageTimerJob?.cancel()
-        player?.stop()
-        binding.videoContainer.gone()
-
         imageTimerJob = lifecycleScope.launch {
-            val bitmap = withContext(Dispatchers.IO) { decodeScaled(media.path) }
-            if (bitmap == null) {
-                Logger.e("Could not decode image: ${media.path}")
-                viewModel.onPlaybackFailed()
-                return@launch
+            val displayMs = preferenceHelper.getSlideDelay()
+                .coerceAtLeast(Constants.MIN_SLIDE_DELAY_SECONDS) * 1000L
+            val modified = File(media.path).lastModified()
+
+            val unchanged = isSinglePlaylist() &&
+                    transitioner.currentView is ImageView &&
+                    media.path == shownImagePath && modified == shownImageModified
+            if (!unchanged) {
+                val bitmap = withContext(Dispatchers.IO) { decodeImage(media.path) }
+                if (bitmap == null) {
+                    Logger.e("Could not decode image: ${media.path}")
+                    viewModel.onPlaybackFailed()
+                    return@launch
+                }
+                val target = if (transitioner.currentView === binding.imageViewA) binding.imageViewB else binding.imageViewA
+                target.setImageBitmap(bitmap)
+                shownImagePath = media.path
+                shownImageModified = modified
+                transitioner.show(target, transitionType(), ::onViewHidden)
             }
 
-            val imageView = binding.imageView
-            imageView.visible()
-            imageView.animate().cancel()
-            if (imageView.drawable == null) {
-                imageView.setImageBitmap(bitmap)
-                imageView.alpha = 1f
-            } else {
-                imageView.animate().alpha(0f).setDuration(300).withEndAction {
-                    imageView.setImageBitmap(bitmap)
-                    imageView.animate().alpha(1f).setDuration(500).start()
-                }.start()
-            }
-
-            val displayMs = preferenceHelper.getSlideDelay().coerceAtLeast(
-                com.kutlusoy.tvsig.models.Constants.MIN_SLIDE_DELAY_SECONDS
-            ) * 1000L
+            viewModel.onPlaybackStarted()
             delay(displayMs)
             viewModel.moveToNextFile()
         }
@@ -151,34 +165,73 @@ class MainActivity : AppCompatActivity() {
 
     private fun playVideo(media: CurrentMedia) {
         imageTimerJob?.cancel()
-        binding.imageView.gone()
-        binding.videoContainer.visible()
+        shownImagePath = null
+        transitioner.show(binding.videoContainer, transitionType(), ::onViewHidden)
 
-        val single = (viewModel.presentationState.value as? PresentationState.Success)?.files?.size == 1
         player?.apply {
-            repeatMode = if (single) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_OFF
+            repeatMode = if (isSinglePlaylist()) Player.REPEAT_MODE_ALL else Player.REPEAT_MODE_OFF
             setMediaItem(MediaItem.fromUri(Uri.fromFile(File(media.path))))
             prepare()
             play()
         }
     }
 
-    private fun stopPlayback() {
-        imageTimerJob?.cancel()
-        player?.stop()
-        binding.videoContainer.gone()
-        binding.imageView.gone()
-        binding.imageView.setImageBitmap(null)
+    private fun onViewHidden(view: View) {
+        when {
+            view is ImageView -> view.setImageBitmap(null)
+            view === binding.videoContainer -> player?.stop()
+        }
     }
 
-    private fun decodeScaled(path: String): Bitmap? {
+    private fun stopPlayback() {
+        imageTimerJob?.cancel()
+        transitioner.reset()
+        player?.stop()
+        shownImagePath = null
+        binding.videoContainer.gone()
+        listOf(binding.imageViewA, binding.imageViewB).forEach {
+            it.gone()
+            it.setImageBitmap(null)
+        }
+    }
+
+    /** Decodes at most twice the screen size and applies the EXIF orientation of photos. */
+    private fun decodeImage(path: String): Bitmap? {
         val metrics = resources.displayMetrics
         val maxSide = maxOf(metrics.widthPixels, metrics.heightPixels) * 2
         val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
         BitmapFactory.decodeFile(path, bounds)
         var sample = 1
         while (bounds.outWidth / sample > maxSide || bounds.outHeight / sample > maxSide) sample *= 2
-        return BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
+        val bitmap = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sample })
+            ?: return null
+
+        val matrix = exifMatrix(path) ?: return bitmap
+        return try {
+            Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+        } catch (e: OutOfMemoryError) {
+            bitmap
+        }
+    }
+
+    private fun exifMatrix(path: String): Matrix? {
+        val orientation = try {
+            ExifInterface(path).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+        } catch (e: Exception) {
+            return null
+        }
+        val matrix = Matrix()
+        when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+            ExifInterface.ORIENTATION_TRANSPOSE -> { matrix.postRotate(90f); matrix.postScale(-1f, 1f) }
+            ExifInterface.ORIENTATION_TRANSVERSE -> { matrix.postRotate(270f); matrix.postScale(-1f, 1f) }
+            else -> return null
+        }
+        return matrix
     }
 
     private fun setupSystemUI() {
@@ -258,8 +311,6 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.clearCacheIfRequested()
     }
-
-    private var lastSource: String? = null
 
     override fun onPause() {
         player?.pause()

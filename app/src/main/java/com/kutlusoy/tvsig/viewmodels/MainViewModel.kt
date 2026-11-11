@@ -64,6 +64,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadPlaylist() {
         retryJob?.cancel()
+        consecutiveFailures = 0
         viewModelScope.launch {
             _presentationState.value = PresentationState.Loading
             _currentMedia.value = null
@@ -120,8 +121,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         showJob = viewModelScope.launch {
             when (val result = repository.ensureLocal(file)) {
                 is Result.Success -> {
-                    consecutiveFailures = 0
                     _currentMedia.value = CurrentMedia(file, result.data.absolutePath, ++tokenCounter)
+                    prefetchNext(state)
                 }
                 is Result.Error -> {
                     Logger.e("Skipping ${file.name}: ${result.exception.message}")
@@ -130,6 +131,17 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 else -> {}
             }
         }
+    }
+
+    /** Called when an image is on screen or a video started, resets the failure counter. */
+    fun onPlaybackStarted() {
+        consecutiveFailures = 0
+    }
+
+    private fun prefetchNext(state: PresentationState.Success) {
+        val next = state.files[(state.currentIndex + 1) % state.files.size]
+        if (next.url == state.files[state.currentIndex].url) return
+        viewModelScope.launch { repository.ensureLocal(next) }
     }
 
     fun onPlaybackFailed() {

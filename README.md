@@ -37,7 +37,10 @@ Supported files:
 ### Playback
 
 - Images are shown for the configured duration (minimum 3 seconds), videos are played to the end.
-- The playlist loops endlessly.
+- The playlist loops endlessly. Files that cannot be played are skipped, and when none of them works the app shows a message and tries again after 30 seconds.
+- The next file is downloaded in advance, so there is no pause between two items.
+- Photos are shown in the right orientation (EXIF), large images are scaled down to the screen to save memory.
+- Only the file types listed above are played. Other files in the folder are ignored.
 - The server is checked every 15 minutes. Changed playlists and replaced files are picked up automatically.
 - All media are downloaded to the device. If the network or the server is down, the app keeps playing the last synchronized content.
 
@@ -47,6 +50,7 @@ Press the back key (or the back button of a TV remote) and enter the PIN. The de
 
 - Base URL and subfolder
 - Display duration per image
+- Transition effect: none, fade, slide (left, right, up, down), zoom in, zoom out or random (a different effect for every change)
 - Screen orientation: landscape, 90, 180, 270 degrees (clockwise rotation of the content) or auto (sensor, phones and tablets only)
 - Light or dark theme
 - PIN

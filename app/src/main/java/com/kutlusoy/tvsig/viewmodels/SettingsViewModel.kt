@@ -22,6 +22,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         baseUrl = preferenceHelper.getBaseUrl(),
         subfolder = preferenceHelper.getSubfolder(),
         slideDelay = preferenceHelper.getSlideDelay(),
+        transition = preferenceHelper.getTransition(),
         orientation = preferenceHelper.getOrientation(),
         isDarkMode = preferenceHelper.isDarkMode(),
         pin = preferenceHelper.getPin()
@@ -31,6 +32,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         baseUrl: String? = null,
         subfolder: String? = null,
         slideDelay: Int? = null,
+        transition: Int? = null,
         orientation: Int? = null,
         isDarkMode: Boolean? = null,
         pin: String? = null
@@ -40,6 +42,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             baseUrl = baseUrl ?: current.baseUrl,
             subfolder = subfolder ?: current.subfolder,
             slideDelay = slideDelay ?: current.slideDelay,
+            transition = transition ?: current.transition,
             orientation = orientation ?: current.orientation,
             isDarkMode = isDarkMode ?: current.isDarkMode,
             pin = pin ?: current.pin
@@ -52,6 +55,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             setBaseUrl(s.baseUrl)
             setSubfolder(s.subfolder)
             setSlideDelay(s.slideDelay)
+            setTransition(s.transition)
             setOrientation(s.orientation)
             setDarkMode(s.isDarkMode)
             setPin(s.pin)

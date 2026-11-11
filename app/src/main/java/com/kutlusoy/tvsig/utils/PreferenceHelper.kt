@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.kutlusoy.tvsig.models.TransitionType
 
 class PreferenceHelper private constructor(context: Context) {
 
@@ -12,6 +13,7 @@ class PreferenceHelper private constructor(context: Context) {
         private const val KEY_SUBFOLDER = "subfolder"
         private const val KEY_SLIDE_DELAY = "slide_delay"
         private const val KEY_ORIENTATION = "orientation"
+        private const val KEY_TRANSITION = "transition"
         private const val KEY_DARK_MODE = "dark_mode"
         private const val KEY_PIN = "pin"
         private const val KEY_CLEAR_CACHE = "clear_cache"
@@ -51,6 +53,12 @@ class PreferenceHelper private constructor(context: Context) {
         preferences.edit {
             putInt(KEY_SLIDE_DELAY, seconds)
         }
+    }
+
+    fun getTransition(): Int = preferences.getInt(KEY_TRANSITION, TransitionType.DEFAULT.id)
+
+    fun setTransition(id: Int) {
+        preferences.edit { putInt(KEY_TRANSITION, id) }
     }
 
     fun getOrientation(): Int = preferences.getInt(KEY_ORIENTATION, OrientationHelper.ORIENTATION_LANDSCAPE)

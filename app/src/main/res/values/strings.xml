@@ -23,6 +23,18 @@
     <string name="settings_base_url">Basis-URL (z. B. https://example.com/signage)</string>
     <string name="settings_subfolder">Unterordner</string>
     <string name="settings_delay">Anzeigedauer pro Bild (Sekunden)</string>
+    <string name="settings_transition">Übergangseffekt</string>
+    <string-array name="transition_options">
+        <item>Keiner</item>
+        <item>Überblenden</item>
+        <item>Schieben nach links</item>
+        <item>Schieben nach rechts</item>
+        <item>Schieben nach oben</item>
+        <item>Schieben nach unten</item>
+        <item>Zoom hinein</item>
+        <item>Zoom heraus</item>
+        <item>Zufall</item>
+    </string-array>
     <string name="settings_orientation">Bildschirmausrichtung</string>
     <string name="settings_theme">App-Theme</string>
 

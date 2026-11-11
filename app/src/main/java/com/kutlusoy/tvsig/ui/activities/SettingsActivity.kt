@@ -1,6 +1,8 @@
 package com.kutlusoy.tvsig.ui.activities
 
 import android.os.Bundle
+import android.view.View
+import android.widget.AdapterView
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -57,6 +59,16 @@ class SettingsActivity : AppCompatActivity() {
                 text?.toString()?.toIntOrNull()?.let { delay ->
                     viewModel.updateSettings(slideDelay = delay)
                 }
+            }
+
+            transitionSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    if (!isUpdatingFromViewModel && position != viewModel.settings.value.transition) {
+                        viewModel.updateSettings(transition = position)
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
 
             orientationGroup.setOnCheckedChangeListener { _, checkedId ->
@@ -125,6 +137,10 @@ class SettingsActivity : AppCompatActivity() {
                         if (delayInput.text.toString() != settings.slideDelay.toString()) {
                             delayInput.setText(settings.slideDelay.toString())
                         }
+
+                        isUpdatingFromViewModel = true
+                        transitionSpinner.setSelection(settings.transition)
+                        isUpdatingFromViewModel = false
 
                         val orientationButton = when (settings.orientation) {
                             OrientationHelper.ORIENTATION_AUTO -> R.id.orientationAuto
