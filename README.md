@@ -94,16 +94,19 @@ For a signed local release build, put a `signing/release.properties` file into `
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `CI` | push to `main` or `integration`, pull requests | Unit tests, lint, debug APK as build artifact |
-| `Release` | tag `v*` (for example `v0.0.1`) | Checks the tag against `versionName`, runs the tests, builds the signed APK and AAB, publishes a GitHub release |
+| `Release` | tag `v*` (for example `v0.0.1`) | Checks the tag against `versionName`, runs the tests, builds the signed APK and AAB, verifies the certificate, publishes a GitHub release with `SHA256SUMS.txt` (tags with a suffix such as `-rc1` become pre-releases) |
 
-Secrets required for the release workflow (repository settings, Secrets and variables, Actions):
+The release workflow needs these repository secrets (Settings, Secrets and variables, Actions):
 
-| Secret | Content |
-|---|---|
-| `ANDROID_KEYSTORE_BASE64` | Keystore file as base64, for example `base64 -w0 release.keystore` |
-| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
-| `ANDROID_KEY_ALIAS` | Key alias |
-| `ANDROID_KEY_PASSWORD` | Key password |
+| Secret | Required | Content |
+|---|---|---|
+| `TVSIG_KEYSTORE_BASE64` | yes | Keystore file as Base64 text |
+| `TVSIG_KEYSTORE_PASSWORD` | yes | Keystore password |
+| `TVSIG_KEY_ALIAS` | yes | Key alias, for example `tvsig-release` |
+| `TVSIG_KEY_PASSWORD` | no | Key password, defaults to the keystore password |
+| `TVSIG_RELEASE_CERT_SHA256` | no | Expected certificate fingerprint, the release fails on a mismatch |
+
+The full step by step guide (creating the keystore, setting the secrets on Windows, Linux and macOS, running a release, troubleshooting) is in [doc/guideline-release-signing.md](doc/guideline-release-signing.md).
 
 To release: raise `versionName` and `versionCode` in `app/build.gradle`, then push the tag.
 
