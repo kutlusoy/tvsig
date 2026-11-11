@@ -78,6 +78,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 return@launch
             }
 
+            val stored = repository.storedPlaylist(source)
+            if (stored.isNotEmpty()) {
+                _presentationState.value = PresentationState.Success(stored, 0)
+                showCurrent()
+                launch { refreshPlaylist() }
+                return@launch
+            }
+
             when (val result = repository.loadPlaylist(source)) {
                 is Result.Success -> {
                     consecutiveFailures = 0
