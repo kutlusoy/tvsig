@@ -37,8 +37,8 @@ class MediaRepository private constructor(private val context: Context) {
      */
     suspend fun loadPlaylist(baseUrl: String, subfolder: String): Result<List<MediaFile>> =
         withContext(Dispatchers.IO) {
-            val folderUrl = buildFolderUrl(baseUrl, subfolder)
-            val cached = getCachedPlaylist(folderUrl)
+            val key = sourceKey(baseUrl, subfolder)
+            val cached = getCachedPlaylist(key)
 
             if (!NetworkHelper.isNetworkAvailable(context)) {
                 return@withContext if (cached.isNotEmpty()) Result.Success(cached)
@@ -46,12 +46,12 @@ class MediaRepository private constructor(private val context: Context) {
             }
 
             try {
-                val files = fetchPlaylist(folderUrl)
-                savePlaylist(folderUrl, files)
+                val files = fetchSource(baseUrl, subfolder)
+                savePlaylist(key, files)
                 startBackgroundSync(files)
                 Result.Success(files)
             } catch (e: Exception) {
-                Logger.e("Failed to load playlist from $folderUrl", e)
+                Logger.e("Failed to load the playlist", e)
                 if (cached.isNotEmpty()) Result.Success(cached) else Result.Error(e)
             }
         }
@@ -62,6 +62,11 @@ class MediaRepository private constructor(private val context: Context) {
             return@withContext Result.Error(Exception(ERROR_OFFLINE))
         }
         try {
+            if (DriveSource.isDriveReference(baseUrl)) {
+                val baseId = DriveSource.folderId(baseUrl) ?: throw Exception(ERROR_DRIVE_LINK)
+                val folders = driveEntries(baseId).filter { it.isFolder }.map { it.name }.sortedBy { it.lowercase() }
+                return@withContext Result.Success(folders)
+            }
             val folderUrl = buildFolderUrl(baseUrl, "")
             val folderFile = httpGetText(folderUrl + Constants.FOLDERS_FILE_NAME, allowNotFound = true)
             val folders = if (folderFile != null) {
@@ -82,7 +87,7 @@ class MediaRepository private constructor(private val context: Context) {
                 return@withContext Result.Error(Exception(ERROR_OFFLINE))
             }
             try {
-                Result.Success(fetchPlaylist(buildFolderUrl(baseUrl, subfolder)))
+                Result.Success(fetchSource(baseUrl, subfolder))
             } catch (e: Exception) {
                 Result.Error(e)
             }
@@ -136,6 +141,39 @@ class MediaRepository private constructor(private val context: Context) {
             if (stalePart || (!f.name.endsWith(PART_SUFFIX) && f.name !in keep)) f.delete()
         }
     }
+
+    private fun fetchSource(baseUrl: String, subfolder: String): List<MediaFile> =
+        if (DriveSource.isDriveReference(baseUrl)) fetchDrivePlaylist(baseUrl, subfolder)
+        else fetchPlaylist(buildFolderUrl(baseUrl, subfolder))
+
+    private fun driveEntries(folderId: String): List<DriveSource.Entry> {
+        val html = httpGetText(DriveSource.listUrl(folderId), allowNotFound = false)
+            ?: throw Exception(ERROR_DRIVE_FOLDER)
+        return DriveSource.parseListing(html).ifEmpty { throw Exception(ERROR_DRIVE_FOLDER) }
+    }
+
+    private fun resolveDriveFolder(baseId: String, subfolder: String): String {
+        var id = baseId
+        for (name in subfolder.split('/').map { it.trim() }.filter { it.isNotEmpty() }) {
+            id = driveEntries(id).firstOrNull { it.isFolder && it.name.equals(name, ignoreCase = true) }?.id
+                ?: throw Exception("Subfolder not found: $name")
+        }
+        return id
+    }
+
+    private fun fetchDrivePlaylist(baseUrl: String, subfolder: String): List<MediaFile> {
+        val baseId = DriveSource.folderId(baseUrl) ?: throw Exception(ERROR_DRIVE_LINK)
+        val files = driveEntries(resolveDriveFolder(baseId, subfolder))
+            .filter { !it.isFolder && MediaFile.isSupported(it.name) }
+            .sortedBy { it.name.lowercase() }
+            .map { MediaFile(it.name, DriveSource.downloadUrl(it.id)) }
+        if (files.isEmpty()) throw Exception(ERROR_NO_MEDIA)
+        return files
+    }
+
+    private fun sourceKey(baseUrl: String, subfolder: String): String =
+        if (DriveSource.isDriveReference(baseUrl)) "drive:${DriveSource.folderId(baseUrl)}/${subfolder.trim()}"
+        else buildFolderUrl(baseUrl, subfolder)
 
     private fun fetchPlaylist(folderUrl: String): List<MediaFile> {
         val playlistText = httpGetText(folderUrl + Constants.PLAYLIST_FILE_NAME, allowNotFound = true)
@@ -203,6 +241,9 @@ class MediaRepository private constructor(private val context: Context) {
             if (connection.responseCode != HttpURLConnection.HTTP_OK) {
                 throw Exception("HTTP ${connection.responseCode} (${file.url})")
             }
+            if (connection.contentType?.startsWith("text/html", ignoreCase = true) == true) {
+                throw Exception(ERROR_BLOCKED)
+            }
             val expected = connection.contentLengthLong
             connection.inputStream.use { input ->
                 part.outputStream().use { output -> input.copyTo(output) }
@@ -212,7 +253,7 @@ class MediaRepository private constructor(private val context: Context) {
             }
             if (target.exists()) target.delete()
             if (!part.renameTo(target)) throw Exception("Could not store ${file.name}")
-            prefs.edit().putString(metaKey(file), signature(connection)).apply()
+            prefs.edit().putString(metaKey(file), remoteSignature(file.url) ?: "").apply()
             target
         } finally {
             connection.disconnect()
@@ -221,26 +262,48 @@ class MediaRepository private constructor(private val context: Context) {
     }
 
     private fun isRemoteChanged(file: MediaFile): Boolean {
-        val local = localFile(file)
-        if (!local.exists()) return false
+        if (!localFile(file).exists()) return false
         val stored = prefs.getString(metaKey(file), null) ?: return true
+        if (stored.isEmpty()) return false
         return try {
-            val connection = openConnection(file.url, method = "HEAD")
-            try {
-                connection.responseCode == HttpURLConnection.HTTP_OK && signature(connection) != stored
-            } finally {
-                connection.disconnect()
-            }
+            val remote = remoteSignature(file.url)
+            remote != null && remote != stored
         } catch (e: Exception) {
             false
         }
     }
 
-    private fun signature(c: HttpURLConnection): String =
-        listOf(c.getHeaderField("ETag"), c.getHeaderField("Last-Modified"), c.contentLengthLong.toString())
+    /** ETag, modification time and size from a HEAD request, or from a one byte range request. */
+    private fun remoteSignature(url: String): String? {
+        val head = openConnection(url, method = "HEAD")
+        try {
+            if (head.responseCode == HttpURLConnection.HTTP_OK) {
+                return signatureOf(head, head.contentLengthLong)
+            }
+        } finally {
+            head.disconnect()
+        }
+
+        val range = openConnection(url, headers = mapOf("Range" to "bytes=0-0"))
+        try {
+            return when (range.responseCode) {
+                HttpURLConnection.HTTP_PARTIAL -> {
+                    val total = range.getHeaderField("Content-Range")?.substringAfter('/')?.toLongOrNull() ?: -1L
+                    signatureOf(range, total)
+                }
+                HttpURLConnection.HTTP_OK -> signatureOf(range, range.contentLengthLong)
+                else -> null
+            }
+        } finally {
+            range.disconnect()
+        }
+    }
+
+    private fun signatureOf(c: HttpURLConnection, length: Long): String =
+        listOf(c.getHeaderField("ETag"), c.getHeaderField("Last-Modified"), length.toString())
             .joinToString("|") { it ?: "" }
 
-    private fun openConnection(url: String, method: String = "GET"): HttpURLConnection {
+    private fun openConnection(url: String, method: String = "GET", headers: Map<String, String> = emptyMap()): HttpURLConnection {
         var current = url
         repeat(MAX_REDIRECTS + 1) {
             val connection = (URL(current).openConnection() as HttpURLConnection).apply {
@@ -248,7 +311,8 @@ class MediaRepository private constructor(private val context: Context) {
                 connectTimeout = Constants.CONNECT_TIMEOUT_MS
                 readTimeout = Constants.READ_TIMEOUT_MS
                 instanceFollowRedirects = false
-                setRequestProperty("User-Agent", "TVSig")
+                setRequestProperty("User-Agent", userAgentFor(current))
+                headers.forEach { (key, value) -> setRequestProperty(key, value) }
             }
             val code = connection.responseCode
             val location = connection.getHeaderField("Location")
@@ -261,6 +325,9 @@ class MediaRepository private constructor(private val context: Context) {
         }
         throw Exception("Too many redirects ($url)")
     }
+
+    private fun userAgentFor(url: String): String =
+        if (url.contains(".google.com")) "Mozilla/5.0 (Linux; Android 10) TVSig" else "TVSig"
 
     private fun localFile(file: MediaFile): File =
         File(mediaDir, "${sha1(file.url)}.${file.extension}")
@@ -292,6 +359,9 @@ class MediaRepository private constructor(private val context: Context) {
         const val ERROR_OFFLINE = "Offline"
         const val ERROR_LISTING = "Folder listing not available"
         const val ERROR_NO_MEDIA = "No media found"
+        const val ERROR_BLOCKED = "The server sent a web page instead of the file (access or download limit)"
+        const val ERROR_DRIVE_LINK = "No Google Drive folder ID found in the link"
+        const val ERROR_DRIVE_FOLDER = "Drive folder not found or not shared with anyone who has the link"
 
         private const val MEDIA_DIR_NAME = "media"
         private const val PREFS_NAME = "media_cache"

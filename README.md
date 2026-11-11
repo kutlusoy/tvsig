@@ -22,6 +22,10 @@ The media are loaded from `<Base URL>/<Subfolder>/`, here `https://example.com/s
 
 You do not have to type the subfolder: after entering the base URL, "Ordner auswählen" in the settings shows the subfolders of the server as a list. The list comes from the directory listing of the web server, or from a `folders.txt` in the base folder (one folder name per line) if the server does not allow directory listings. "Verbindung testen" checks the settings and reports how many images and videos were found.
 
+### Google Drive
+
+Instead of a web server, a publicly shared Google Drive folder ("Anyone with the link") can be used. Paste the folder link into the base URL, pick the subfolder from the list and you are done, there is no Google account and no API key. This relies on the public folder view of Google, which is not an official interface, see [doc/guideline-google-drive.md](doc/guideline-google-drive.md) for the setup and the limits.
+
 ### Playlist
 
 The app builds the playlist in one of two ways:

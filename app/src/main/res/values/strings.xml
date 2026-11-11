@@ -27,7 +27,7 @@
     <string name="error_pins_dont_match">PINs stimmen nicht überein</string>
 
     <string name="settings_title">Einstellungen</string>
-    <string name="settings_base_url">Basis-URL (z. B. https://example.com/signage)</string>
+    <string name="settings_base_url">Basis-URL oder Google-Drive-Ordnerlink</string>
     <string name="settings_subfolder">Unterordner</string>
     <string name="settings_delay">Anzeigedauer pro Bild</string>
     <string name="arrow_left">‹</string>
