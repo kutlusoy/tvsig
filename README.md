@@ -117,6 +117,16 @@ git tag v0.0.1
 git push origin v0.0.1
 ```
 
+## Permissions
+
+| Permission | Why |
+|---|---|
+| `INTERNET`, `ACCESS_NETWORK_STATE` | Load the media from your web server and detect when the network is back |
+| `WAKE_LOCK`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SPECIAL_USE` | Keep playing around the clock |
+| `RECEIVE_BOOT_COMPLETED` | Start after a reboot |
+| `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` | Ask once to be excluded from battery optimization |
+| `SYSTEM_ALERT_WINDOW` | Optional: if "Display over other apps" is allowed in the Android settings, the app can open itself after a reboot on Android 10 and newer |
+
 ## Background operation
 
 The app is built for 24/7 operation: it runs a foreground service, keeps the screen on, starts on boot and restarts itself after a crash. On some devices you have to allow auto start and disable battery optimization manually.

@@ -98,7 +98,7 @@ class TVSigApp : Application() {
             )
 
             val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmManager.setExactAndAllowWhileIdle(
+            alarmManager.setAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
                 System.currentTimeMillis() + RESTART_DELAY,
                 pendingIntent

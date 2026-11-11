@@ -14,9 +14,7 @@ class ServiceRestarter : BroadcastReceiver() {
             Intent.ACTION_BOOT_COMPLETED,
             "android.intent.action.QUICKBOOT_POWERON",
             "com.htc.intent.action.QUICKBOOT_POWERON",
-            "com.kutlusoy.tvsig.RESTART_SERVICE",
-            Intent.ACTION_MY_PACKAGE_REPLACED,
-            Intent.ACTION_PACKAGE_REPLACED -> {
+            Intent.ACTION_MY_PACKAGE_REPLACED -> {
                 Logger.d("System event received: ${intent.action}")
                 startServices(context)
             }
