@@ -15,6 +15,7 @@ import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.models.SourceType
 import com.kutlusoy.tvsig.ui.dialogs.ChangePinDialog
 import com.kutlusoy.tvsig.ui.dialogs.FolderPickerDialog
+import com.kutlusoy.tvsig.ui.dialogs.RemoteSetupDialog
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 import com.kutlusoy.tvsig.viewmodels.SettingsViewModel
@@ -91,6 +92,7 @@ class SettingsActivity : AppCompatActivity() {
             themeRow.setOptions(listOf(getString(R.string.theme_light), getString(R.string.theme_dark)), if (settings.isDarkMode) 1 else 0)
             themeRow.onSelectionChanged = { viewModel.updateSettings(isDarkMode = it == 1) }
 
+            btnRemoteSetup.setOnClickListener { RemoteSetupDialog.show(supportFragmentManager) }
             btnPickFolder.setOnClickListener {
                 val source = viewModel.settings.value.toSource()
                 if (!source.isConfigured) {

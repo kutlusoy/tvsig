@@ -26,6 +26,10 @@ The media are loaded from `<Base URL>/<Subfolder>/`, here `https://example.com/s
 
 Instead of a web server, a publicly shared Google Drive folder ("Anyone with the link") can be used. In the settings, set the source to "Google Drive" and type the ID of the main folder, there is no Google account and no API key. This relies on the public folder view of Google, which is not an official interface, see [doc/guideline-google-drive.md](doc/guideline-google-drive.md) for the setup and the limits.
 
+### Setup from a smartphone
+
+For screens that only have a remote control, the settings offer "Einrichtung per Smartphone": the TV shows a QR code, the phone opens a setup page in the browser, and the source, the folder and the playback settings are entered there, with copy and paste. The page is served by the app only while the dialog is open and is protected by a one-time code in the QR code. See [doc/guideline-remote-setup.md](doc/guideline-remote-setup.md).
+
 ### Choosing the folder
 
 Because a TV has no copy and paste, only the base URL (web server) or the ID of the main folder (Google Drive) is typed. "Ordner auswählen" then browses the folders level by level, up to five levels deep, and takes the chosen folder. Both sources work the same way. For a web server the list comes from the directory listing, or from a `folders.txt` (one folder name per line) in each folder if the server does not allow directory listings.
@@ -56,7 +60,7 @@ Supported files:
 
 ## Settings
 
-The settings are made for remote controls: arrow keys move the focus, left and right change a value, OK confirms, and no touch or keyboard is needed except for typing the base URL. The PIN is entered on an on-screen number pad, so remotes without number keys work. The settings also show the app version, author and repository.
+The settings are made for remote controls (and can be filled in from a smartphone, see below): arrow keys move the focus, left and right change a value, OK confirms, and no touch or keyboard is needed except for typing the base URL. The PIN is entered on an on-screen number pad, so remotes without number keys work. The settings also show the app version, author and repository.
 
 Press the back key (or the back button of a TV remote) and enter the PIN. The default PIN is `0000`; change it in the settings.
 

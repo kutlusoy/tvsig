@@ -55,6 +55,11 @@
     <string name="folder_picker_empty">Keine weiteren Unterordner</string>
     <string name="folder_picker_max_depth">Größte Tiefe erreicht (%d Ebenen)</string>
     <string name="folder_picker_error">Ordner konnten nicht geladen werden: %s</string>
+    <string name="settings_remote_setup">Einrichtung per Smartphone</string>
+    <string name="remote_title">Einrichtung per Smartphone</string>
+    <string name="remote_hint">Smartphone mit demselben WLAN oder Netzwerk verbinden, QR-Code mit der Kamera scannen und die Einstellungen dort eintragen.</string>
+    <string name="remote_no_network">Keine Netzwerkverbindung. Bitte den Fernseher mit dem Netzwerk verbinden.</string>
+    <string name="remote_failed">Die Einrichtung konnte nicht gestartet werden.</string>
     <string name="settings_test_connection">Verbindung testen</string>
     <string name="test_running">Teste…</string>
     <string name="test_ok">%1$d Dateien gefunden (%2$d Bilder, %3$d Videos)</string>

@@ -84,6 +84,12 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         _saveResult.value = true
     }
 
+    /** Takes the settings sent from the phone and saves them at once. */
+    fun applyRemote(settings: AppSettings) {
+        _settings.value = settings
+        saveSettings()
+    }
+
     fun verifyCurrentPin(pin: String): Boolean = pin == preferenceHelper.getPin()
 
     fun requestCacheClear() {

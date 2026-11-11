@@ -56,6 +56,14 @@
                     android:layout_marginBottom="@dimen/margin_small"
                     android:text="@string/settings_section_source" />
 
+                <Button
+                    android:id="@+id/btnRemoteSetup"
+                    style="@style/Widget.TVSig.Button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_medium"
+                    android:text="@string/settings_remote_setup" />
+
                 <com.kutlusoy.tvsig.ui.views.OptionRow
                     android:id="@+id/sourceRow"
                     android:layout_width="match_parent"

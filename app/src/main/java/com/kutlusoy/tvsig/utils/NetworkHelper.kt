@@ -24,6 +24,21 @@ object NetworkHelper {
         }
     }
 
+    /** IPv4 address of the active network, used for the address of the setup page. */
+    fun localIpv4(context: Context): String? {
+        return try {
+            val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+            val network = manager.activeNetwork ?: return null
+            manager.getLinkProperties(network)?.linkAddresses
+                ?.map { it.address }
+                ?.firstOrNull { it is java.net.Inet4Address && !it.isLoopbackAddress }
+                ?.hostAddress
+        } catch (e: Exception) {
+            Logger.e("Could not read the local address", e)
+            null
+        }
+    }
+
     fun observeNetworkState(context: Context): Flow<Boolean> = callbackFlow {
         val manager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val callback = object : ConnectivityManager.NetworkCallback() {
