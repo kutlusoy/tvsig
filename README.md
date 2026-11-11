@@ -79,13 +79,38 @@ Then put the files into `/var/www/signage/lobby-screen/` and set the subfolder t
 
 ## Build
 
-Requirements: Android Studio (or Gradle 8.13+), JDK 17, Android SDK 35.
+Requirements: Android Studio (or just JDK 17 and the Android SDK 35). The Gradle wrapper is included.
 
 ```bash
-gradle assembleDebug
+./gradlew testDebugUnitTest assembleDebug
 ```
 
-For release builds, put a `signing/release.properties` file into `app/` with the keys `storeFile`, `storePassword`, `keyAlias` and `keyPassword`. The `signing/` folder is ignored by git.
+The debug APK is written to `app/build/outputs/apk/debug/`.
+
+For a signed local release build, put a `signing/release.properties` file into `app/` with the keys `storeFile` (file name of the keystore inside `app/signing/`), `storePassword`, `keyAlias` and `keyPassword`. The `signing/` folder is ignored by git.
+
+## GitHub Actions
+
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `CI` | push to `main` or `integration`, pull requests | Unit tests, lint, debug APK as build artifact |
+| `Release` | tag `v*` (for example `v0.0.1`) | Checks the tag against `versionName`, runs the tests, builds the signed APK and AAB, publishes a GitHub release |
+
+Secrets required for the release workflow (repository settings, Secrets and variables, Actions):
+
+| Secret | Content |
+|---|---|
+| `ANDROID_KEYSTORE_BASE64` | Keystore file as base64, for example `base64 -w0 release.keystore` |
+| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
+| `ANDROID_KEY_ALIAS` | Key alias |
+| `ANDROID_KEY_PASSWORD` | Key password |
+
+To release: raise `versionName` and `versionCode` in `app/build.gradle`, then push the tag.
+
+```bash
+git tag v0.0.1
+git push origin v0.0.1
+```
 
 ## Background operation
 

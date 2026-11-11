@@ -50,7 +50,9 @@ android {
             minifyEnabled = true
             shrinkResources = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig = signingConfigs.release
+            if (file('signing/release.properties').exists()) {
+                signingConfig = signingConfigs.release
+            }
 
             buildConfigField "boolean", "ENABLE_LOGGING", "false"
             buildConfigField "boolean", "ENABLE_CRASH_REPORTING", "true"
