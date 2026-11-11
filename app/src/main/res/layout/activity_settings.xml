@@ -159,7 +159,14 @@
                     android:id="@+id/transitionRow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
                     app:optionTitle="@string/settings_transition" />
+
+                <com.kutlusoy.tvsig.ui.views.OptionRow
+                    android:id="@+id/backdropRow"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:optionTitle="@string/settings_backdrop" />
 
                 <TextView
                     style="@style/TextAppearance.TVSig.Section"

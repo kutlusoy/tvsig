@@ -72,6 +72,7 @@ class RemoteSetupTest {
         assertNull(RemoteSettings(slideDelay = 1).applyTo(current))
         assertNull(RemoteSettings(transition = 99).applyTo(current))
         assertNull(RemoteSettings(orientation = 45).applyTo(current))
+        assertNull(RemoteSettings(backdrop = 7).applyTo(current))
         assertNull(RemoteSettings(sourceType = 5).applyTo(current))
         assertNull(RemoteSettings(baseUrl = "x".repeat(3000)).applyTo(current))
         assertNotNull(RemoteSettings().applyTo(current))

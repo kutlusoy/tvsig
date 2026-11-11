@@ -21,6 +21,14 @@ object BackdropMath {
         return Layout(canvasWidth, canvasHeight, width, height, (canvasWidth - width) / 2, (canvasHeight - height) / 2)
     }
 
+    /** Size of the zoomed copy, the aspect ratio of the picture is kept. */
+    fun zoomSize(imageWidth: Int, imageHeight: Int): Pair<Int, Int> =
+        if (imageWidth >= imageHeight) {
+            CANVAS_LONG_SIDE to max(1, (CANVAS_LONG_SIDE * imageHeight / imageWidth.toFloat()).roundToInt())
+        } else {
+            max(1, (CANVAS_LONG_SIDE * imageWidth / imageHeight.toFloat()).roundToInt()) to CANVAS_LONG_SIDE
+        }
+
     /** Bounces an index back and forth inside 0 until length, like a mirror at both ends. */
     fun reflect(index: Int, length: Int): Int {
         if (length <= 1) return 0

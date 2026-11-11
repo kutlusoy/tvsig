@@ -32,6 +32,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.TVSigApp
 import com.kutlusoy.tvsig.databinding.ActivityMainBinding
+import com.kutlusoy.tvsig.models.BackdropMode
 import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.models.CurrentMedia
 import com.kutlusoy.tvsig.models.PresentationState
@@ -188,13 +189,14 @@ class MainActivity : AppCompatActivity() {
                 .coerceAtLeast(Constants.MIN_SLIDE_DELAY_SECONDS) * 1000L
             val modified = File(media.path).lastModified()
             val stageAspect = stageAspect()
+            val backdropMode = BackdropMode.fromId(preferenceHelper.getBackdrop())
 
             val unchanged = isSinglePlaylist() &&
                     (transitioner.currentView === stageA.container || transitioner.currentView === stageB.container) &&
                     media.path == shownImagePath && modified == shownImageModified
             if (!unchanged) {
                 val images = withContext(Dispatchers.IO) {
-                    decodeImage(media.path)?.let { it to BackdropBlur.create(it, stageAspect) }
+                    decodeImage(media.path)?.let { it to BackdropBlur.create(it, stageAspect, backdropMode) }
                 }
                 if (images == null) {
                     Logger.e("Could not decode image: ${media.path}")
@@ -222,8 +224,9 @@ class MainActivity : AppCompatActivity() {
         binding.videoBlur.setImageBitmap(null)
         transitioner.show(binding.videoContainer, transitionType(), ::onViewHidden)
         val stageAspect = stageAspect()
+        val backdropMode = BackdropMode.fromId(preferenceHelper.getBackdrop())
         lifecycleScope.launch {
-            val backdrop = withContext(Dispatchers.IO) { BackdropBlur.fromVideo(media.path, stageAspect) }
+            val backdrop = withContext(Dispatchers.IO) { BackdropBlur.fromVideo(media.path, stageAspect, backdropMode) }
             if (backdrop != null && shownVideoPath == media.path) binding.videoBlur.setImageBitmap(backdrop)
         }
 

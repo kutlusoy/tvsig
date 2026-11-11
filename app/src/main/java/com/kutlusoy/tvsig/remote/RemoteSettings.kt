@@ -1,6 +1,7 @@
 package com.kutlusoy.tvsig.remote
 
 import com.kutlusoy.tvsig.models.AppSettings
+import com.kutlusoy.tvsig.models.BackdropMode
 import com.kutlusoy.tvsig.models.FolderPath
 import com.kutlusoy.tvsig.models.SourceType
 import com.kutlusoy.tvsig.models.TransitionType
@@ -14,12 +15,14 @@ data class RemoteSettings(
     val drivePath: String = "",
     val slideDelay: Int = 10,
     val transition: Int = 1,
+    val backdrop: Int = 0,
     val orientation: Int = 0
 ) {
     /** Returns the settings with the values of this request, or null when a value is not valid. */
     fun applyTo(current: AppSettings): AppSettings? {
         if (SourceType.values().none { it.id == sourceType }) return null
         if (TransitionType.values().none { it.id == transition }) return null
+        if (BackdropMode.values().none { it.id == backdrop }) return null
         if (orientation !in ORIENTATIONS) return null
         if (slideDelay !in MIN_DELAY..MAX_DELAY) return null
         if (listOf(baseUrl, subfolder, driveId, drivePath).any { it.length > MAX_TEXT }) return null
@@ -32,6 +35,7 @@ data class RemoteSettings(
             drivePath = FolderPath.normalize(drivePath),
             slideDelay = slideDelay,
             transition = transition,
+            backdrop = backdrop,
             orientation = orientation
         )
     }
@@ -50,6 +54,7 @@ data class RemoteSettings(
             drivePath = settings.drivePath,
             slideDelay = settings.slideDelay,
             transition = settings.transition,
+            backdrop = settings.backdrop,
             orientation = settings.orientation
         )
     }

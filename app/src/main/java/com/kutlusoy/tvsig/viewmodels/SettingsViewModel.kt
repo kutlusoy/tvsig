@@ -35,6 +35,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         drivePath = preferenceHelper.getDrivePath(),
         slideDelay = preferenceHelper.getSlideDelay(),
         transition = preferenceHelper.getTransition(),
+        backdrop = preferenceHelper.getBackdrop(),
         orientation = preferenceHelper.getOrientation(),
         isDarkMode = preferenceHelper.isDarkMode(),
         pin = preferenceHelper.getPin()
@@ -48,6 +49,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         drivePath: String? = null,
         slideDelay: Int? = null,
         transition: Int? = null,
+        backdrop: Int? = null,
         orientation: Int? = null,
         isDarkMode: Boolean? = null,
         pin: String? = null
@@ -61,6 +63,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             drivePath = drivePath ?: current.drivePath,
             slideDelay = slideDelay ?: current.slideDelay,
             transition = transition ?: current.transition,
+            backdrop = backdrop ?: current.backdrop,
             orientation = orientation ?: current.orientation,
             isDarkMode = isDarkMode ?: current.isDarkMode,
             pin = pin ?: current.pin
@@ -77,6 +80,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             setDrivePath(s.drivePath)
             setSlideDelay(s.slideDelay)
             setTransition(s.transition)
+            setBackdrop(s.backdrop)
             setOrientation(s.orientation)
             setDarkMode(s.isDarkMode)
             setPin(s.pin)

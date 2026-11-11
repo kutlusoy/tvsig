@@ -62,4 +62,12 @@ class BackdropMathTest {
         assertEquals(64, layout.canvasWidth)
         assertEquals(36, layout.canvasHeight)
     }
+
+    @Test
+    fun theZoomedCopyKeepsTheProportionsOfThePicture() {
+        assertEquals(64 to 36, BackdropMath.zoomSize(1920, 1080))
+        assertEquals(64 to 48, BackdropMath.zoomSize(4000, 3000))
+        assertEquals(36 to 64, BackdropMath.zoomSize(1080, 1920))
+        assertEquals(64 to 1, BackdropMath.zoomSize(6400, 10))
+    }
 }

@@ -63,6 +63,11 @@
     <select id="delay"></select>
     <label for="transition">Übergangseffekt</label>
     <select id="transition"></select>
+    <label for="backdrop">Hintergrund bei Bildern</label>
+    <select id="backdrop">
+      <option value="0">Gezoomt und unscharf</option>
+      <option value="1">Gespiegelt und unscharf</option>
+    </select>
   </div>
 
   <div class="card">
@@ -173,6 +178,7 @@ el('save').addEventListener('click', function () {
     driveId: state.driveId || '', drivePath: state.drivePath || '',
     slideDelay: parseInt(el('delay').value, 10),
     transition: parseInt(el('transition').value, 10),
+    backdrop: parseInt(el('backdrop').value, 10),
     orientation: parseInt(el('orientation').value, 10)
   };
   msg.className = 'msg'; msg.textContent = 'Speichere …';
@@ -194,6 +200,7 @@ api('GET', '/api/state').then(function (s) {
   var nearest = delays.reduce(function (a, b) { return Math.abs(b - s.slideDelay) < Math.abs(a - s.slideDelay) ? b : a; });
   el('delay').value = nearest;
   el('transition').value = s.transition;
+  el('backdrop').value = s.backdrop;
   el('orientation').value = s.orientation;
   updateLabels();
 }).catch(function () { el('saveMsg').className = 'msg err'; el('saveMsg').textContent = 'Keine Verbindung zum Fernseher'; });

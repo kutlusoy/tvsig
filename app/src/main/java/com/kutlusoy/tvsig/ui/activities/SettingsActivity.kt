@@ -84,6 +84,9 @@ class SettingsActivity : AppCompatActivity() {
             transitionRow.setOptions(resources.getStringArray(R.array.transition_options).toList(), settings.transition)
             transitionRow.onSelectionChanged = { viewModel.updateSettings(transition = it) }
 
+            backdropRow.setOptions(listOf(getString(R.string.backdrop_zoom), getString(R.string.backdrop_mirror)), settings.backdrop)
+            backdropRow.onSelectionChanged = { viewModel.updateSettings(backdrop = it) }
+
             val orientationLabels = orientationOptions.map { orientationLabel(it) }
             val orientationIndex = orientationOptions.indexOf(settings.orientation).takeIf { it >= 0 } ?: 0
             orientationRow.setOptions(orientationLabels, orientationIndex)

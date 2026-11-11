@@ -77,6 +77,9 @@
         <item>Zoom heraus</item>
         <item>Zufall</item>
     </string-array>
+    <string name="settings_backdrop">Hintergrund bei Bildern</string>
+    <string name="backdrop_zoom">Gezoomt und unscharf</string>
+    <string name="backdrop_mirror">Gespiegelt und unscharf</string>
     <string name="settings_orientation">Bildschirmausrichtung</string>
     <string name="settings_theme">App-Theme</string>
 

@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:importantForAccessibility="no"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop" />
 
         <androidx.media3.ui.PlayerView
             android:id="@+id/videoView"
@@ -50,7 +50,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:importantForAccessibility="no"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop" />
 
         <ImageView
             android:id="@+id/imageFitA"
@@ -76,7 +76,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:importantForAccessibility="no"
-            android:scaleType="fitXY" />
+            android:scaleType="centerCrop" />
 
         <ImageView
             android:id="@+id/imageFitB"
