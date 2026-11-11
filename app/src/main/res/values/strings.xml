@@ -37,6 +37,8 @@
     <string name="settings_folder_helper">Mit „Ordner auswählen“ aus einer Liste wählbar</string>
     <string name="settings_subfolder">Ordner (Pfad)</string>
     <string name="settings_delay">Anzeigedauer pro Bild</string>
+    <string name="option_previous">Vorheriger Wert</string>
+    <string name="option_next">Nächster Wert</string>
     <string name="arrow_left">‹</string>
     <string name="arrow_right">›</string>
     <string name="seconds_format">%d Sekunden</string>

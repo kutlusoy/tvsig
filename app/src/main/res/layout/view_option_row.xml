@@ -10,27 +10,33 @@
 
     <TextView
         android:id="@+id/optionPrevious"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="48dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:contentDescription="@string/option_previous"
         android:text="@string/arrow_left"
         android:textColor="?attr/colorPrimary"
-        android:textSize="32sp"
-        android:importantForAccessibility="no" />
+        android:textSize="32sp" />
 
     <TextView
         android:id="@+id/optionValue"
-        android:layout_width="260dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
+        android:maxLines="2"
+        android:minWidth="@dimen/option_value_min_width"
         android:textAppearance="@style/TextAppearance.TVSig.Title"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/optionNext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="56dp"
+        android:layout_height="48dp"
+        android:focusable="false"
+        android:gravity="center"
+        android:contentDescription="@string/option_next"
         android:text="@string/arrow_right"
         android:textColor="?attr/colorPrimary"
-        android:textSize="32sp"
-        android:importantForAccessibility="no" />
+        android:textSize="32sp" />
 </merge>
