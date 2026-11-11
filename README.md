@@ -2,7 +2,7 @@
 
 # TVSig
 
-Digital signage app for Android phones, tablets and Android TV. It plays images and videos from a folder on your own web server. There is no Google account, no Google Drive and no license check.
+Android digital signage app for phones, tablets and Android TV. It plays images and videos from a folder on your own web server. There is no Google account, no Google Drive and no license check.
 
 - **Application ID:** `com.kutlusoy.tvsig`
 - **Version:** 0.0.1

@@ -80,7 +80,7 @@ const lockup = (logoWidth, textSize, gap) =>
   await shot('doc/social-preview.png', 1280, 640,
     `<div style="display:flex;align-items:center;gap:56px">${logo(430)}` +
     `<div>${wordmark(150)}<div style="margin-top:18px;font-size:38px;font-weight:400;color:#021B8D">` +
-    `Digital signage for Android</div></div></div>`, '#fff');
+    `Android Digital Signage</div></div></div>`, '#fff');
 
   await browser.close();
 })();
