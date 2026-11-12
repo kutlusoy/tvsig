@@ -39,6 +39,8 @@ class OptionRow @JvmOverloads constructor(
             typedArray.recycle()
         }
         setOnClickListener { step(1) }
+        binding.optionPrevious.setOnClickListener { step(-1) }
+        binding.optionNext.setOnClickListener { step(1) }
     }
 
     fun setOptions(options: List<String>, selected: Int) {

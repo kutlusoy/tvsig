@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: Version without the leading v, must match versionName in app/build.gradle (for example 0.0.1)
+        description: Version without the leading v, must match app/version.txt (for example 0.0.1)
         required: true
 
 permissions:
@@ -25,28 +25,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Resolve version
+      - name: Check the version
         env:
           INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [[ "$GITHUB_REF_TYPE" == tag ]]; then tag=$GITHUB_REF_NAME; else tag="v${INPUT_VERSION#v}"; fi
-          version=${tag#v}
-          if [[ ! $version =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.]+)?$ ]]; then
-            echo "::error::Version '$version' is not of the form X.Y.Z or X.Y.Z-suffix"
-            exit 1
-          fi
-          gradle_version=$(grep -oP 'versionName "\K[^"]+' app/build.gradle)
-          if [[ $gradle_version != "$version" ]]; then
-            echo "::error::Tag $tag does not match versionName $gradle_version in app/build.gradle"
-            exit 1
-          fi
-          prerelease=false
-          [[ $version == *-* ]] && prerelease=true
-          {
-            echo "TAG=$tag"
-            echo "VERSION=$version"
-            echo "PRERELEASE=$prerelease"
-          } >> "$GITHUB_ENV"
+          if [[ "$GITHUB_REF_TYPE" == tag ]]; then wanted=$GITHUB_REF_NAME; else wanted=$INPUT_VERSION; fi
+          python3 -I tools/version.py --selftest
+          python3 -I tools/version.py "$wanted" > "$RUNNER_TEMP/version.out"
+          cat "$RUNNER_TEMP/version.out"
+          awk -F= '{ print toupper($1) "=" $2 }' "$RUNNER_TEMP/version.out" >> "$GITHUB_ENV"
 
       - uses: actions/setup-java@v4
         with:
@@ -93,45 +80,23 @@ jobs:
           fi
           (cd dist && sha256sum ./*.apk ./*.aab > SHA256SUMS.txt)
 
-      - name: Check the signing certificate
+      - name: Check the APK
         env:
           EXPECTED_CERT_SHA256: ${{ secrets.TVSIG_RELEASE_CERT_SHA256 }}
         run: |
-          apksigner=$(ls "${ANDROID_HOME:-/usr/local/lib/android/sdk}"/build-tools/*/apksigner | sort -V | tail -1)
-          "$apksigner" verify --verbose --print-certs "dist/TVSig-$VERSION.apk" > "$RUNNER_TEMP/verify.txt"
-          cert=$(sed -n 's/^.*[Ss]igner.*certificate SHA-256 digest: *//p' "$RUNNER_TEMP/verify.txt" | head -1 | tr -d ':' | tr 'A-F' 'a-f')
-          echo "Signing certificate SHA-256: $cert"
-          if [[ -z $cert ]]; then
-            cat "$RUNNER_TEMP/verify.txt"
-            echo "::error::No signing certificate found in the APK"
-            exit 1
+          tools/release-notes.sh facts "dist/TVSig-$VERSION.apk" | tee "$RUNNER_TEMP/facts.out"
+          source "$RUNNER_TEMP/facts.out"
+          fail() { echo "::error::$1"; exit 1; }
+          [[ $PACKAGE_NAME == com.kutlusoy.tvsig ]] || fail "Unexpected application ID $PACKAGE_NAME"
+          [[ $APK_VERSION_NAME == "$VERSION" ]] || fail "The APK says version $APK_VERSION_NAME but the release is $VERSION"
+          [[ $APK_VERSION_CODE == "$VERSION_CODE" ]] || fail "The APK has version code $APK_VERSION_CODE but tools/version.py says $VERSION_CODE"
+          [[ -n $CERT_SHA256 ]] || fail "No signing certificate found in the APK"
+          if [[ -n $EXPECTED_CERT_SHA256 && $CERT_SHA256 != "$(echo "$EXPECTED_CERT_SHA256" | tr -d ':' | tr 'A-F' 'a-f')" ]]; then
+            fail "The APK certificate $CERT_SHA256 does not match TVSIG_RELEASE_CERT_SHA256"
           fi
-          if [[ -n $EXPECTED_CERT_SHA256 && $cert != "$(echo "$EXPECTED_CERT_SHA256" | tr -d ':' | tr 'A-F' 'a-f')" ]]; then
-            echo "::error::The APK certificate $cert does not match TVSIG_RELEASE_CERT_SHA256"
-            exit 1
-          fi
-          echo "CERT_SHA256=$cert" >> "$GITHUB_ENV"
 
       - name: Release notes
-        run: |
-          {
-            echo "TVSig v$VERSION"
-            echo
-            echo "| Item | Value |"
-            echo "|---|---|"
-            echo "| Application ID | com.kutlusoy.tvsig |"
-            echo "| Version | $VERSION |"
-            echo "| Signing certificate SHA-256 | $CERT_SHA256 |"
-            echo
-            echo "Files:"
-            echo
-            echo "- \`TVSig-$VERSION.apk\`: the app, install this file on the device"
-            echo "- \`TVSig-$VERSION.aab\`: app bundle for store uploads"
-            echo "- \`TVSig-$VERSION-mapping.txt\`: R8 mapping to read crash traces"
-            echo "- \`SHA256SUMS.txt\`: checksums of the files"
-            echo
-            echo "Verify a download with \`sha256sum -c SHA256SUMS.txt\`, and compare the signing certificate with \`apksigner verify --print-certs <apk>\`."
-          } > dist/NOTES.md
+        run: tools/release-notes.sh notes "dist/TVSig-$VERSION.apk" "dist/TVSig-$VERSION.aab" "$VERSION" "$GITHUB_SHA" > dist/NOTES.md
 
       - uses: actions/upload-artifact@v4
         with:
