@@ -230,7 +230,7 @@ npm install playwright
 node design/generate-assets.js
 ```
 
-The script writes the launcher icons (adaptive, monochrome and legacy), the Android TV banner, the splash logo, the notification icon, the store icon and the repository graphics (`doc/logo.png`, `doc/social-preview.png`). The social preview image can be uploaded in the repository settings under "Social preview".
+The script also writes a debug variant of the launcher icons and the TV banner (orange background and a red "DEBUG" label) into `app/src/debug/res/`, so the debug app is easy to tell apart from the release app. The script writes the launcher icons (adaptive, monochrome and legacy), the Android TV banner, the splash logo, the notification icon, the store icon and the repository graphics (`doc/logo.png`, `doc/social-preview.png`). The social preview image can be uploaded in the repository settings under "Social preview".
 
 ## License
 
