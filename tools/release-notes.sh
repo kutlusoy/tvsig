@@ -21,6 +21,7 @@ read_facts() {
   TARGET_SDK=$(field "s/^targetSdkVersion:'\([0-9]*\)'.*/\1/p")
   CERT_SHA256=$(digest SHA-256)
   CERT_SHA1=$(digest SHA-1)
+  if unzip -Z1 "$apk" | grep -qx 'assets/adi-registration.properties'; then ADI_FILE=yes; else ADI_FILE=no; fi
 }
 
 colon() { tr 'a-f' 'A-F' <<<"$1" | sed 's/../&:/g; s/:$//'; }
@@ -29,13 +30,18 @@ sum() { sha256sum "$1" | cut -d' ' -f1; }
 case "${1:-}" in
   facts)
     read_facts "$2"
-    for name in PACKAGE_NAME APK_VERSION_NAME APK_VERSION_CODE MIN_SDK TARGET_SDK CERT_SHA256 CERT_SHA1; do
+    for name in PACKAGE_NAME APK_VERSION_NAME APK_VERSION_CODE MIN_SDK TARGET_SDK CERT_SHA256 CERT_SHA1 ADI_FILE; do
       echo "$name=${!name}"
     done
     ;;
   notes)
     apk=$2 aab=$3 version=$4 commit=$5
     read_facts "$apk"
+    if [[ $ADI_FILE == yes ]]; then
+      adi="included in the APK (assets/adi-registration.properties)"
+    else
+      adi="not included"
+    fi
     cat <<TEXT
 TVSig v$version
 
@@ -51,6 +57,7 @@ Android digital signage app. It plays images and videos from a web server or a s
 | Source commit | $commit |
 | Signing certificate SHA-256 | \`$(colon "$CERT_SHA256")\` |
 | Signing certificate SHA-1 | \`$(colon "$CERT_SHA1")\` |
+| Android developer verification proof | $adi |
 | APK SHA-256 | \`$(sum "$apk")\` |
 | AAB SHA-256 | \`$(sum "$aab")\` |
 

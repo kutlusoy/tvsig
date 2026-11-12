@@ -166,7 +166,7 @@ Copy the keystore into `app/signing/` and run `./gradlew assembleRelease`. The A
 Google is introducing a verification of developers for apps installed on certified Android devices, also for apps outside Google Play. Check the current rules and dates in the Android Developer Console documentation before you register, they change.
 
 - A personal account is enough. Distribution through Google Play is not required.
-- Register the package name `com.kutlusoy.tvsig` with the SHA-256 fingerprint of the release certificate from §2.
+- Register the package name `com.kutlusoy.tvsig` with the SHA-256 fingerprint of the release certificate from §2. The steps and the proof file are in [`guideline-android-developer-verification.md`](./guideline-android-developer-verification.md).
 - Keep the release key unchanged for the lifetime of the app. A key change requires Android key rotation and a new registration.
 - Keep the account and its identity documents up to date. A lapsed verification can block installs on certified devices.
 
@@ -181,7 +181,7 @@ Google is introducing a verification of developers for apps installed on certifi
 | `Cannot recover key` | `TVSIG_KEY_PASSWORD` is wrong, or the key password differs from the keystore password and `TVSIG_KEY_PASSWORD` is not set. |
 | `app/version.txt says ... but the version is ...` | The tag and `app/version.txt` differ. Change the file and push a new tag, or delete the tag and tag again. |
 | `does not match TVSIG_RELEASE_CERT_SHA256` | The APK is signed with another key than expected. Check the keystore secret, or update the expected fingerprint when you changed the key on purpose. |
-| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` on a device | The installed app was signed with another key (for example a debug build). Uninstall it once, then install the release. |
+| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` on a device | An app with the same application ID is installed that was signed with another key, for example a release build that was signed with a different release key. Uninstall it once. Debug builds have their own ID (`com.kutlusoy.tvsig.debug`) and cannot cause this. |
 
 ## 8. Checklist
 

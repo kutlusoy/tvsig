@@ -133,7 +133,9 @@ Requirements: Android Studio (or just JDK 17 and the Android SDK 35). The Gradle
 
 The debug APK is written to `app/build/outputs/apk/debug/`.
 
-Debug builds are always signed with the same key, `app/debug.keystore`, which is part of the repository on purpose (password `android`, only for debug builds, it protects nothing). So a debug APK from GitHub Actions, one built on another computer and one run from Android Studio can update each other without uninstalling the app. A release build uses the separate release key, see below, and cannot replace a debug build or the other way round: switch between them by uninstalling once.
+Debug builds have their own application ID, `com.kutlusoy.tvsig.debug`, and the name "TVSig Debug". They are installed next to the release app (`com.kutlusoy.tvsig`) without touching it, each with its own data, so nothing has to be uninstalled when you switch between them.
+
+Debug builds are always signed with the same key, `app/debug.keystore`, which is part of the repository on purpose (password `android`, only for debug builds, it protects nothing). So a debug APK from GitHub Actions, one built on another computer and one run from Android Studio can update each other without uninstalling the app. The release build uses the separate release key, see below.
 
 For a signed local release build, put a `signing/release.properties` file into `app/` with the keys `storeFile` (file name of the keystore inside `app/signing/`), `storePassword`, `keyAlias` and `keyPassword`. The `signing/` folder is ignored by git.
 
@@ -215,6 +217,10 @@ Press the back key, enter the PIN and choose "Beenden". This stops the app and i
 | The picture freezes | Check the video file on another device. A video that cannot be decoded is skipped, a short note in the message line appears only when no file at all can be played |
 | Everything stops when the network is lost | Update to the current version. Media are cached, only the first start needs the source once |
 
+## Android developer verification
+
+Google asks for a registration of package name and signing key for apps on certified devices. The repository is prepared: the release workflow checks the proof file `app/src/main/assets/adi-registration.properties`, and the release page says whether it is part of the APK. The file holds the snippet of your developer account and is added once, see [doc/guideline-android-developer-verification.md](doc/guideline-android-developer-verification.md).
+
 ## Graphics
 
 All icons, banners and the splash logo are generated from `design/TVSig_icon.svg`. To change the logo, replace the SVG and run:
@@ -224,7 +230,7 @@ npm install playwright
 node design/generate-assets.js
 ```
 
-The script writes the launcher icons (adaptive, monochrome and legacy), the Android TV banner, the splash logo, the notification icon, the store icon and the repository graphics (`doc/logo.png`, `doc/social-preview.png`). The social preview image can be uploaded in the repository settings under "Social preview".
+The script also writes a debug variant of the launcher icons and the TV banner (orange background and a red "DEBUG" label) into `app/src/debug/res/`, so the debug app is easy to tell apart from the release app. The script writes the launcher icons (adaptive, monochrome and legacy), the Android TV banner, the splash logo, the notification icon, the store icon and the repository graphics (`doc/logo.png`, `doc/social-preview.png`). The social preview image can be uploaded in the repository settings under "Social preview".
 
 ## License
 
