@@ -95,6 +95,21 @@ jobs:
             fail "The APK certificate $CERT_SHA256 does not match TVSIG_RELEASE_CERT_SHA256"
           fi
 
+      - name: Check the proof for the Android developer verification
+        run: |
+          file=app/src/main/assets/adi-registration.properties
+          if [[ ! -f $file ]]; then
+            echo "::warning::$file is missing. The release cannot be used as proof of ownership for the Android developer verification, see doc/guideline-android-developer-verification.md."
+          elif [[ $(tr -d '[:space:]' < $file | wc -c) -lt 8 || $(wc -c < $file) -gt 2000 ]]; then
+            echo "::error::$file does not look like the snippet of the console."
+            exit 1
+          fi
+          source <(tools/release-notes.sh facts "dist/TVSig-$VERSION.apk")
+          if [[ -f $file && $ADI_FILE != yes ]]; then
+            echo "::error::$file exists but is not part of the APK"
+            exit 1
+          fi
+
       - name: Release notes
         run: tools/release-notes.sh notes "dist/TVSig-$VERSION.apk" "dist/TVSig-$VERSION.aab" "$VERSION" "$GITHUB_SHA" > dist/NOTES.md
 

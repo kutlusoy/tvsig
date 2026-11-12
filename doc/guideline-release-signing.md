@@ -166,7 +166,7 @@ Copy the keystore into `app/signing/` and run `./gradlew assembleRelease`. The A
 Google is introducing a verification of developers for apps installed on certified Android devices, also for apps outside Google Play. Check the current rules and dates in the Android Developer Console documentation before you register, they change.
 
 - A personal account is enough. Distribution through Google Play is not required.
-- Register the package name `com.kutlusoy.tvsig` with the SHA-256 fingerprint of the release certificate from §2.
+- Register the package name `com.kutlusoy.tvsig` with the SHA-256 fingerprint of the release certificate from §2. The steps and the proof file are in [`guideline-android-developer-verification.md`](./guideline-android-developer-verification.md).
 - Keep the release key unchanged for the lifetime of the app. A key change requires Android key rotation and a new registration.
 - Keep the account and its identity documents up to date. A lapsed verification can block installs on certified devices.
 

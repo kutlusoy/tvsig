@@ -215,6 +215,10 @@ Press the back key, enter the PIN and choose "Beenden". This stops the app and i
 | The picture freezes | Check the video file on another device. A video that cannot be decoded is skipped, a short note in the message line appears only when no file at all can be played |
 | Everything stops when the network is lost | Update to the current version. Media are cached, only the first start needs the source once |
 
+## Android developer verification
+
+Google asks for a registration of package name and signing key for apps on certified devices. The repository is prepared: the release workflow checks the proof file `app/src/main/assets/adi-registration.properties`, and the release page says whether it is part of the APK. The file holds the snippet of your developer account and is added once, see [doc/guideline-android-developer-verification.md](doc/guideline-android-developer-verification.md).
+
 ## Graphics
 
 All icons, banners and the splash logo are generated from `design/TVSig_icon.svg`. To change the logo, replace the SVG and run:
