@@ -142,7 +142,7 @@ For a signed local release build, put a `signing/release.properties` file into `
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `CI` | push to `main` or `integration`, pull requests | Unit tests, lint, debug APK as build artifact |
-| `Release` | tag `v*` (for example `v0.0.1`) | Checks the tag against `versionName`, runs the tests, builds the signed APK and AAB, verifies the certificate, publishes a GitHub release with `SHA256SUMS.txt` (tags with a suffix such as `-rc1` become pre-releases) |
+| `Release` | tag `v*` (for example `v0.0.1`) | Checks the tag against `app/version.txt`, runs the tests, builds the signed APK and AAB, verifies the APK (application ID, version, certificate), publishes a GitHub release. The release page lists the signing certificate (SHA-256 and SHA-1), the SHA-256 of the APK and the bundle, the version code, the Android versions and the source commit, and offers `SHA256SUMS.txt` (tags with a suffix such as `-rc1` become pre-releases) |
 
 The release workflow needs these repository secrets (Settings, Secrets and variables, Actions):
 
@@ -156,7 +156,9 @@ The release workflow needs these repository secrets (Settings, Secrets and varia
 
 The full step by step guide (creating the keystore, setting the secrets on Windows, Linux and macOS, running a release, troubleshooting) is in [doc/guideline-release-signing.md](doc/guideline-release-signing.md).
 
-To release: raise `versionName` and `versionCode` in `app/build.gradle`, then push the tag.
+The version of the app is in one file, **`app/version.txt`** (for example `0.0.1`, or `0.1.0-rc1` for a pre-release). The Android version name is that text, the version code is derived from it (`major * 1,000,000 + minor * 1,000 + patch`, so `0.0.1` is 1, `0.1.0` is 1000 and `1.0.0` is 1000000). `tools/version.py` checks the file and the release workflow compares it with the tag.
+
+To release: change `app/version.txt`, commit, then push the matching tag.
 
 ```bash
 git tag v0.0.1

@@ -18,7 +18,7 @@ Requirement levels follow common practice: **MUST** = mandatory, **SHOULD** = st
 
 `CI` needs no secrets. The `Release` workflow stops with an error when a required secret is missing, so it cannot publish an unsigned or wrongly signed release by accident.
 
-A tag with a suffix such as `v0.1.0-rc1` is published as a pre-release. The tag MUST match `versionName` in `app/build.gradle` (`0.1.0-rc1` in this example), otherwise the workflow stops.
+A tag with a suffix such as `v0.1.0-rc1` is published as a pre-release. The tag MUST match the content of `app/version.txt` (`0.1.0-rc1` in this example), otherwise the workflow stops.
 
 Only repository secrets are used. The tab "Variables" is not needed, there are no repository variables.
 
@@ -134,7 +134,7 @@ gh secret list --repo kutlusoy/tvsig
 
 ## 4. Run a release
 
-1. Raise `versionName` and `versionCode` in `app/build.gradle` and merge the change to `main`. `versionCode` MUST grow with every release, Android refuses an update with a lower or equal code.
+1. Change the version in `app/version.txt` (`MAJOR.MINOR.PATCH`, or with a suffix such as `-rc1` for a pre-release) and merge the change to `main`. This one file is the version of the app: the version name is its text, the version code is derived from it by `tools/version.py` and the build (`major * 1,000,000 + minor * 1,000 + patch`). The version code MUST grow with every release, Android refuses an update with a lower or equal code, so always raise the number.
 2. Tag the commit with `v` plus the version and push the tag:
 
 ```bash
@@ -143,7 +143,7 @@ git push origin v0.0.2
 ```
 
    Or open Actions, workflow "Release", "Run workflow" and enter the version without the `v`.
-3. The workflow checks the tag against `versionName`, runs the unit tests, builds the signed APK and AAB, verifies the signature with `apksigner verify --print-certs`, and publishes the files, `SHA256SUMS.txt` and notes with the certificate fingerprint.
+3. The workflow checks the tag against `app/version.txt`, runs the unit tests, builds the signed APK and AAB and verifies the APK: application ID, version name, version code and signing certificate. It publishes the files and `SHA256SUMS.txt`. The release page lists the signing certificate (SHA-256 and SHA-1), the SHA-256 of the APK and the bundle, the version code, the minimum and target Android version and the source commit, followed by the commands to verify a download.
 4. Compare the fingerprint in the release notes with the one you noted in §2.
 
 A failed run can be started again with "Re-run jobs". A run for an existing release replaces its files.
@@ -179,7 +179,7 @@ Google is introducing a verification of developers for apps installed on certifi
 | `base64: invalid input` | The value of `TVSIG_KEYSTORE_BASE64` contains spaces or line breaks. Create it again as one line, see §3.1. |
 | `Keystore was tampered with, or password was incorrect` | `TVSIG_KEYSTORE_PASSWORD` is wrong. |
 | `Cannot recover key` | `TVSIG_KEY_PASSWORD` is wrong, or the key password differs from the keystore password and `TVSIG_KEY_PASSWORD` is not set. |
-| `Tag ... does not match versionName` | Change `versionName` in `app/build.gradle`, or delete the tag and tag again. |
+| `app/version.txt says ... but the version is ...` | The tag and `app/version.txt` differ. Change the file and push a new tag, or delete the tag and tag again. |
 | `does not match TVSIG_RELEASE_CERT_SHA256` | The APK is signed with another key than expected. Check the keystore secret, or update the expected fingerprint when you changed the key on purpose. |
 | `INSTALL_FAILED_UPDATE_INCOMPATIBLE` on a device | The installed app was signed with another key (for example a debug build). Uninstall it once, then install the release. |
 

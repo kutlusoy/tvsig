@@ -3,6 +3,15 @@ plugins {
     id 'kotlin-android'
 }
 
+def versionText = file('version.txt').text.trim()
+def versionMatch = java.util.regex.Pattern.compile('^(\\d+)\\.(\\d+)\\.(\\d+)(-[0-9A-Za-z.]+)?$').matcher(versionText)
+if (!versionMatch.matches()) {
+    throw new GradleException("app/version.txt must look like 1.2.3 or 1.2.3-rc1, found: ${versionText}")
+}
+// Same scheme as tools/version.py, the release workflow checks that both agree
+def computedVersionCode = versionMatch.group(1).toInteger() * 1_000_000 +
+        versionMatch.group(2).toInteger() * 1_000 + versionMatch.group(3).toInteger()
+
 android {
     namespace = 'com.kutlusoy.tvsig'
 
@@ -16,8 +25,8 @@ android {
         applicationId "com.kutlusoy.tvsig"
         minSdk rootProject.ext.minSdkVersion
         targetSdk rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "0.0.1"
+        versionCode computedVersionCode
+        versionName versionText
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled = true
@@ -69,6 +78,7 @@ android {
 
         debug {
             signingConfig = signingConfigs.debug
+            versionNameSuffix = "-debug"
             buildConfigField "boolean", "ENABLE_LOGGING", "true"
             buildConfigField "boolean", "ENABLE_CRASH_REPORTING", "false"
 
