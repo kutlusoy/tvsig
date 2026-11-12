@@ -133,7 +133,9 @@ Requirements: Android Studio (or just JDK 17 and the Android SDK 35). The Gradle
 
 The debug APK is written to `app/build/outputs/apk/debug/`.
 
-Debug builds are always signed with the same key, `app/debug.keystore`, which is part of the repository on purpose (password `android`, only for debug builds, it protects nothing). So a debug APK from GitHub Actions, one built on another computer and one run from Android Studio can update each other without uninstalling the app. A release build uses the separate release key, see below, and cannot replace a debug build or the other way round: switch between them by uninstalling once.
+Debug builds have their own application ID, `com.kutlusoy.tvsig.debug`, and the name "TVSig Debug". They are installed next to the release app (`com.kutlusoy.tvsig`) without touching it, each with its own data, so nothing has to be uninstalled when you switch between them.
+
+Debug builds are always signed with the same key, `app/debug.keystore`, which is part of the repository on purpose (password `android`, only for debug builds, it protects nothing). So a debug APK from GitHub Actions, one built on another computer and one run from Android Studio can update each other without uninstalling the app. The release build uses the separate release key, see below.
 
 For a signed local release build, put a `signing/release.properties` file into `app/` with the keys `storeFile` (file name of the keystore inside `app/signing/`), `storePassword`, `keyAlias` and `keyPassword`. The `signing/` folder is ignored by git.
 

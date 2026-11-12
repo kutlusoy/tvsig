@@ -35,7 +35,7 @@ The file itself is **not** in the repository yet, because its content is the sni
 4. A package name that was never used on Android needs only the public certificate: choose "Add key" and enter the **SHA-256 fingerprint of the release certificate**. It is printed on every release page and by `keytool -list -v -keystore tvsig-release.jks -alias tvsig-release`. The console accepts it with colons.
 5. The console then shows the **snippet** and asks for a proof of ownership: an APK that is signed with the private release key and contains the snippet.
 
-Do **not** register the key of the debug builds (`app/debug.keystore`, it is public).
+Do **not** register the debug application ID `com.kutlusoy.tvsig.debug` and do not register the key of the debug builds (`app/debug.keystore`, it is public). Debug builds have their own ID on purpose, so they are never mixed up with the registered release app.
 
 ## 4. Put the snippet into the app
 

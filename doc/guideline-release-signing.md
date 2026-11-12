@@ -181,7 +181,7 @@ Google is introducing a verification of developers for apps installed on certifi
 | `Cannot recover key` | `TVSIG_KEY_PASSWORD` is wrong, or the key password differs from the keystore password and `TVSIG_KEY_PASSWORD` is not set. |
 | `app/version.txt says ... but the version is ...` | The tag and `app/version.txt` differ. Change the file and push a new tag, or delete the tag and tag again. |
 | `does not match TVSIG_RELEASE_CERT_SHA256` | The APK is signed with another key than expected. Check the keystore secret, or update the expected fingerprint when you changed the key on purpose. |
-| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` on a device | The installed app was signed with another key (for example a debug build). Uninstall it once, then install the release. |
+| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` on a device | An app with the same application ID is installed that was signed with another key, for example a release build that was signed with a different release key. Uninstall it once. Debug builds have their own ID (`com.kutlusoy.tvsig.debug`) and cannot cause this. |
 
 ## 8. Checklist
 

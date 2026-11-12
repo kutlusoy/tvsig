@@ -78,6 +78,7 @@ android {
 
         debug {
             signingConfig = signingConfigs.debug
+            applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             buildConfigField "boolean", "ENABLE_LOGGING", "true"
             buildConfigField "boolean", "ENABLE_CRASH_REPORTING", "false"
