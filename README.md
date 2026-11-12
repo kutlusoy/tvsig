@@ -139,6 +139,8 @@ Debug builds are always signed with the same key, `app/debug.keystore`, which is
 
 For a signed local release build, put a `signing/release.properties` file into `app/` with the keys `storeFile` (file name of the keystore inside `app/signing/`), `storePassword`, `keyAlias` and `keyPassword`. The `signing/` folder is ignored by git.
 
+Classes that are read or written with Gson (the settings of the phone setup, the stored file information) must keep their names in the release build. They are listed in `app/proguard-rules.pro` and in `tools/check-keep-rules.py`, which the CI and the release workflow run on the mapping of the release build. Add a new Gson class to both lists.
+
 ## GitHub Actions
 
 | Workflow | Trigger | What it does |

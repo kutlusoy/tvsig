@@ -39,6 +39,11 @@ jobs:
       - name: Build debug APK
         run: ./gradlew assembleDebug --stacktrace
 
+      - name: Release build and keep rules
+        run: |
+          ./gradlew assembleRelease --stacktrace
+          python3 -I tools/check-keep-rules.py
+
       - name: Check the version code of the APK
         run: |
           expected=$(python3 -I tools/version.py | sed -n 's/^version_code=//p')

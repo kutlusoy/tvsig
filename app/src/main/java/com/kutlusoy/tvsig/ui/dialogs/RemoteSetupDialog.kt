@@ -13,7 +13,9 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.DialogRemoteSetupBinding
+import com.kutlusoy.tvsig.remote.RemoteRouter
 import com.kutlusoy.tvsig.remote.RemoteSetupServer
+import com.kutlusoy.tvsig.repositories.MediaRepository
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.NetworkHelper
 import com.kutlusoy.tvsig.utils.OrientationHelper
@@ -68,11 +70,16 @@ class RemoteSetupDialog : DialogFragment() {
 
         val token = newToken()
         try {
+            val repository = MediaRepository.getInstance(context)
             val newServer = RemoteSetupServer(
-                context = context,
-                token = token,
-                currentSettings = { viewModel.settings.value },
-                onSave = { updated -> mainHandler.post { viewModel.applyRemote(updated) } }
+                RemoteRouter(
+                    token = token,
+                    page = { context.assets.open(PAGE_ASSET).use { it.readBytes() } },
+                    currentSettings = { viewModel.settings.value },
+                    onSave = { updated -> mainHandler.post { viewModel.applyRemote(updated) } },
+                    listFolders = { source, path -> repository.listSubfolders(source, path) },
+                    testSource = { source -> repository.testConnection(source) }
+                )
             )
             val port = newServer.start()
             server = newServer
@@ -104,6 +111,7 @@ class RemoteSetupDialog : DialogFragment() {
 
     companion object {
         private const val TAG = "RemoteSetupDialog"
+        private const val PAGE_ASSET = "remote_setup.html"
         private const val QR_SIZE = 520
         private const val TIMEOUT_MS = 10 * 60 * 1000L
 

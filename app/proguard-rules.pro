@@ -2,6 +2,8 @@
 -keepattributes SourceFile,LineNumberTable
 
 -keep class com.kutlusoy.tvsig.models.** { *; }
+-keep class com.kutlusoy.tvsig.remote.RemoteSettings { *; }
+-keep class com.kutlusoy.tvsig.repositories.OfflinePolicy$FileMeta { *; }
 -keep class com.kutlusoy.tvsig.TVSigApp { *; }
 -keep class com.kutlusoy.tvsig.services.** { *; }
 
