@@ -105,9 +105,9 @@ class SplashParticlesTest {
         val particles = com.kutlusoy.tvsig.utils.SplashParticles.particles
         val far = particles.filter { !it.glitter && it.z < 0.3f }
         val close = particles.filter { !it.glitter && it.z > 0.7f }
-        assertTrue(far.isNotEmpty() && close.isNotEmpty())
+        assertTrue(far.isNotEmpty() && close.size in 5..30)
         assertTrue(far.map { it.size }.average() < close.map { it.size }.average())
-        assertTrue(far.maxOf { it.size } < 6f && close.maxOf { it.size } < 12f)
+        assertTrue(far.maxOf { it.size } < 3.5f && close.maxOf { it.size } < 7.1f)
         assertTrue(com.kutlusoy.tvsig.utils.SplashParticles.parallax(far.first()) < com.kutlusoy.tvsig.utils.SplashParticles.parallax(close.first()))
     }
 
@@ -141,9 +141,9 @@ class SplashVisibilityTest {
         val seconds = 2.5f
         val visible = com.kutlusoy.tvsig.utils.SplashParticles.particles.filter {
             com.kutlusoy.tvsig.utils.SplashParticles.place(it, 0.5f, seconds, 1280, 720, placement) &&
-                placement.alpha > 0.25f && placement.radius >= 2f &&
+                placement.alpha > 0.2f && placement.radius >= 1.2f &&
                 placement.cx in 0f..1280f && placement.cy in 0f..720f
         }
-        assertTrue("only ${visible.size} visible", visible.size >= 80)
+        assertTrue("only ${visible.size} visible", visible.size >= 70)
     }
 }

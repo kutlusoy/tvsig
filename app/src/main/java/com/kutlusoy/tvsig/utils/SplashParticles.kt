@@ -61,13 +61,13 @@ object SplashParticles {
         val result = ArrayList<Particle>()
         repeat(DUST_COUNT + GLITTER_COUNT) { index ->
             val glitter = index >= DUST_COUNT
-            val z = random.next().let { it * it * 0.4f + it * 0.6f }
+            val z = random.next().pow(3.2f)
             val tint = when { random.next() < 0.5f -> TINT_BLUE; random.next() < 0.5f -> TINT_PINK; else -> TINT_WHITE }
             result += Particle(
                 x = random.between(-0.06f, 1.06f),
                 y = random.next(),
                 z = z,
-                size = 3.5f + z * z * 7.5f,
+                size = 2.2f + z * z * 4.8f,
                 rise = 0.006f + z * 0.02f,
                 drift = random.between(-0.008f, 0.008f) * (0.4f + z),
                 sway = random.between(0.7f, 1.7f),
