@@ -34,11 +34,32 @@ For screens that only have a remote control, the settings offer "Set up with a s
 
 Because a TV has no copy and paste, only the base URL (web server) or the ID of the main folder (Google Drive) is typed. "Choose folder" then browses the folders level by level, up to five levels deep, and takes the chosen folder. Both sources work the same way. For a web server the list comes from the directory listing, or from a `folders.txt` (one folder name per line) in each folder if the server does not allow directory listings.
 
+Example `folders.txt` in the base folder (a trailing `/` is allowed, empty lines and lines starting with `#` are ignored):
+
+```text
+# one folder name per line
+lobby-screen
+canteen
+reception/
+```
+
+Each of these folders may contain its own `folders.txt` for the next level.
+
 ### Playlist
 
 The app builds the playlist in one of two ways:
 
 1. **`playlist.txt`** (optional): if the folder contains this file, it defines the playlist. One file name per line, played in the given order. Empty lines and lines starting with `#` are ignored. Full `http(s)` URLs are allowed as well.
+
+Example `playlist.txt`:
+
+```text
+# played from top to bottom, then again from the start
+welcome.jpg
+menu-of-the-day.png
+intro.mp4
+https://example.com/other-folder/special-offer.webp
+```
 2. **Directory listing**: otherwise the app reads the automatic folder index of the web server (Apache `Options +Indexes`, nginx `autoindex on`) and plays all supported files sorted by name.
 
 Supported files:
