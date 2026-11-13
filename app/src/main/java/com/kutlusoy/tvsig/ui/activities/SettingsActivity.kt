@@ -33,6 +33,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()
     private var bindingFields = false
+    private var rotation = 0
 
     private val delayOptions = listOf(3, 5, 8, 10, 15, 20, 30, 45, 60, 90, 120, 180, 300)
     private val orientationOptions: List<Int> by lazy {
@@ -53,7 +54,8 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            val padding = OrientationHelper.rotateInsets(bars.left, bars.top, bars.right, bars.bottom, rotation)
+            view.setPadding(padding[0], padding[1], padding[2], padding[3])
             insets
         }
         applyOrientation(PreferenceHelper.getInstance(this).getOrientation())
@@ -63,7 +65,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun applyOrientation(orientation: Int) {
+        rotation = if (orientation == OrientationHelper.ORIENTATION_AUTO) 0 else OrientationHelper.rotationDegrees(orientation)
         OrientationHelper.setOrientation(this, orientation)
+        ViewCompat.requestApplyInsets(binding.root)
     }
 
     private fun setupViews() {

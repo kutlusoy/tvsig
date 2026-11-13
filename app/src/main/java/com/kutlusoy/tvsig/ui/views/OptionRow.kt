@@ -8,7 +8,10 @@ import android.widget.LinearLayout
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.ViewOptionRowBinding
 
-/** A settings row for remote controls: left and right change the value, OK steps forward. */
+/**
+ * A settings row for remote controls: left and right change the value, OK steps forward.
+ * The title stands above the value, so the row looks the same on every width and rotation.
+ */
 class OptionRow @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null
@@ -23,8 +26,7 @@ class OptionRow @JvmOverloads constructor(
     var onSelectionChanged: ((Int) -> Unit)? = null
 
     init {
-        orientation = HORIZONTAL
-        gravity = android.view.Gravity.CENTER_VERTICAL
+        orientation = VERTICAL
         minimumHeight = resources.getDimensionPixelSize(R.dimen.row_min_height)
         val padding = resources.getDimensionPixelSize(R.dimen.margin_medium)
         setPadding(padding, padding / 2, padding, padding / 2)

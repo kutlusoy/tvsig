@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="text_size_headline">32sp</dimen>
-    <dimen name="text_size_title">24sp</dimen>
-    <dimen name="text_size_subtitle">20sp</dimen>
-    <dimen name="text_size_body">20sp</dimen>
-    <dimen name="text_size_caption">16sp</dimen>
+    <dimen name="text_size_headline">28sp</dimen>
+    <dimen name="text_size_title">20sp</dimen>
+    <dimen name="text_size_subtitle">17sp</dimen>
+    <dimen name="text_size_body">17sp</dimen>
+    <dimen name="text_size_caption">14sp</dimen>
     
     <dimen name="margin_xxxsmall">2dp</dimen>
     <dimen name="margin_xxsmall">4dp</dimen>
@@ -31,7 +31,6 @@
     <dimen name="tv_safe_horizontal">20dp</dimen>
     <dimen name="tv_safe_vertical">12dp</dimen>
     <dimen name="row_min_height">64dp</dimen>
-    <dimen name="option_value_min_width">120dp</dimen>
     <dimen name="pin_key_size">48dp</dimen>
     <dimen name="pin_key_margin">3dp</dimen>
     <dimen name="pin_dots_size">24sp</dimen>
