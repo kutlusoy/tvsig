@@ -34,11 +34,52 @@ For screens that only have a remote control, the settings offer "Set up with a s
 
 Because a TV has no copy and paste, only the base URL (web server) or the ID of the main folder (Google Drive) is typed. "Choose folder" then browses the folders level by level, up to five levels deep, and takes the chosen folder. Both sources work the same way. For a web server the list comes from the directory listing, or from a `folders.txt` (one folder name per line) in each folder if the server does not allow directory listings.
 
+Example `folders.txt` in the base folder (a trailing `/` is allowed, empty lines and lines starting with `#` are ignored):
+
+```text
+# one folder name per line
+lobby-screen
+canteen
+reception/
+```
+
+Each of these folders may contain its own `folders.txt` for the next level.
+
+Example of a folder structure on the web server (the same layout works in Google Drive):
+
+```text
+https://example.com/signage/          <- base URL (or the main Drive folder)
+├── folders.txt                       <- lists: lobby-screen, branch-north
+├── lobby-screen/                     <- folder "lobby-screen", played on this screen
+│   ├── playlist.txt                  <- optional
+│   ├── welcome.jpg
+│   └── intro.mp4
+└── branch-north/
+    ├── folders.txt                   <- lists: floor-1, floor-2
+    ├── floor-1/                      <- folder "branch-north/floor-1"
+    │   ├── 01-menu.png
+    │   └── 02-offer.webp
+    └── floor-2/
+        └── 01-news.jpg
+```
+
+In the settings, "Choose folder" shows `lobby-screen` and `branch-north` first and then goes down level by level (up to five levels). The chosen folder is saved as a path, for example `branch-north/floor-1`. Only the files directly inside the chosen folder are played, not those of its subfolders. A screen that is set to `lobby-screen` shows `welcome.jpg` and `intro.mp4`, a screen set to `branch-north/floor-1` shows its two pictures.
+
 ### Playlist
 
 The app builds the playlist in one of two ways:
 
 1. **`playlist.txt`** (optional): if the folder contains this file, it defines the playlist. One file name per line, played in the given order. Empty lines and lines starting with `#` are ignored. Full `http(s)` URLs are allowed as well.
+
+Example `playlist.txt`:
+
+```text
+# played from top to bottom, then again from the start
+welcome.jpg
+menu-of-the-day.png
+intro.mp4
+https://example.com/other-folder/special-offer.webp
+```
 2. **Directory listing**: otherwise the app reads the automatic folder index of the web server (Apache `Options +Indexes`, nginx `autoindex on`) and plays all supported files sorted by name.
 
 Supported files:
