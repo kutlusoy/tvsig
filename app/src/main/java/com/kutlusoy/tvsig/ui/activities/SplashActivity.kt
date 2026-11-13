@@ -3,6 +3,8 @@ package com.kutlusoy.tvsig.ui.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
+import android.widget.Toast
 import android.view.MotionEvent
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -10,7 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.ActivitySplashBinding
+import com.kutlusoy.tvsig.ui.dialogs.PinDialog
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 
@@ -21,6 +25,7 @@ class SplashActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivitySplashBinding
+    private var introFinished = false
     private val preferenceHelper by lazy { PreferenceHelper.getInstance(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,20 +43,58 @@ class SplashActivity : AppCompatActivity() {
         setupOrientation()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {}
+            override fun handleOnBackPressed() {
+                if (introFinished) showPinDialog() else binding.splashAnimation.skip()
+            }
         })
 
-        binding.splashAnimation.start { startMainActivity() }
+        binding.setupHint.setOnClickListener { showPinDialog() }
+        binding.splashAnimation.start { onIntroFinished() }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (introFinished && preferenceHelper.getSource().isConfigured) startMainActivity()
+    }
+
+    /** Without a source the splash screen stays and leads into the setup, once it is set up the player starts. */
+    private fun onIntroFinished() {
+        introFinished = true
+        if (preferenceHelper.getSource().isConfigured) {
+            startMainActivity()
+            return
+        }
+        binding.splashAnimation.hold()
+        binding.setupHint.visibility = View.VISIBLE
+        binding.setupHint.requestFocus()
+        if (!preferenceHelper.wasSetupShown()) {
+            preferenceHelper.setSetupShown()
+            startActivity(Intent(this, SettingsActivity::class.java))
+        }
+    }
+
+    private fun showPinDialog() {
+        PinDialog.show(supportFragmentManager) { enteredPin ->
+            if (enteredPin == preferenceHelper.getPin()) {
+                startActivity(Intent(this, SettingsActivity::class.java))
+            } else {
+                Toast.makeText(this, R.string.pin_incorrect, Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
-        if (keyCode == KeyEvent.KEYCODE_BACK) return super.onKeyDown(keyCode, event)
+        if (introFinished) {
+            if (keyCode != KeyEvent.KEYCODE_BACK) return super.onKeyDown(keyCode, event)
+            showPinDialog()
+            return true
+        }
         binding.splashAnimation.skip()
         return true
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_UP) binding.splashAnimation.skip()
+        if (!introFinished && event.action == MotionEvent.ACTION_UP) binding.splashAnimation.skip()
         return true
     }
 

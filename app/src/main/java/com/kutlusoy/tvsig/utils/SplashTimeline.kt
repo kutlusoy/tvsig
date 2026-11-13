@@ -75,9 +75,10 @@ object SplashTimeline {
     private val sparkAlpha = Track(ease, 0f to 0f, 0.36f to 0f, 0.45f to 0.95f, 0.60f to 0f, 1f to 0f)
     private val sparkScale = Track(ease, 0f to 0.6f, 0.36f to 0.6f, 0.45f to 1.1f, 0.60f to 0.8f, 1f to 0.8f)
 
-    fun frame(progress: Float): SplashFrame {
+    /** [extraMs] is the time after the end of the intro, while the splash screen is held. */
+    fun frame(progress: Float, extraMs: Float = 0f): SplashFrame {
         val p = progress.coerceIn(0f, 1f)
-        val elapsedMs = p * DURATION_MS
+        val elapsedMs = p * DURATION_MS + extraMs
         val breathWeight = ((p - BREATH_START) / 0.1f).coerceIn(0f, 1f)
         val breath = 1f + 0.08f * breathWeight * sin(2.0 * PI * elapsedMs / BREATH_PERIOD_MS).toFloat()
         val sheen = sheenAlpha.at(p)

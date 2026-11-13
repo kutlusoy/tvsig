@@ -1,8 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.kutlusoy.tvsig.ui.views.SplashAnimationView
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/splashAnimation"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#040A1F"
-    android:contentDescription="@string/app_tagline" />
+    android:background="#040A1F">
+
+    <com.kutlusoy.tvsig.ui.views.SplashAnimationView
+        android:id="@+id/splashAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/app_tagline" />
+
+    <TextView
+        android:id="@+id/setupHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_margin="@dimen/margin_xlarge"
+        android:background="@drawable/bg_splash_hint"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center"
+        android:maxWidth="560dp"
+        android:padding="@dimen/margin_medium"
+        android:text="@string/error_no_base_url"
+        android:textAppearance="@style/TextAppearance.TVSig.Body"
+        android:textColor="#E6F3FF"
+        android:visibility="gone" />
+</FrameLayout>

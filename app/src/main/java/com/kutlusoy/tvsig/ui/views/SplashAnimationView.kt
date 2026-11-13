@@ -63,6 +63,8 @@ class SplashAnimationView @JvmOverloads constructor(
     private var progress = 0f
     private var onFinished: (() -> Unit)? = null
     private var finished = false
+    private var idleMs = 0f
+    private var idleAnimator: ValueAnimator? = null
     private var warmedUp = false
     private var pendingStart = false
 
@@ -96,6 +98,22 @@ class SplashAnimationView @JvmOverloads constructor(
         }
     }
 
+    /** Keeps the last picture alive: particles keep drifting and the glow keeps breathing until the view goes. */
+    fun hold() {
+        if (idleAnimator != null || animationsDisabled()) return
+        val startedAt = System.nanoTime()
+        idleAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = IDLE_LOOP_MS
+            repeatCount = ValueAnimator.INFINITE
+            interpolator = LinearInterpolator()
+            addUpdateListener {
+                idleMs = (System.nanoTime() - startedAt) / 1_000_000f
+                invalidate()
+            }
+            start()
+        }
+    }
+
     /** Ends the animation at once and reports it as finished. */
     fun skip() {
         animator?.removeAllListeners()
@@ -112,6 +130,8 @@ class SplashAnimationView @JvmOverloads constructor(
     }
 
     override fun onDetachedFromWindow() {
+        idleAnimator?.cancel()
+        idleAnimator = null
         animator?.removeAllListeners()
         animator?.cancel()
         animator = null
@@ -134,7 +154,7 @@ class SplashAnimationView @JvmOverloads constructor(
             warmUp(canvas)
             post { beginAnimation() }
         }
-        val frame = SplashTimeline.frame(progress)
+        val frame = SplashTimeline.frame(progress, idleMs)
         drawBackground(canvas)
 
         drawParticles(canvas, front = false)
@@ -176,7 +196,7 @@ class SplashAnimationView @JvmOverloads constructor(
     private fun pan(): Float = (progress - 0.5f) * PAN
 
     private fun drawParticles(canvas: Canvas, front: Boolean) {
-        val seconds = progress * SplashTimeline.DURATION_MS / 1000f
+        val seconds = (progress * SplashTimeline.DURATION_MS + idleMs) / 1000f
         val unit = min(width / FIT_WIDTH, height / FIT_HEIGHT)
         val pan = pan()
         for (particle in SplashParticles.particles) {
@@ -208,7 +228,7 @@ class SplashAnimationView @JvmOverloads constructor(
     }
 
     private fun drawSparkles(canvas: Canvas) {
-        val seconds = progress * SplashTimeline.DURATION_MS / 1000f
+        val seconds = (progress * SplashTimeline.DURATION_MS + idleMs) / 1000f
         for (sparkle in SplashParticles.sparkles) {
             val alpha = SplashParticles.sparkleAlpha(sparkle, progress, seconds)
             if (alpha <= 0.01f) continue
@@ -289,6 +309,7 @@ class SplashAnimationView @JvmOverloads constructor(
         const val SHEEN_SLANT = 16f
         val SHEEN_BANDS = listOf(70f to 0.16f, 36f to 0.3f, 12f to 0.5f)
         const val REDUCED_MOTION_HOLD_MS = 1500L
+        const val IDLE_LOOP_MS = 1000L
 
         val LOGO = RectF(744f, 147f, 1176f, 465.3f)
         val GLOW = RectF(614f, 17f, 1306f, 595.3f)

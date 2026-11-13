@@ -144,7 +144,7 @@ On a TV remote, left and right skip to the previous or next item.
 
 ### Phones and TVs
 
-The app tells the two apart: TVs, TV boxes and every device without a touchscreen count as TVs. On a TV the interface gets the same size on every screen (a layout of 960 by 540 dp, with safe margins), whatever density the device reports, so a 720p box, a 1080p TV and a 4K TV look alike. On phones and tablets the density of the system is kept and the dialogs switch to a compact side by side layout when the screen is low, for example a phone in landscape. On the first start without a source the settings open by themselves, and the message on the player screen can be tapped to open the PIN dialog.
+The app tells the two apart: TVs, TV boxes and every device without a touchscreen count as TVs. On a TV the interface gets the same size on every screen (a layout of 960 by 540 dp, with safe margins), whatever density the device reports, so a 720p box, a 1080p TV and a 4K TV look alike. On phones and tablets the density of the system is kept and the dialogs switch to a compact side by side layout when the screen is low, for example a phone in landscape. On the first start without a source the settings open by themselves. As long as no source is set up, the splash screen stays and shows the instruction at the bottom (Back key or a tap opens the PIN dialog); once a source is saved, the player starts.
 
 ### Rotated screens
 
