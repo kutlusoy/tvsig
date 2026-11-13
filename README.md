@@ -45,6 +45,26 @@ reception/
 
 Each of these folders may contain its own `folders.txt` for the next level.
 
+Example of a folder structure on the web server (the same layout works in Google Drive):
+
+```text
+https://example.com/signage/          <- base URL (or the main Drive folder)
+├── folders.txt                       <- lists: lobby-screen, branch-north
+├── lobby-screen/                     <- folder "lobby-screen", played on this screen
+│   ├── playlist.txt                  <- optional
+│   ├── welcome.jpg
+│   └── intro.mp4
+└── branch-north/
+    ├── folders.txt                   <- lists: floor-1, floor-2
+    ├── floor-1/                      <- folder "branch-north/floor-1"
+    │   ├── 01-menu.png
+    │   └── 02-offer.webp
+    └── floor-2/
+        └── 01-news.jpg
+```
+
+In the settings, "Choose folder" shows `lobby-screen` and `branch-north` first and then goes down level by level (up to five levels). The chosen folder is saved as a path, for example `branch-north/floor-1`. Only the files directly inside the chosen folder are played, not those of its subfolders. A screen that is set to `lobby-screen` shows `welcome.jpg` and `intro.mp4`, a screen set to `branch-north/floor-1` shows its two pictures.
+
 ### Playlist
 
 The app builds the playlist in one of two ways:
