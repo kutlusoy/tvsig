@@ -138,8 +138,8 @@ gh secret list --repo kutlusoy/tvsig
 2. Tag the commit with `v` plus the version and push the tag:
 
 ```bash
-git tag v0.0.3
-git push origin v0.0.3
+git tag v0.0.4
+git push origin v0.0.4
 ```
 
    Or open Actions, workflow "Release", "Run workflow" and enter the version without the `v`.

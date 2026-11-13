@@ -13,10 +13,10 @@ Requirement levels follow common practice: **MUST** = mandatory, **SHOULD** = st
 ## 1. How it works
 
 1. Settings, "Updates", button "Check for updates". The app asks `api.github.com/repos/kutlusoy/tvsig/releases/latest`. This is the newest release that is not a draft and not a pre-release. No account and no identifier is sent.
-2. The tag of the release (`v0.0.3`) is turned into a version code with the scheme of `app/version.txt` (`major * 1,000,000 + minor * 1,000 + patch`) and compared with the installed version code. Only when the release is newer, its version number is shown. The release notes are not shown.
+2. The tag of the release (`v0.0.4`) is turned into a version code with the scheme of `app/version.txt` (`major * 1,000,000 + minor * 1,000 + patch`) and compared with the installed version code. Only when the release is newer, its version number is shown. The release notes are not shown.
 3. The button "Install version X" starts the update. The app downloads `SHA256SUMS.txt` and the APK `TVSig-X.apk` of the release, and compares the SHA-256 of the download with the checksum. A download without a matching checksum is deleted and never installed.
 4. The APK is given to the Android package installer. Android checks that it is signed with the **same key** as the installed app, and refuses it otherwise.
-5. After the installation the app is replaced and restarts by itself (the receiver for `MY_PACKAGE_REPLACED` starts the service and the player).
+5. After the installation the app is replaced. The receiver for `MY_PACKAGE_REPLACED` starts the service and tries to open the player. Android 10 and newer allow the screen to open from the background only when "Display over other apps" is allowed for TVSig. Without it the player stays closed until the check of the service brings it back (about 20 seconds, when the service runs) or until the app is opened by hand.
 
 Nothing happens without a press of the button: there is no check in the background and no automatic installation.
 
@@ -46,4 +46,5 @@ The release workflow creates both. A release without them can be seen in the che
 | The release has no APK file / no checksum file | The release was created by hand. Publish it with the release workflow. |
 | The checksum of the download does not match | The download is damaged or the release was changed. Nothing was installed, try again. |
 | Update failed with a message of the installer | Usually a different signing key (the release was signed with another key than the installed app) or an app with a higher version code is installed. |
+| The app does not open again after the installation | "Display over other apps" is not allowed for TVSig (Settings, Apps, Special app access). Allow it once, see the README. Until then open the app by hand. |
 | The button for the permission shows no page | Some TV systems do not offer "install unknown apps". Install the APK with `adb install -r` instead. |
