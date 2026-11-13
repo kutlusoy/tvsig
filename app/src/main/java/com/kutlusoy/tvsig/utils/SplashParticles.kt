@@ -15,6 +15,7 @@ data class Particle(
     val z: Float,
     val size: Float,
     val rise: Float,
+    val drift: Float,
     val sway: Float,
     val phase: Float,
     val tint: Int,
@@ -32,8 +33,8 @@ object SplashParticles {
     const val TINT_BLUE = 1
     const val TINT_PINK = 2
 
-    private const val DUST_COUNT = 78
-    private const val GLITTER_COUNT = 26
+    private const val DUST_COUNT = 190
+    private const val GLITTER_COUNT = 54
     private const val SWEEP_START = 0.19f
     private const val SWEEP_END = 0.57f
     private const val SWEEP_LEFT = 655f
@@ -66,7 +67,8 @@ object SplashParticles {
                 y = random.next(),
                 z = z,
                 size = if (glitter) 9f + z * 15f else 2.5f + z * z * 7.5f,
-                rise = 0.004f + z * 0.022f,
+                rise = 0.02f + z * 0.07f,
+                drift = random.between(-0.012f, 0.012f) * (0.4f + z),
                 sway = random.between(0.6f, 1.8f),
                 phase = random.next(),
                 tint = if (glitter && tint == TINT_PINK) TINT_WHITE else tint,
@@ -96,7 +98,7 @@ object SplashParticles {
     }
 
     fun x(p: Particle, seconds: Float): Float =
-        p.x + 0.012f * sin(2.0 * PI * (seconds * 0.12f * p.sway + p.phase)).toFloat()
+        p.x + p.drift * seconds + 0.02f * (0.5f + p.z) * sin(2.0 * PI * (seconds * 0.2f * p.sway + p.phase)).toFloat()
 
     fun y(p: Particle, seconds: Float): Float {
         val y = (p.y - p.rise * seconds) % 1f

@@ -5,7 +5,6 @@ import kotlin.math.sin
 
 /** The values of every layer of the splash animation at one moment. Progress runs from 0 to 1. */
 data class SplashFrame(
-    val aura: Float,
     val logoAlpha: Float,
     val logoOffsetY: Float,
     val logoScale: Float,
@@ -46,6 +45,7 @@ object SplashTimeline {
     private const val BREATH_PERIOD_MS = 2400f
     private const val BREATH_START = 0.62f
     private val ease = CubicBezier(0.22f, 0.72f, 0.25f, 1f)
+    private val settle = CubicBezier(0.3f, 0f, 0.2f, 1f)
     private val easeInOut = CubicBezier(0.42f, 0f, 0.58f, 1f)
 
     private class Track(private val easing: CubicBezier, vararg keys: Pair<Float, Float>) {
@@ -62,10 +62,9 @@ object SplashTimeline {
         }
     }
 
-    private val aura = Track(ease, 0f to 0f, 0.06f to 0f, 0.27f to 0.65f, 0.70f to 0.35f, 1f to 0.35f)
     private val logoAlpha = Track(ease, 0f to 0f, 0.05f to 0f, 0.23f to 1f, 1f to 1f)
-    private val logoOffsetY = Track(ease, 0f to 15f, 0.05f to 15f, 0.38f to 0f, 1f to 0f)
-    private val logoScale = Track(ease, 0f to 0.88f, 0.05f to 0.88f, 0.38f to 1.018f, 0.62f to 1f, 1f to 1f)
+    private val logoOffsetY = Track(settle, 0f to 18f, 0.05f to 18f, 0.5f to 0f, 1f to 0f)
+    private val logoScale = Track(settle, 0f to 0.9f, 0.05f to 0.9f, 0.5f to 1f, 1f to 1f)
     private val glow = Track(ease, 0f to 0f, 0.05f to 0f, 0.22f to 0.8f, 0.38f to 1f, 0.62f to 0.9f, 1f to 0.9f)
     private val sheenAlpha = Track(ease, 0f to 0f, 0.19f to 0f, 0.27f to 1f, 0.46f to 0.75f, 0.57f to 0f, 1f to 0f)
     private val sheenOffset = Track(easeInOut, 0f to -550f, 0.19f to -550f, 0.57f to 570f, 1f to 570f)
@@ -84,7 +83,6 @@ object SplashTimeline {
         val sheen = sheenAlpha.at(p)
         val glowBase = glow.at(p)
         return SplashFrame(
-            aura = aura.at(p),
             logoAlpha = logoAlpha.at(p),
             logoOffsetY = logoOffsetY.at(p),
             logoScale = logoScale.at(p),

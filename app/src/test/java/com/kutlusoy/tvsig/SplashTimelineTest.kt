@@ -44,7 +44,7 @@ class SplashTimelineTest {
     fun valuesStayInTheirRange() {
         for (i in 0..2000) {
             val f = SplashTimeline.frame(i / 2000f)
-            listOf(f.aura, f.logoAlpha, f.glowWide, f.glowNear, f.sheenAlpha, f.titleAlpha, f.subtitleAlpha, f.sparkAlpha)
+            listOf(f.logoAlpha, f.glowWide, f.glowNear, f.sheenAlpha, f.titleAlpha, f.subtitleAlpha, f.sparkAlpha)
                 .forEach { assertTrue("alpha out of range at $i: $it", it in 0f..1f) }
         }
     }
@@ -60,7 +60,8 @@ class SplashTimelineTest {
         var last = SplashTimeline.frame(0f)
         for (i in 1..1000) {
             val frame = SplashTimeline.frame(i / 1000f)
-            assertTrue(kotlin.math.abs(frame.logoScale - last.logoScale) < 0.01f)
+            assertTrue(kotlin.math.abs(frame.logoScale - last.logoScale) < 0.002f)
+            assertTrue(frame.logoScale <= 1f)
             last = frame
         }
     }
@@ -113,8 +114,8 @@ class SplashParticlesTest {
     @Test
     fun thereIsDustAndGlitterInEveryDepth() {
         val particles = com.kutlusoy.tvsig.utils.SplashParticles.particles
-        assertTrue(particles.count { it.glitter } >= 20)
-        assertTrue(particles.count { !it.glitter } >= 60)
+        assertTrue(particles.count { it.glitter } >= 50)
+        assertTrue(particles.count { !it.glitter } >= 180)
         assertTrue(particles.zipWithNext().all { it.first.z <= it.second.z })
     }
 
@@ -130,5 +131,19 @@ class SplashParticlesTest {
     fun sparklesFollowTheSweepFromLeftToRight() {
         val sorted = com.kutlusoy.tvsig.utils.SplashParticles.sparkles.sortedBy { it.x }
         assertTrue(sorted.zipWithNext().all { it.first.trigger <= it.second.trigger })
+    }
+}
+
+class SplashMotionTest {
+    @Test
+    fun particlesVisiblyMoveDuringTheIntro() {
+        val particles = com.kutlusoy.tvsig.utils.SplashParticles.particles
+        val moved = particles.map {
+            val dx = com.kutlusoy.tvsig.utils.SplashParticles.x(it, 5f) - com.kutlusoy.tvsig.utils.SplashParticles.x(it, 0f)
+            val dy = com.kutlusoy.tvsig.utils.SplashParticles.y(it, 5f) - com.kutlusoy.tvsig.utils.SplashParticles.y(it, 0f)
+            kotlin.math.hypot(dx, dy)
+        }
+        assertTrue(moved.average() > 0.1)
+        assertTrue(moved.min() > 0.05)
     }
 }

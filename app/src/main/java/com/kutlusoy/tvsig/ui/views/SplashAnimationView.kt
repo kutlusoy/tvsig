@@ -7,14 +7,12 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
-import android.graphics.LinearGradient
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffColorFilter
-import android.graphics.PorterDuffXfermode
 import android.graphics.RectF
-import android.graphics.Shader
 import android.provider.Settings
 import android.util.AttributeSet
 import android.view.View
@@ -37,25 +35,22 @@ class SplashAnimationView @JvmOverloads constructor(
 ) : View(context, attrs) {
 
     private val background = load(R.drawable.splash_background)
-    private val aura = load(R.drawable.splash_aura)
     private val glowWide = load(R.drawable.splash_glow_wide)
     private val glowNear = load(R.drawable.splash_glow_near)
     private val logo = load(R.drawable.splash_logo)
     private val spark = load(R.drawable.splash_spark)
     private val dot = load(R.drawable.splash_particle)
     private val star = load(R.drawable.splash_star)
+    private val dotSharp = load(R.drawable.splash_dot_sharp)
+    private val dotSoft = load(R.drawable.splash_dot_soft)
     private val title = load(R.drawable.splash_title)
     private val subtitle = load(R.drawable.splash_subtitle)
 
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG)
-    private val sheenPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        shader = LinearGradient(
-            0f, 0f, SHEEN.width(), 0f,
-            intArrayOf(0x00FFFFFF, 0x00FFFFFF, 0xB3FFFFFF.toInt(), 0x00FFFFFF, 0x00FFFFFF),
-            floatArrayOf(0f, 0.36f, 0.5f, 0.64f, 1f), Shader.TileMode.CLAMP
-        )
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+    private val silhouette = Paint(Paint.FILTER_BITMAP_FLAG).apply {
+        colorFilter = PorterDuffColorFilter(0xFFFFFFFF.toInt(), PorterDuff.Mode.SRC_IN)
     }
+    private val sheenPath = Path()
     private val tintPaints = listOf(0xFFFFFFFF.toInt(), 0xFF8EC2FF.toInt(), 0xFFF9A8FF.toInt()).map { color ->
         Paint(Paint.FILTER_BITMAP_FLAG).apply { colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN) }
     }
@@ -68,6 +63,8 @@ class SplashAnimationView @JvmOverloads constructor(
     private var progress = 0f
     private var onFinished: (() -> Unit)? = null
     private var finished = false
+    private var warmedUp = false
+    private var pendingStart = false
 
     fun start(onFinished: () -> Unit) {
         this.onFinished = onFinished
@@ -78,6 +75,13 @@ class SplashAnimationView @JvmOverloads constructor(
             postDelayed({ finish() }, REDUCED_MOTION_HOLD_MS)
             return
         }
+        pendingStart = true
+        if (warmedUp) beginAnimation() else invalidate()
+    }
+
+    private fun beginAnimation() {
+        if (!pendingStart) return
+        pendingStart = false
         animator = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = SplashTimeline.DURATION_MS
             interpolator = LinearInterpolator()
@@ -115,7 +119,21 @@ class SplashAnimationView @JvmOverloads constructor(
         super.onDetachedFromWindow()
     }
 
+    /** Every bitmap is drawn once under the opaque background, so the textures are uploaded before the animation runs. */
+    private fun warmUp(canvas: Canvas) {
+        val target = RectF(0f, 0f, 16f, 16f)
+        listOf(glowWide, glowNear, logo, spark, star, dot, dotSharp, dotSoft, title, subtitle).forEach {
+            canvas.drawBitmap(it, null, target, paint)
+        }
+    }
+
     override fun onDraw(canvas: Canvas) {
+        if (!warmedUp) {
+            warmedUp = true
+            paint.alpha = 255
+            warmUp(canvas)
+            post { beginAnimation() }
+        }
         val frame = SplashTimeline.frame(progress)
         drawBackground(canvas)
 
@@ -131,7 +149,6 @@ class SplashAnimationView @JvmOverloads constructor(
         canvas.save()
         canvas.concat(stage)
 
-        draw(canvas, aura, AURA, frame.aura)
         updateLogoMatrix(frame)
         canvas.save()
         canvas.concat(logoMatrix)
@@ -144,6 +161,7 @@ class SplashAnimationView @JvmOverloads constructor(
         if (frame.sparkAlpha > 0f) {
             canvas.save()
             canvas.scale(frame.sparkScale, frame.sparkScale, SPARK_CENTER_X, SPARK_CENTER_Y)
+            canvas.rotate((progress - SPARK_PEAK) * SPARK_TURN, SPARK_CENTER_X, SPARK_CENTER_Y)
             draw(canvas, spark, SPARK, frame.sparkAlpha)
             canvas.restore()
         }
@@ -169,7 +187,7 @@ class SplashAnimationView @JvmOverloads constructor(
             val cx = (SplashParticles.x(particle, seconds) - pan * SplashParticles.parallax(particle)) * width
             val cy = SplashParticles.y(particle, seconds) * height
             particleTarget.set(cx - radius, cy - radius, cx + radius, cy + radius)
-            val tint = tintPaints[particle.tint]
+            val tint = tintPaints[if (particle.z < HAZE_DEPTH) SplashParticles.TINT_BLUE else particle.tint]
             tint.alpha = (alpha * 255).toInt()
             if (particle.glitter) {
                 canvas.save()
@@ -177,9 +195,16 @@ class SplashAnimationView @JvmOverloads constructor(
                 canvas.drawBitmap(star, null, particleTarget, tint)
                 canvas.restore()
             } else {
-                canvas.drawBitmap(dot, null, particleTarget, tint)
+                canvas.drawBitmap(focus(particle.z), null, particleTarget, tint)
             }
         }
+    }
+
+    /** Depth of field: far particles are soft, the closest ones are almost sharp. */
+    private fun focus(z: Float): Bitmap = when {
+        z >= SplashParticles.FRONT_DEPTH -> dotSharp
+        z >= SHARPER_DEPTH -> dot
+        else -> dotSoft
     }
 
     private fun drawSparkles(canvas: Canvas) {
@@ -214,17 +239,22 @@ class SplashAnimationView @JvmOverloads constructor(
         logoMatrix.postTranslate(0f, frame.logoOffsetY)
     }
 
+    /** Light band over the logo: the white silhouette of the logo, clipped to a slanted band. No offscreen layer. */
     private fun drawSheen(canvas: Canvas, frame: SplashFrame) {
-        val layer = canvas.saveLayer(LOGO, null)
-        paint.alpha = 255
-        canvas.drawBitmap(logo, null, LOGO, paint)
-        canvas.save()
-        canvas.translate(SHEEN.left + frame.sheenOffsetX, SHEEN.top)
-        canvas.skew(SHEEN_SKEW, 0f)
-        sheenPaint.alpha = (frame.sheenAlpha * 255).toInt()
-        canvas.drawRect(0f, 0f, SHEEN.width(), SHEEN.height(), sheenPaint)
-        canvas.restore()
-        canvas.restoreToCount(layer)
+        val center = SHEEN.centerX() + frame.sheenOffsetX
+        for ((half, share) in SHEEN_BANDS) {
+            sheenPath.reset()
+            sheenPath.moveTo(center - half + SHEEN_SLANT, LOGO.top - 4f)
+            sheenPath.lineTo(center + half + SHEEN_SLANT, LOGO.top - 4f)
+            sheenPath.lineTo(center + half - SHEEN_SLANT, LOGO.bottom + 4f)
+            sheenPath.lineTo(center - half - SHEEN_SLANT, LOGO.bottom + 4f)
+            sheenPath.close()
+            canvas.save()
+            canvas.clipPath(sheenPath)
+            silhouette.alpha = (frame.sheenAlpha * share * 255).toInt()
+            canvas.drawBitmap(logo, null, LOGO, silhouette)
+            canvas.restore()
+        }
     }
 
     private fun draw(canvas: Canvas, bitmap: Bitmap, target: RectF, alpha: Float, offsetY: Float = 0f) {
@@ -248,24 +278,28 @@ class SplashAnimationView @JvmOverloads constructor(
 
     private companion object {
         const val PUSH_IN = 0.045f
+        const val HAZE_DEPTH = 0.25f
+        const val SHARPER_DEPTH = 0.4f
         const val PAN = 0.05f
         const val STAGE_PARALLAX = 1f
         const val FIT_WIDTH = 900f
         const val FIT_HEIGHT = 700f
         const val CONTENT_CENTER_X = 960f
         const val CONTENT_CENTER_Y = 410f
-        const val SHEEN_SKEW = -0.25f
+        const val SHEEN_SLANT = 16f
+        val SHEEN_BANDS = listOf(70f to 0.16f, 36f to 0.3f, 12f to 0.5f)
         const val REDUCED_MOTION_HOLD_MS = 1500L
 
         val LOGO = RectF(744f, 147f, 1176f, 465.3f)
         val GLOW = RectF(614f, 17f, 1306f, 595.3f)
-        val AURA = RectF(390f, -55f, 1530f, 725f)
-        val SPARK = RectF(947f, 116f, 1377f, 200f)
+        val SPARK = RectF(1012f, 8f, 1312f, 308f)
         val TITLE = RectF(740f, 515f, 1180f, 680f)
         val SUBTITLE = RectF(760f, 655f, 1160f, 725f)
         val SHEEN = RectF(655f, 122f, 1225f, 527f)
         const val LOGO_CENTER_X = 960f
         const val LOGO_CENTER_Y = 306f
+        const val SPARK_PEAK = 0.45f
+        const val SPARK_TURN = 130f
         const val SPARK_CENTER_X = 1162f
         const val SPARK_CENTER_Y = 158f
     }

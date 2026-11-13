@@ -16,10 +16,10 @@ const LOGO = { x: 744, y: 147, w: 432, h: 432 / (434.889 / 320.446) };
 const GLOW = { x: LOGO.x - 130, y: LOGO.y - 130, w: LOGO.w + 260, h: LOGO.h + 260, scale: 0.5 };
 const TITLE = { x: 740, y: 515, w: 440, h: 165, scale: 2 };
 const SUB = { x: 760, y: 655, w: 400, h: 70, scale: 2 };
-const AURA = { x: 390, y: -55, w: 1140, h: 780, scale: 0.25 };
 const SPARK_CENTER = { x: 1162, y: 158 };
-const SPARK = { x: SPARK_CENTER.x - 215, y: SPARK_CENTER.y - 42, w: 430, h: 84, scale: 1 };
+const SPARK = { x: SPARK_CENTER.x - 150, y: SPARK_CENTER.y - 150, w: 300, h: 300, scale: 1 };
 const DOT = { x: 0, y: 0, w: 64, h: 64, scale: 1 };
+const SHARP = { x: 0, y: 0, w: 64, h: 64, scale: 1 };
 const STAR = { x: 0, y: 0, w: 128, h: 128, scale: 1 };
 
 const FONT = "Arial, Helvetica, 'Liberation Sans', sans-serif";
@@ -77,18 +77,22 @@ const layers = {
     textSvg(SUB, subText('#3b96ff'), 'blur(18px)') +
     textSvg(SUB, subText('#6cc4ff'), 'blur(8px)') +
     textSvg(SUB, subText('#e6f3ff'))],
-  splash_aura: [AURA,
-    `<div style="position:absolute;inset:0;background:radial-gradient(ellipse 50% 50% at 50% 50%,` +
-    `rgba(52,104,214,.62) 0%,rgba(30,70,170,.34) 28%,rgba(16,45,111,.14) 55%,rgba(6,16,32,0) 100%)"></div>`],
   splash_spark: [SPARK,
-    `<div style="position:absolute;left:${SPARK_CENTER.x - SPARK.x - 115}px;top:${SPARK_CENTER.y - SPARK.y - 36}px;width:230px;height:72px;background:radial-gradient(ellipse 50% 50% at 50% 50%,` +
-    `rgba(255,255,255,1) 0%,rgba(200,241,255,.85) 14%,rgba(120,183,255,.3) 50%,rgba(120,183,255,0) 100%)"></div>` +
-    `<div style="position:absolute;left:0;top:${SPARK_CENTER.y - SPARK.y - 2}px;width:430px;height:4px;border-radius:2px;filter:blur(1.2px);` +
-    `background:linear-gradient(90deg,rgba(80,170,255,0) 0%,rgba(120,200,255,.75) 38%,rgba(255,255,255,1) 50%,rgba(120,200,255,.75) 62%,rgba(80,170,255,0) 100%)"></div>` +
-    `<div style="position:absolute;left:0;top:${SPARK_CENTER.y - SPARK.y - 9}px;width:430px;height:18px;border-radius:9px;filter:blur(7px);opacity:.55;` +
-    `background:linear-gradient(90deg,rgba(40,120,255,0) 0%,rgba(60,150,255,.8) 50%,rgba(40,120,255,0) 100%)"></div>`],
+    `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(215,240,255,.9) 5%,rgba(120,190,255,.45) 16%,rgba(70,130,255,.15) 34%,rgba(70,130,255,0) 55%)"></div>` +
+    `<div style="position:absolute;left:${150 - 150.0}px;top:${150 - 8.0}px;width:300px;height:16px;border-radius:8.0px;transform:rotate(0deg);opacity:0.5;filter:blur(6px);background:linear-gradient(90deg,rgba(255,255,255,0),#6cb4ff 50%,rgba(255,255,255,0))"></div>` +
+    `<div style="position:absolute;left:${150 - 150.0}px;top:${150 - 2.0}px;width:300px;height:4px;border-radius:2.0px;transform:rotate(0deg);opacity:1;filter:blur(0.6px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>` +
+    `<div style="position:absolute;left:${150 - 132.0}px;top:${150 - 6.0}px;width:264px;height:12px;border-radius:6.0px;transform:rotate(90deg);opacity:0.45;filter:blur(5px);background:linear-gradient(90deg,rgba(255,255,255,0),#6cb4ff 50%,rgba(255,255,255,0))"></div>` +
+    `<div style="position:absolute;left:${150 - 132.0}px;top:${150 - 1.75}px;width:264px;height:3.5px;border-radius:1.75px;transform:rotate(90deg);opacity:1;filter:blur(0.6px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>` +
+    `<div style="position:absolute;left:${150 - 85.0}px;top:${150 - 4.0}px;width:170px;height:8px;border-radius:4.0px;transform:rotate(45deg);opacity:0.4;filter:blur(4px);background:linear-gradient(90deg,rgba(255,255,255,0),#9fd0ff 50%,rgba(255,255,255,0))"></div>` +
+    `<div style="position:absolute;left:${150 - 85.0}px;top:${150 - 1.25}px;width:170px;height:2.5px;border-radius:1.25px;transform:rotate(45deg);opacity:0.8;filter:blur(0.6px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>` +
+    `<div style="position:absolute;left:${150 - 85.0}px;top:${150 - 4.0}px;width:170px;height:8px;border-radius:4.0px;transform:rotate(-45deg);opacity:0.4;filter:blur(4px);background:linear-gradient(90deg,rgba(255,255,255,0),#9fd0ff 50%,rgba(255,255,255,0))"></div>` +
+    `<div style="position:absolute;left:${150 - 85.0}px;top:${150 - 1.25}px;width:170px;height:2.5px;border-radius:1.25px;transform:rotate(-45deg);opacity:0.8;filter:blur(0.6px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>`],
   splash_particle: [DOT,
     `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,255,255,.55) 30%,rgba(255,255,255,.14) 65%,rgba(255,255,255,0) 100%)"></div>`],
+  splash_dot_soft: [SHARP,
+    `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.75) 0%,rgba(255,255,255,.32) 28%,rgba(255,255,255,.09) 58%,rgba(255,255,255,0) 92%)"></div>`],
+  splash_dot_sharp: [SHARP,
+    `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,255,255,.95) 46%,rgba(255,255,255,.35) 68%,rgba(255,255,255,0) 82%)"></div>`],
   splash_star: [STAR,
     `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.9) 0%,rgba(255,255,255,.3) 14%,rgba(255,255,255,0) 40%)"></div>` +
     `<div style="position:absolute;left:0;top:61px;width:128px;height:6px;border-radius:3px;filter:blur(.8px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>` +
@@ -105,7 +109,7 @@ const layers = {
     const w = Math.round(region.w * region.scale), h = Math.round(region.h * region.scale);
     await tab.setViewportSize({ width: w, height: h });
     await tab.setContent(`<html><body style="margin:0;width:${w}px;height:${h}px;position:relative;overflow:hidden;background:transparent">${body}</body></html>`);
-    if (name === 'splash_particle' || name === 'splash_star') b64[name] = '';
+    if (name.startsWith('splash_p') || name === 'splash_star' || name.startsWith('splash_dot')) b64[name] = '';
     const file = path.join(out, `${name}.png`);
     await tab.screenshot({ path: file, omitBackground: true });
     b64[name] = fs.readFileSync(file).toString('base64');
@@ -129,9 +133,8 @@ const layers = {
 <clipPath id="shapeClip"><svg x="${LOGO.x}" y="${LOGO.y}" width="${LOGO.w}" height="${LOGO.h}" viewBox="0 0 434.889 320.446"><path d="${logoSvg.match(/<path fill="url\(#SVGID_1_\)" d="([^"]+)"/)[1]}"/></svg></clipPath>
 <style>
 svg *{transform-box:fill-box}
-#aura,#glowWide,#glowNear,#logo,#sheen,#title,#sub,#spark{will-change:transform,opacity;animation-duration:5s;animation-fill-mode:both}
-#aura{animation-name:aura;animation-timing-function:cubic-bezier(.22,.72,.25,1)}
-#logo,#glowWide,#glowNear{transform-origin:960px 306px;transform-box:view-box;animation-timing-function:cubic-bezier(.22,.72,.25,1)}
+#glowWide,#glowNear,#logo,#sheen,#title,#sub,#spark{will-change:transform,opacity;animation-duration:5s;animation-fill-mode:both}
+#logo,#glowWide,#glowNear{transform-origin:960px 306px;transform-box:view-box;animation-timing-function:cubic-bezier(.3,0,.2,1)}
 #logo{animation-name:entrance}
 #glowWide{animation-name:entrance,breathe;animation-duration:5s,2.4s;animation-delay:0s,3.1s;animation-iteration-count:1,infinite}
 #glowNear{animation-name:entrance,breathe;animation-duration:5s,2.4s;animation-delay:0s,3.1s;animation-iteration-count:1,infinite}
@@ -139,18 +142,16 @@ svg *{transform-box:fill-box}
 #title{animation-name:titleIn;animation-timing-function:cubic-bezier(.22,.72,.25,1)}
 #sub{animation-name:subIn;animation-timing-function:cubic-bezier(.22,.72,.25,1)}
 #spark{animation-name:sparkle;transform-origin:${SPARK_CENTER.x}px ${SPARK_CENTER.y}px;transform-box:view-box}
-@keyframes aura{0%,6%{opacity:0}27%{opacity:.65}70%,100%{opacity:.35}}
-@keyframes entrance{0%,5%{opacity:0;transform:translateY(15px) scale(.88)}23%{opacity:1}38%{transform:translateY(0) scale(1.018)}62%,100%{opacity:1;transform:none}}
+@keyframes entrance{0%,5%{opacity:0;transform:translateY(18px) scale(.9)}23%{opacity:1}50%,100%{opacity:1;transform:none}}
 @keyframes breathe{0%,100%{opacity:1}50%{opacity:.8}}
 @keyframes sweep{0%,19%{opacity:0;transform:translateX(-550px)}27%{opacity:1}46%{opacity:.75}57%,100%{opacity:0;transform:translateX(570px)}}
 @keyframes titleIn{0%,34%{opacity:0;transform:translateY(20px)}57%,100%{opacity:1;transform:translateY(0)}}
 @keyframes subIn{0%,45%{opacity:0;transform:translateY(13px)}66%,100%{opacity:1;transform:translateY(0)}}
-@keyframes sparkle{0%,36%{opacity:0;transform:scale(.6)}45%{opacity:.95;transform:scale(1.1)}60%,100%{opacity:0;transform:scale(.8)}}
-@media(prefers-reduced-motion:reduce){#aura,#glowWide,#glowNear,#logo,#title,#sub{animation:none;opacity:1;transform:none}#sheen,#spark{animation:none;opacity:0}}
+@keyframes sparkle{0%,36%{opacity:0;transform:scale(.5) rotate(-20deg)}45%{opacity:1;transform:scale(1) rotate(0)}60%,100%{opacity:0;transform:scale(.7) rotate(20deg)}}
+@media(prefers-reduced-motion:reduce){#glowWide,#glowNear,#logo,#title,#sub{animation:none;opacity:1;transform:none}#sheen,#spark{animation:none;opacity:0}}
 </style>
 </defs>
 <image href="data:image/jpeg;base64,${b64.bg}" width="1920" height="1080" preserveAspectRatio="xMidYMid slice"/>
-${image('splash_aura', AURA, 'aura')}
 ${image('splash_glow_wide', GLOW, 'glowWide')}
 ${image('splash_glow_near', GLOW, 'glowNear')}
 <g id="logo">${logoSvg.replace(/<svg /, `<svg x="${LOGO.x}" y="${LOGO.y}" width="${LOGO.w}" height="${LOGO.h}" `)}</g>
