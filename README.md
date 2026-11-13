@@ -295,6 +295,14 @@ node design/generate-assets.js
 
 The script also writes a debug variant of the launcher icons and the TV banner (orange background and a red "DEBUG" label) into `app/src/debug/res/`, so the debug app is easy to tell apart from the release app. The script writes the launcher icons (adaptive, monochrome and legacy), the Android TV banner, the splash logo, the notification icon, the store icon and the repository graphics (`doc/logo.png`, `doc/social-preview.png`). The social preview image can be uploaded in the repository settings under "Social preview".
 
+### Splash screen
+
+The start screen is a short intro (5 seconds) that is drawn by the app itself: `ui/views/SplashAnimationView.kt` plays the timeline of `utils/SplashTimeline.kt` (logo turning in, glow, light sweep, title, subtitle, a slow push in) and the particles of `utils/SplashParticles.kt` (drifting dust in three depths and glitter stars that flash when the light sweep passes). The glow is blurred once when the graphics are made, so the app only moves and fades finished layers, which keeps the animation smooth on weak TV boxes. Any key or touch skips the intro, and it is shown as a still image when the system animations are turned off. `design/generate-splash.js` writes the layers (`app/src/main/res/drawable-nodpi/splash_*`) and a preview with the same animation as a browser file, `design/TVSig_splash.svg` (without the particles):
+
+```bash
+node design/generate-splash.js
+```
+
 ## License
 
 MIT, see [LICENSE](LICENSE).

@@ -2,8 +2,8 @@ package com.kutlusoy.tvsig.ui.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.view.KeyEvent
+import android.view.MotionEvent
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -21,7 +21,6 @@ class SplashActivity : AppCompatActivity() {
 
 
     private lateinit var binding: ActivitySplashBinding
-    private val splashDelay = 3000L
     private val preferenceHelper by lazy { PreferenceHelper.getInstance(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,9 +41,18 @@ class SplashActivity : AppCompatActivity() {
             override fun handleOnBackPressed() {}
         })
 
-        Handler(Looper.getMainLooper()).postDelayed({
-            startMainActivity()
-        }, splashDelay)
+        binding.splashAnimation.start { startMainActivity() }
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) return super.onKeyDown(keyCode, event)
+        binding.splashAnimation.skip()
+        return true
+    }
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        if (event.action == MotionEvent.ACTION_UP) binding.splashAnimation.skip()
+        return true
     }
 
     private fun setupSystemUI() {
