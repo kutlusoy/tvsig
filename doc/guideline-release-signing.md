@@ -13,7 +13,7 @@ Requirement levels follow common practice: **MUST** = mandatory, **SHOULD** = st
 
 | Workflow | Start | Signing | Result |
 |---|---|---|---|
-| `CI` | push to `main` or `integration`, pull requests, manual | none (debug key of the runner) | test results, lint report, debug APK as build artifact |
+| `CI` | every push, pull requests, manual | none (the fixed debug key `app/debug.keystore`) | test results, lint report, debug APK as build artifact |
 | `Release` | push of a tag `v*`, or manual with the version | the release keystore from the repository secrets | GitHub release with APK, AAB, `SHA256SUMS.txt` and R8 mapping |
 
 `CI` needs no secrets. The `Release` workflow stops with an error when a required secret is missing, so it cannot publish an unsigned or wrongly signed release by accident.

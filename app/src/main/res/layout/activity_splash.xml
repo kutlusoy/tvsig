@@ -24,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="www.tvsig.at"
+        android:text="@string/app_tagline"
         android:textAppearance="@style/TextAppearance.TVSig.Title"
         android:textColor="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"

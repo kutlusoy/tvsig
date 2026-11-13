@@ -96,4 +96,26 @@
         <item>Zoom heraus</item>
         <item>Zufall</item>
     </string-array>
+    <string name="settings_section_updates">Updates</string>
+    <string name="update_installed_version">Installierte Version: %s</string>
+    <string name="settings_check_update">Nach Updates suchen</string>
+    <string name="update_checking">Prüfe …</string>
+    <string name="update_available">Update verfügbar: %s</string>
+    <string name="update_current">Die neueste Version ist installiert (%s)</string>
+    <string name="update_none">Kein Release gefunden</string>
+    <string name="update_check_failed">Update-Prüfung fehlgeschlagen: %s</string>
+    <string name="settings_install_update">Version %s installieren</string>
+    <string name="update_downloading">Lade herunter … %d%%</string>
+    <string name="update_verifying">Prüfe den Download …</string>
+    <string name="update_installing">Installiere … die App startet danach neu</string>
+    <string name="update_needs_permission">Auf dem nächsten Bildschirm TVSig das Installieren von Apps erlauben, danach erneut auf Installieren drücken</string>
+    <string name="update_failed">Update fehlgeschlagen: %s</string>
+    <string name="update_debug_build">Updates gibt es nur in der Release-App</string>
+    <string name="update_error_network">Keine Verbindung zu GitHub</string>
+    <string name="update_error_no_apk">Das Release enthält keine APK-Datei</string>
+    <string name="update_error_no_checksum">Das Release enthält keine Prüfsummendatei, das Update wird nicht installiert</string>
+    <string name="update_error_checksum">Die Prüfsumme des Downloads stimmt nicht, das Update wird nicht installiert</string>
+    <string name="update_error_insecure">Die Download-Adresse ist nicht sicher</string>
+    <string name="update_error_too_large">Die Update-Datei ist ungewöhnlich groß</string>
+    <string name="update_error_storage">Nicht genug freier Speicher</string>
 </resources>

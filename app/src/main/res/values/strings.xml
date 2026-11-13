@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">TVSig</string>
+    <string name="app_tagline" translatable="false">TVSig Android Digital Signage</string>
     <string name="app_contact" translatable="false">kutlusoy.dev@gmail.com</string>
     <string name="about_author_name" translatable="false">Ali Kutlusoy</string>
     <string name="about_repo_url" translatable="false">github.com/kutlusoy/tvsig</string>
@@ -105,4 +106,26 @@
         <item>Zoom out</item>
         <item>Random</item>
     </string-array>
+    <string name="settings_section_updates">Updates</string>
+    <string name="update_installed_version">Installed version: %s</string>
+    <string name="settings_check_update">Check for updates</string>
+    <string name="update_checking">Checking …</string>
+    <string name="update_available">Update available: %s</string>
+    <string name="update_current">The latest version is installed (%s)</string>
+    <string name="update_none">No release found</string>
+    <string name="update_check_failed">Could not check for updates: %s</string>
+    <string name="settings_install_update">Install version %s</string>
+    <string name="update_downloading">Downloading … %d%%</string>
+    <string name="update_verifying">Verifying the download …</string>
+    <string name="update_installing">Installing … the app restarts afterwards</string>
+    <string name="update_needs_permission">Allow TVSig to install apps on the next screen, then press Install again</string>
+    <string name="update_failed">Update failed: %s</string>
+    <string name="update_debug_build">Updates are only available in the release app</string>
+    <string name="update_error_network">No connection to GitHub</string>
+    <string name="update_error_no_apk">The release has no APK file</string>
+    <string name="update_error_no_checksum">The release has no checksum file, the update is not installed</string>
+    <string name="update_error_checksum">The checksum of the download does not match, the update is not installed</string>
+    <string name="update_error_insecure">The download address is not secure</string>
+    <string name="update_error_too_large">The update file is unexpectedly large</string>
+    <string name="update_error_storage">Not enough free storage</string>
 </resources>
