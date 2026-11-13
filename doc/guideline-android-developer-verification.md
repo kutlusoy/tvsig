@@ -25,7 +25,7 @@ TVSig has no Google account and no Google service inside. The registration only 
 | Line on the release page | `tools/release-notes.sh` | "Android developer verification proof: included in the APK" or "not included". |
 | Signing fingerprint | release page | SHA-256 and SHA-1 of the release certificate, with colons as the console wants them. |
 
-The file itself is **not** in the repository yet, because its content is the snippet of your developer account, which only the console shows. Until it exists, a release is built without it and the workflow prints a warning.
+The file is part of the repository since version 0.0.3 and contains the ID of the developer account. Without it a release would be built without the proof and the workflow would print a warning.
 
 ## 3. Register the package name
 

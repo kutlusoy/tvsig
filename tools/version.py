@@ -30,7 +30,7 @@ def selftest():
     assert parse("1.2.3")["version_code"] == "1002003"
     assert parse("1.0.0-rc1")["prerelease"] == "true"
     assert parse("1.0.0")["prerelease"] == "false"
-    ordered = ["0.0.1", "0.0.2", "0.1.0", "0.9.9", "1.0.0", "1.0.1", "1.1.0", "2.0.0"]
+    ordered = ["0.0.1", "0.0.2", "0.0.3", "0.1.0", "0.9.9", "1.0.0", "1.0.1", "1.1.0", "2.0.0"]
     codes = [int(parse(v)["version_code"]) for v in ordered]
     assert codes == sorted(codes) and len(set(codes)) == len(codes)
     assert max(codes) < 2_100_000_000
