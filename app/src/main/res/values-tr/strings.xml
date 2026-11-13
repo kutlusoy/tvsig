@@ -96,4 +96,26 @@
         <item>Uzaklaştır</item>
         <item>Rastgele</item>
     </string-array>
+    <string name="settings_section_updates">Güncellemeler</string>
+    <string name="update_installed_version">Yüklü sürüm: %s</string>
+    <string name="settings_check_update">Güncellemeleri denetle</string>
+    <string name="update_checking">Denetleniyor …</string>
+    <string name="update_available">Güncelleme mevcut: %s</string>
+    <string name="update_current">En son sürüm yüklü (%s)</string>
+    <string name="update_none">Sürüm bulunamadı</string>
+    <string name="update_check_failed">Güncelleme denetlenemedi: %s</string>
+    <string name="settings_install_update">%s sürümünü yükle</string>
+    <string name="update_downloading">İndiriliyor … %d%%</string>
+    <string name="update_verifying">İndirme doğrulanıyor …</string>
+    <string name="update_installing">Yükleniyor … uygulama ardından yeniden başlar</string>
+    <string name="update_needs_permission">Sonraki ekranda TVSig\'in uygulama yüklemesine izin verin, ardından tekrar Yükle\'ye basın</string>
+    <string name="update_failed">Güncelleme başarısız: %s</string>
+    <string name="update_debug_build">Güncellemeler yalnızca sürüm uygulamasında kullanılabilir</string>
+    <string name="update_error_network">GitHub bağlantısı yok</string>
+    <string name="update_error_no_apk">Sürümde APK dosyası yok</string>
+    <string name="update_error_no_checksum">Sürümde sağlama toplamı dosyası yok, güncelleme yüklenmedi</string>
+    <string name="update_error_checksum">İndirmenin sağlama toplamı eşleşmiyor, güncelleme yüklenmedi</string>
+    <string name="update_error_insecure">İndirme adresi güvenli değil</string>
+    <string name="update_error_too_large">Güncelleme dosyası beklenmedik şekilde büyük</string>
+    <string name="update_error_storage">Yeterli boş depolama alanı yok</string>
 </resources>

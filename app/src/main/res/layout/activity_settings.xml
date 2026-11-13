@@ -207,6 +207,43 @@
                 android:layout_marginTop="@dimen/margin_small"
                 android:text="@string/cache_clear" />
 
+            <TextView
+                style="@style/TextAppearance.TVSig.Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:text="@string/settings_section_updates" />
+
+            <TextView
+                android:id="@+id/updateInstalled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.TVSig.Body" />
+
+            <Button
+                android:id="@+id/btnCheckUpdate"
+                style="@style/Widget.TVSig.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/settings_check_update" />
+
+            <TextView
+                android:id="@+id/updateStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:textAppearance="@style/TextAppearance.TVSig.Body" />
+
+            <Button
+                android:id="@+id/btnInstallUpdate"
+                style="@style/Widget.TVSig.Button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:visibility="gone" />
+
             <LinearLayout
                 android:id="@+id/aboutCard"
                 android:layout_width="match_parent"

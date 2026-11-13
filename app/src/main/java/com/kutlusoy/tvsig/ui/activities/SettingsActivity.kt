@@ -1,6 +1,11 @@
 package com.kutlusoy.tvsig.ui.activities
 
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
@@ -21,8 +26,10 @@ import com.kutlusoy.tvsig.ui.dialogs.FolderPickerDialog
 import com.kutlusoy.tvsig.ui.dialogs.RemoteSetupDialog
 import com.kutlusoy.tvsig.utils.LanguageHelper
 import com.kutlusoy.tvsig.utils.OrientationHelper
+import com.kutlusoy.tvsig.utils.UpdateErrorText
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 import com.kutlusoy.tvsig.viewmodels.SettingsViewModel
+import com.kutlusoy.tvsig.viewmodels.UpdateViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.abs
 
@@ -34,6 +41,7 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()
+    private val updateViewModel: UpdateViewModel by viewModels()
     private var bindingFields = false
     private var rotation = 0
 
@@ -118,6 +126,10 @@ class SettingsActivity : AppCompatActivity() {
             )
             languageRow.onSelectionChanged = { viewModel.updateSettings(language = it) }
 
+            updateInstalled.text = getString(R.string.update_installed_version, BuildConfig.VERSION_NAME)
+            btnCheckUpdate.setOnClickListener { updateViewModel.check() }
+            btnInstallUpdate.setOnClickListener { installUpdate() }
+
             btnRemoteSetup.setOnClickListener { RemoteSetupDialog.show(supportFragmentManager) }
             btnPickFolder.setOnClickListener {
                 val source = viewModel.settings.value.toSource()
@@ -153,7 +165,41 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
+    private fun installUpdate() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && !packageManager.canRequestPackageInstalls()) {
+            updateViewModel.permissionRequested()
+            startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName")))
+        } else {
+            updateViewModel.install()
+        }
+    }
+
+    private fun showUpdateState(state: UpdateViewModel.State) {
+        with(binding) {
+            updateStatus.text = when (state.kind) {
+                UpdateViewModel.Kind.IDLE -> ""
+                UpdateViewModel.Kind.CHECKING -> getString(R.string.update_checking)
+                UpdateViewModel.Kind.UP_TO_DATE -> getString(R.string.update_current, state.detail)
+                UpdateViewModel.Kind.AVAILABLE -> getString(R.string.update_available, state.release?.version.orEmpty())
+                UpdateViewModel.Kind.NOT_FOUND -> getString(R.string.update_none)
+                UpdateViewModel.Kind.CHECK_FAILED -> getString(R.string.update_check_failed, UpdateErrorText.of(this@SettingsActivity, state.error))
+                UpdateViewModel.Kind.DOWNLOADING -> getString(R.string.update_downloading, state.percent)
+                UpdateViewModel.Kind.VERIFYING -> getString(R.string.update_verifying)
+                UpdateViewModel.Kind.INSTALLING -> getString(R.string.update_installing)
+                UpdateViewModel.Kind.NEEDS_PERMISSION -> getString(R.string.update_needs_permission)
+                UpdateViewModel.Kind.INSTALL_FAILED -> getString(R.string.update_failed, UpdateErrorText.of(this@SettingsActivity, state.error, state.detail))
+                UpdateViewModel.Kind.DEBUG_BUILD -> getString(R.string.update_debug_build)
+            }
+            btnCheckUpdate.isEnabled = !state.busy && state.kind != UpdateViewModel.Kind.DEBUG_BUILD
+            btnInstallUpdate.visibility = if (state.canInstall) View.VISIBLE else View.GONE
+            btnInstallUpdate.text = getString(R.string.settings_install_update, state.release?.version.orEmpty())
+        }
+    }
+
     private fun setupObservers() {
+        lifecycleScope.launch {
+            updateViewModel.state.collect { showUpdateState(it) }
+        }
         lifecycleScope.launch {
             viewModel.testStatus.collect { binding.testStatus.text = it }
         }

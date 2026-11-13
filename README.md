@@ -174,6 +174,18 @@ git tag v0.0.1
 git push origin v0.0.1
 ```
 
+## Updates from inside the app
+
+In the settings, "Updates" shows the installed version and a button "Check for updates". It asks GitHub for the newest release of this repository, and when that is newer, it shows only the version number. A second button installs it. There is no automatic check and no automatic installation, both only happen when the button is pressed.
+
+The app downloads the APK of the release, checks its SHA-256 against `SHA256SUMS.txt` of the release (it refuses to install without a matching checksum), and hands it to the Android installer. Android installs it only when it is signed with the same key as the installed app. After the installation the app restarts by itself.
+
+- The first time, Android asks to allow TVSig to "install unknown apps". The settings open the right page for it.
+- A confirmation of the installation may be shown by Android. Unattended installation without a question is possible on Android 12 and newer only for later updates that TVSig installed itself.
+- Pre-releases and drafts are ignored. Debug builds do not update themselves.
+- Only the release app (`com.kutlusoy.tvsig`) updates, and the check sends no identifiers.
+- See [doc/guideline-in-app-update.md](doc/guideline-in-app-update.md).
+
 ## Permissions
 
 | Permission | Why |
@@ -181,6 +193,7 @@ git push origin v0.0.1
 | `INTERNET`, `ACCESS_NETWORK_STATE` | Load the media from your web server and detect when the network is back |
 | `WAKE_LOCK`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SPECIAL_USE` | Keep playing around the clock |
 | `RECEIVE_BOOT_COMPLETED` | Start after a reboot |
+| `REQUEST_INSTALL_PACKAGES` | Install an update that was started with the button in the settings |
 | `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` | Ask once to be excluded from battery optimization |
 | `SYSTEM_ALERT_WINDOW` | Optional: if "Display over other apps" is allowed in the Android settings, the app can open itself after a reboot on Android 10 and newer |
 
