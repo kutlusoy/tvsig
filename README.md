@@ -77,6 +77,10 @@ When the source is reachable, every stored file is compared with the server, not
 
 A changed file is downloaded next to the old one and only replaces it when it is complete, so a broken download never destroys what is playing. A file that disappears from the source is kept on the device for three days before it is removed, so one incomplete answer of a server cannot empty the device.
 
+## Languages
+
+The app speaks English (default), German and Turkish. "Automatic" follows the language of the device and falls back to English. The language can be chosen in the settings, in this order: Automatic, English, Deutsch, Türkçe, and on the phone page of the setup, which also appears in these three languages. The texts are in `app/src/main/res/values/` (English), `values-de/` and `values-tr/`; a unit test checks that every text exists in all three languages with the same placeholders. To add a language: add a `values-xx/strings.xml`, a value in `AppLanguage` and the language list of the setting, and a dictionary in `app/src/main/assets/remote_setup.html`.
+
 ## Settings
 
 The settings are made for remote controls (and can be filled in from a smartphone, see below): arrow keys move the focus, left and right change a value, OK confirms, and no touch or keyboard is needed except for typing the base URL. The PIN is entered on an on-screen number pad, so remotes without number keys work. The settings also show the app version, author and repository.
@@ -85,6 +89,7 @@ Press the back key (or the back button of a TV remote) and enter the PIN. The de
 
 - Base URL and subfolder
 - Display duration per image
+- Language: automatic (the language of the device), English, German or Turkish
 - Backdrop around images: zoomed and blurred, or mirrored and blurred
 - Transition effect: none, fade, slide (left, right, up, down), zoom in, zoom out or random (a different effect for every change)
 - Screen orientation: landscape, 90, 180, 270 degrees (clockwise rotation of the content) or auto (sensor, phones and tablets only)
@@ -138,6 +143,8 @@ Debug builds have their own application ID, `com.kutlusoy.tvsig.debug`, and the 
 Debug builds are always signed with the same key, `app/debug.keystore`, which is part of the repository on purpose (password `android`, only for debug builds, it protects nothing). So a debug APK from GitHub Actions, one built on another computer and one run from Android Studio can update each other without uninstalling the app. The release build uses the separate release key, see below.
 
 For a signed local release build, put a `signing/release.properties` file into `app/` with the keys `storeFile` (file name of the keystore inside `app/signing/`), `storePassword`, `keyAlias` and `keyPassword`. The `signing/` folder is ignored by git.
+
+Classes that are read or written with Gson (the settings of the phone setup, the stored file information) must keep their names in the release build. They are listed in `app/proguard-rules.pro` and in `tools/check-keep-rules.py`, which the CI and the release workflow run on the mapping of the release build. Add a new Gson class to both lists.
 
 ## GitHub Actions
 

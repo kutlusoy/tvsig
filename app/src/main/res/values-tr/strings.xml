@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">TVSig Hakkında</string>
+    <string name="about_version">Sürüm: %1$s (%2$d)</string>
+    <string name="about_author">Geliştirici: %s</string>
+    <string name="about_repo">Depo: %s</string>
+    <string name="about_license">Lisans: MIT</string>
+    <string name="about_contact">İletişim: %s</string>
+    <string name="pin_enter">PIN girin</string>
+    <string name="pin_incorrect">Yanlış PIN</string>
+    <string name="button_exit">Çıkış</string>
+    <string name="button_change_pin">PIN değiştir</string>
+    <string name="pin_changed">PIN değiştirildi</string>
+    <string name="pin_current">Mevcut PIN</string>
+    <string name="pin_new">Yeni PIN</string>
+    <string name="pin_confirm_new">Yeni PIN\'i doğrulayın</string>
+    <string name="error_pins_dont_match">PIN\'ler eşleşmiyor</string>
+    <string name="settings_title">Ayarlar</string>
+    <string name="settings_base_url">Web sunucusunun temel URL\'si</string>
+    <string name="settings_base_url_helper">örn. https://example.com/signage</string>
+    <string name="settings_drive_id">Ana Drive klasörünün kimliği</string>
+    <string name="settings_drive_id_helper">Kimlik, klasör bağlantısında /folders/ ifadesinden sonra yer alır</string>
+    <string name="settings_source_type">Kaynak türü</string>
+    <string name="source_web">Web sunucusu</string>
+    <string name="source_drive">Google Drive</string>
+    <string name="settings_folder_helper">\"Klasör seç\" ile listeden seçilebilir</string>
+    <string name="settings_subfolder">Klasör (yol)</string>
+    <string name="settings_delay">Görsel başına gösterim süresi</string>
+    <string name="option_previous">Önceki değer</string>
+    <string name="option_next">Sonraki değer</string>
+    <string name="seconds_format">%d saniye</string>
+    <string name="settings_remote_hint">Sol ve sağ ok tuşları değeri değiştirir, Tamam bir sonrakine geçer, Geri iptal eder.</string>
+    <string name="settings_section_source">Kaynak</string>
+    <string name="settings_section_playback">Oynatma</string>
+    <string name="settings_section_display">Görünüm</string>
+    <string name="settings_section_security">Güvenlik ve bakım</string>
+    <string name="settings_pick_folder">Klasör seç</string>
+    <string name="folder_picker_title">Klasör seçin</string>
+    <string name="folder_picker_loading">Klasörler yükleniyor…</string>
+    <string name="folder_picker_root">Ana klasör</string>
+    <string name="folder_picker_use">✓  Bu klasörü kullan</string>
+    <string name="folder_picker_up">↑  Bir üst seviye</string>
+    <string name="folder_picker_folder">›  %s</string>
+    <string name="folder_picker_empty">Başka alt klasör yok</string>
+    <string name="folder_picker_max_depth">En fazla derinliğe ulaşıldı (%d seviye)</string>
+    <string name="folder_picker_error">Klasörler yüklenemedi: %s</string>
+    <string name="settings_remote_setup">Akıllı telefonla kurulum</string>
+    <string name="remote_title">Akıllı telefonla kurulum</string>
+    <string name="remote_hint">Akıllı telefonu aynı Wi-Fi veya ağa bağlayın, QR kodu kamerayla okutun ve ayarları orada girin.</string>
+    <string name="remote_no_network">Ağ bağlantısı yok. Lütfen televizyonu ağa bağlayın.</string>
+    <string name="remote_failed">Kurulum başlatılamadı.</string>
+    <string name="settings_test_connection">Bağlantıyı test et</string>
+    <string name="test_running">Test ediliyor…</string>
+    <string name="test_ok">%1$d dosya bulundu (%2$d görsel, %3$d video)</string>
+    <string name="test_failed">Başarısız: %s</string>
+    <string name="test_no_url">Lütfen önce kaynağı girin</string>
+    <string name="settings_transition">Geçiş efekti</string>
+    <string name="settings_backdrop">Görsellerin arka planı</string>
+    <string name="backdrop_zoom">Yakınlaştırılmış ve bulanık</string>
+    <string name="backdrop_mirror">Yansıtılmış ve bulanık</string>
+    <string name="settings_orientation">Ekran yönü</string>
+    <string name="settings_theme">Uygulama teması</string>
+    <string name="settings_language">Dil</string>
+    <string name="language_auto">Otomatik</string>
+    <string name="orientation_auto">Otomatik (yalnızca mobil)</string>
+    <string name="orientation_landscape">Yatay</string>
+    <string name="orientation_90">90° döndürülmüş</string>
+    <string name="orientation_180">180° döndürülmüş</string>
+    <string name="orientation_270">270° döndürülmüş</string>
+    <string name="theme_light">Açık</string>
+    <string name="theme_dark">Koyu</string>
+    <string name="cache_clear">Önbelleği temizle</string>
+    <string name="button_cancel">İptal</string>
+    <string name="button_save">Kaydet</string>
+    <string name="button_close">Kapat</string>
+    <string name="error_no_base_url">Henüz bir kaynak ayarlanmadı.\n\nGeri tuşuna basın veya buraya dokunun, PIN\'i girin ve ayarları açın.</string>
+    <string name="error_load_failed">Medya yüklenemedi: %s</string>
+    <string name="error_no_playable_media">Oynatılabilir medya bulunamadı</string>
+    <string name="error_offline">Ağ bağlantısı yok</string>
+    <string name="error_no_media">Klasörde görsel veya video bulunamadı</string>
+    <string name="error_blocked">Sunucu dosya yerine bir web sayfası gönderdi (erişim veya indirme sınırı)</string>
+    <string name="error_drive_link">Google Drive klasör kimliği bulunamadı</string>
+    <string name="error_drive_folder">Drive klasörü bulunamadı veya bağlantıya sahip herkesle paylaşılmadı</string>
+    <string name="error_listing">Klasör listesi sunucuda kullanılamıyor</string>
+    <string name="foreground_service_notification_text">Ekran yayını arka planda çalışıyor</string>
+    <string name="foreground_service_channel_name">TVSig Signage hizmeti</string>
+    <string name="foreground_service_channel_description">TVSig Signage uygulamasının çalışmaya devam etmesini sağlar</string>
+    <string-array name="transition_options">
+        <item>Yok</item>
+        <item>Solma</item>
+        <item>Sola kaydır</item>
+        <item>Sağa kaydır</item>
+        <item>Yukarı kaydır</item>
+        <item>Aşağı kaydır</item>
+        <item>Yakınlaştır</item>
+        <item>Uzaklaştır</item>
+        <item>Rastgele</item>
+    </string-array>
+</resources>

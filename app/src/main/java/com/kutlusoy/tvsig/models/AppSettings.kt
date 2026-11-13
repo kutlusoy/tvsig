@@ -11,6 +11,7 @@ data class AppSettings(
     val slideDelay: Int = 10,
     val transition: Int = TransitionType.DEFAULT.id,
     val backdrop: Int = BackdropMode.DEFAULT.id,
+    val language: Int = AppLanguage.DEFAULT.id,
     val orientation: Int = OrientationHelper.ORIENTATION_LANDSCAPE,
     val isDarkMode: Boolean = true,
     val pin: String = "0000"

@@ -5,268 +5,249 @@
     android:layout_height="match_parent"
     android:background="?android:attr/colorBackground">
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:orientation="vertical"
+        android:clipToPadding="false"
+        android:fillViewport="true"
         android:paddingStart="@dimen/tv_safe_horizontal"
-        android:paddingEnd="@dimen/tv_safe_horizontal"
         android:paddingTop="@dimen/tv_safe_vertical"
+        android:paddingEnd="@dimen/tv_safe_horizontal"
         android:paddingBottom="@dimen/tv_safe_vertical"
+        android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_max="960dp">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/settings_title"
-            android:textAppearance="@style/TextAppearance.TVSig.Headline" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_xsmall"
-            android:layout_marginBottom="@dimen/margin_medium"
-            android:alpha="0.8"
-            android:text="@string/settings_remote_hint"
-            android:textAppearance="@style/TextAppearance.TVSig.Caption" />
-
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:fillViewport="true"
-            android:padding="6dp"
-            android:scrollbars="none">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/TextAppearance.TVSig.Section"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:text="@string/settings_section_source" />
-
-                <Button
-                    android:id="@+id/btnRemoteSetup"
-                    style="@style/Widget.TVSig.Button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_medium"
-                    android:text="@string/settings_remote_setup" />
-
-                <com.kutlusoy.tvsig.ui.views.OptionRow
-                    android:id="@+id/sourceRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    app:optionTitle="@string/settings_source_type" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/baseUrlLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:hint="@string/settings_base_url"
-                    app:boxStrokeWidthFocused="4dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/baseUrlInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionNext"
-                        android:inputType="textUri"
-                        android:maxLines="1"
-                        android:textSize="@dimen/text_size_body" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/btnPickFolder"
-                        style="@style/Widget.TVSig.Button.Secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_medium"
-                        android:text="@string/settings_pick_folder" />
-
-                    <Button
-                        android:id="@+id/btnTestConnection"
-                        style="@style/Widget.TVSig.Button.Secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/settings_test_connection" />
-
-                    <TextView
-                        android:id="@+id/testStatus"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/margin_medium"
-                        android:layout_weight="1"
-                        android:textAppearance="@style/TextAppearance.TVSig.Body" />
-                </LinearLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/subfolderLayout"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:hint="@string/settings_subfolder"
-                    app:boxStrokeWidthFocused="4dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/subfolderInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:imeOptions="actionDone"
-                        android:inputType="text"
-                        android:maxLines="1"
-                        android:textSize="@dimen/text_size_body" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <TextView
-                    style="@style/TextAppearance.TVSig.Section"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:text="@string/settings_section_playback" />
-
-                <com.kutlusoy.tvsig.ui.views.OptionRow
-                    android:id="@+id/delayRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    app:optionTitle="@string/settings_delay" />
-
-                <com.kutlusoy.tvsig.ui.views.OptionRow
-                    android:id="@+id/transitionRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    app:optionTitle="@string/settings_transition" />
-
-                <com.kutlusoy.tvsig.ui.views.OptionRow
-                    android:id="@+id/backdropRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:optionTitle="@string/settings_backdrop" />
-
-                <TextView
-                    style="@style/TextAppearance.TVSig.Section"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:text="@string/settings_section_display" />
-
-                <com.kutlusoy.tvsig.ui.views.OptionRow
-                    android:id="@+id/orientationRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    app:optionTitle="@string/settings_orientation" />
-
-                <com.kutlusoy.tvsig.ui.views.OptionRow
-                    android:id="@+id/themeRow"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:optionTitle="@string/settings_theme" />
-
-                <TextView
-                    style="@style/TextAppearance.TVSig.Section"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_large"
-                    android:layout_marginBottom="@dimen/margin_small"
-                    android:text="@string/settings_section_security" />
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/btnChangePin"
-                        style="@style/Widget.TVSig.Button.Secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="@dimen/margin_medium"
-                        android:text="@string/button_change_pin" />
-
-                    <Button
-                        android:id="@+id/btnClearCache"
-                        style="@style/Widget.TVSig.Button.Secondary"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/cache_clear" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/aboutCard"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/margin_xlarge"
-                    android:background="@drawable/bg_row"
-                    android:focusable="true"
-                    android:orientation="vertical"
-                    android:padding="@dimen/margin_medium">
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/margin_small"
-                        android:text="@string/about_title"
-                        android:textAppearance="@style/TextAppearance.TVSig.Title"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/aboutText"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:lineSpacingMultiplier="1.2"
-                        android:textAppearance="@style/TextAppearance.TVSig.Body" />
-                </LinearLayout>
-            </LinearLayout>
-        </ScrollView>
+        app:layout_constraintWidth_max="720dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_small"
-            android:gravity="end"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:padding="6dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/settings_title"
+                android:textAppearance="@style/TextAppearance.TVSig.Headline" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_xsmall"
+                android:alpha="0.8"
+                android:text="@string/settings_remote_hint"
+                android:textAppearance="@style/TextAppearance.TVSig.Caption" />
 
             <Button
-                android:id="@+id/btnCancel"
-                style="@style/Widget.TVSig.Button.Tertiary"
-                android:layout_width="wrap_content"
+                android:id="@+id/btnRemoteSetup"
+                style="@style/Widget.TVSig.Button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/margin_medium"
-                android:text="@string/button_cancel" />
+                android:layout_marginTop="@dimen/margin_medium"
+                android:text="@string/settings_remote_setup" />
+
+            <TextView
+                style="@style/TextAppearance.TVSig.Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:text="@string/settings_section_source" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/sourceRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                app:optionTitle="@string/settings_source_type" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/baseUrlLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:hint="@string/settings_base_url"
+                app:boxStrokeWidthFocused="4dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/baseUrlInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionNext"
+                    android:inputType="textUri"
+                    android:maxLines="1"
+                    android:textSize="@dimen/text_size_body" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/subfolderLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:hint="@string/settings_subfolder"
+                app:boxStrokeWidthFocused="4dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/subfolderInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeOptions="actionDone"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:textSize="@dimen/text_size_body" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnPickFolder"
+                style="@style/Widget.TVSig.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/settings_pick_folder" />
+
+            <Button
+                android:id="@+id/btnTestConnection"
+                style="@style/Widget.TVSig.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/settings_test_connection" />
+
+            <TextView
+                android:id="@+id/testStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:textAppearance="@style/TextAppearance.TVSig.Body" />
+
+            <TextView
+                style="@style/TextAppearance.TVSig.Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:text="@string/settings_section_playback" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/delayRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                app:optionTitle="@string/settings_delay" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/transitionRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                app:optionTitle="@string/settings_transition" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/backdropRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                app:optionTitle="@string/settings_backdrop" />
+
+            <TextView
+                style="@style/TextAppearance.TVSig.Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:text="@string/settings_section_display" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/orientationRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                app:optionTitle="@string/settings_orientation" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/themeRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/margin_small"
+                app:optionTitle="@string/settings_theme" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/languageRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                app:optionTitle="@string/settings_language" />
+
+            <TextView
+                style="@style/TextAppearance.TVSig.Section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_large"
+                android:layout_marginBottom="@dimen/margin_small"
+                android:text="@string/settings_section_security" />
+
+            <Button
+                android:id="@+id/btnChangePin"
+                style="@style/Widget.TVSig.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0dp"
+                android:text="@string/button_change_pin" />
+
+            <Button
+                android:id="@+id/btnClearCache"
+                style="@style/Widget.TVSig.Button.Secondary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/cache_clear" />
+
+            <LinearLayout
+                android:id="@+id/aboutCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_xlarge"
+                android:background="@drawable/bg_row"
+                android:focusable="true"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_medium">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/margin_small"
+                    android:text="@string/about_title"
+                    android:textAppearance="@style/TextAppearance.TVSig.Title"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/aboutText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.2"
+                    android:textAppearance="@style/TextAppearance.TVSig.Body" />
+            </LinearLayout>
 
             <Button
                 android:id="@+id/btnSave"
                 style="@style/Widget.TVSig.Button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_xlarge"
                 android:text="@string/button_save" />
+
+            <Button
+                android:id="@+id/btnCancel"
+                style="@style/Widget.TVSig.Button.Tertiary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_small"
+                android:text="@string/button_cancel" />
         </LinearLayout>
-    </LinearLayout>
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

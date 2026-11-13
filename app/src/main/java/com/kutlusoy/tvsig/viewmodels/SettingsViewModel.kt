@@ -7,6 +7,7 @@ import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.models.AppSettings
 import com.kutlusoy.tvsig.models.Result
 import com.kutlusoy.tvsig.repositories.MediaRepository
+import com.kutlusoy.tvsig.utils.ErrorText
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -36,6 +37,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         slideDelay = preferenceHelper.getSlideDelay(),
         transition = preferenceHelper.getTransition(),
         backdrop = preferenceHelper.getBackdrop(),
+        language = preferenceHelper.getLanguage(),
         orientation = preferenceHelper.getOrientation(),
         isDarkMode = preferenceHelper.isDarkMode(),
         pin = preferenceHelper.getPin()
@@ -50,6 +52,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
         slideDelay: Int? = null,
         transition: Int? = null,
         backdrop: Int? = null,
+        language: Int? = null,
         orientation: Int? = null,
         isDarkMode: Boolean? = null,
         pin: String? = null
@@ -64,6 +67,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             slideDelay = slideDelay ?: current.slideDelay,
             transition = transition ?: current.transition,
             backdrop = backdrop ?: current.backdrop,
+            language = language ?: current.language,
             orientation = orientation ?: current.orientation,
             isDarkMode = isDarkMode ?: current.isDarkMode,
             pin = pin ?: current.pin
@@ -81,6 +85,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
             setSlideDelay(s.slideDelay)
             setTransition(s.transition)
             setBackdrop(s.backdrop)
+            setLanguage(s.language)
             setOrientation(s.orientation)
             setDarkMode(s.isDarkMode)
             setPin(s.pin)
@@ -115,7 +120,7 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
                     val files = result.data
                     app.getString(R.string.test_ok, files.size, files.count { it.isImage() }, files.count { it.isVideo() })
                 }
-                is Result.Error -> app.getString(R.string.test_failed, result.exception.message ?: result.exception.javaClass.simpleName)
+                is Result.Error -> app.getString(R.string.test_failed, ErrorText.of(app, result.exception))
                 else -> ""
             }
         }

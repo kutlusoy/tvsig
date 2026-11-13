@@ -13,11 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import com.kutlusoy.tvsig.BuildConfig
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.ActivitySettingsBinding
+import com.kutlusoy.tvsig.models.AppLanguage
 import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.models.SourceType
 import com.kutlusoy.tvsig.ui.dialogs.ChangePinDialog
 import com.kutlusoy.tvsig.ui.dialogs.FolderPickerDialog
 import com.kutlusoy.tvsig.ui.dialogs.RemoteSetupDialog
+import com.kutlusoy.tvsig.utils.LanguageHelper
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 import com.kutlusoy.tvsig.viewmodels.SettingsViewModel
@@ -33,6 +35,7 @@ class SettingsActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingsBinding
     private val viewModel: SettingsViewModel by viewModels()
     private var bindingFields = false
+    private var rotation = 0
 
     private val delayOptions = listOf(3, 5, 8, 10, 15, 20, 30, 45, 60, 90, 120, 180, 300)
     private val orientationOptions: List<Int> by lazy {
@@ -53,7 +56,8 @@ class SettingsActivity : AppCompatActivity() {
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
             val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout())
-            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            val padding = OrientationHelper.rotateInsets(bars.left, bars.top, bars.right, bars.bottom, rotation)
+            view.setPadding(padding[0], padding[1], padding[2], padding[3])
             insets
         }
         applyOrientation(PreferenceHelper.getInstance(this).getOrientation())
@@ -63,7 +67,9 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun applyOrientation(orientation: Int) {
+        rotation = if (orientation == OrientationHelper.ORIENTATION_AUTO) 0 else OrientationHelper.rotationDegrees(orientation)
         OrientationHelper.setOrientation(this, orientation)
+        ViewCompat.requestApplyInsets(binding.root)
     }
 
     private fun setupViews() {
@@ -105,6 +111,12 @@ class SettingsActivity : AppCompatActivity() {
 
             themeRow.setOptions(listOf(getString(R.string.theme_light), getString(R.string.theme_dark)), if (settings.isDarkMode) 1 else 0)
             themeRow.onSelectionChanged = { viewModel.updateSettings(isDarkMode = it == 1) }
+
+            languageRow.setOptions(
+                listOf(getString(R.string.language_auto), getString(R.string.language_en), getString(R.string.language_de), getString(R.string.language_tr)),
+                settings.language
+            )
+            languageRow.onSelectionChanged = { viewModel.updateSettings(language = it) }
 
             btnRemoteSetup.setOnClickListener { RemoteSetupDialog.show(supportFragmentManager) }
             btnPickFolder.setOnClickListener {
@@ -151,6 +163,7 @@ class SettingsActivity : AppCompatActivity() {
                     AppCompatDelegate.setDefaultNightMode(
                         if (viewModel.settings.value.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                     )
+                    LanguageHelper.apply(AppLanguage.fromId(viewModel.settings.value.language))
                     finish()
                 }
             }

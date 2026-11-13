@@ -16,8 +16,10 @@ import android.os.PowerManager
 import android.os.Process
 import android.provider.Settings
 import androidx.appcompat.app.AppCompatDelegate
+import com.kutlusoy.tvsig.models.AppLanguage
 import com.kutlusoy.tvsig.services.ForegroundService
 import com.kutlusoy.tvsig.ui.activities.MainActivity
+import com.kutlusoy.tvsig.utils.LanguageHelper
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 import com.kutlusoy.tvsig.utils.RestartBackoff
@@ -162,6 +164,7 @@ class TVSigApp : Application() {
     }
 
     private fun initializeApp() {
+        LanguageHelper.apply(AppLanguage.fromId(PreferenceHelper.getInstance(this).getLanguage()))
         val isDarkMode = PreferenceHelper.getInstance(this).isDarkMode()
         AppCompatDelegate.setDefaultNightMode(
             if (isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO

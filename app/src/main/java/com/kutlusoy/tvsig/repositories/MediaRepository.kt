@@ -4,6 +4,7 @@ import android.content.Context
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kutlusoy.tvsig.models.Constants
+import com.kutlusoy.tvsig.models.ErrorMessages
 import com.kutlusoy.tvsig.models.FolderPath
 import com.kutlusoy.tvsig.models.MediaFile
 import com.kutlusoy.tvsig.models.Result
@@ -402,12 +403,12 @@ class MediaRepository private constructor(private val context: Context) {
     }
 
     companion object {
-        const val ERROR_OFFLINE = "Offline"
-        const val ERROR_LISTING = "Folder listing not available"
-        const val ERROR_NO_MEDIA = "No media found"
-        const val ERROR_BLOCKED = "The server sent a web page instead of the file (access or download limit)"
-        const val ERROR_DRIVE_LINK = "No Google Drive folder ID found in the link"
-        const val ERROR_DRIVE_FOLDER = "Drive folder not found or not shared with anyone who has the link"
+        const val ERROR_OFFLINE = ErrorMessages.OFFLINE
+        const val ERROR_LISTING = ErrorMessages.LISTING
+        const val ERROR_NO_MEDIA = ErrorMessages.NO_MEDIA
+        const val ERROR_BLOCKED = ErrorMessages.BLOCKED
+        const val ERROR_DRIVE_LINK = ErrorMessages.DRIVE_LINK
+        const val ERROR_DRIVE_FOLDER = ErrorMessages.DRIVE_FOLDER
 
         private const val MEDIA_DIR_NAME = "media"
         private const val PREFS_NAME = "media_cache"

@@ -70,6 +70,9 @@ jobs:
       - name: Build signed release APK and bundle
         run: ./gradlew assembleRelease bundleRelease --stacktrace
 
+      - name: Check that the Gson classes keep their names
+        run: python3 -I tools/check-keep-rules.py
+
       - name: Collect files
         run: |
           mkdir -p dist

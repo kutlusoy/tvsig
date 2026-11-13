@@ -33,6 +33,18 @@ object OrientationHelper {
         root.rotationDegrees = if (orientation == ORIENTATION_AUTO) 0 else rotationDegrees(orientation)
     }
 
+    /**
+     * Turns the system bar sizes of the screen into paddings of the rotated content. The screen edge
+     * that becomes the top of the content depends on the rotation, so the sizes have to move with it.
+     * Returns left, top, right and bottom of the content.
+     */
+    fun rotateInsets(left: Int, top: Int, right: Int, bottom: Int, degrees: Int): IntArray = when (degrees) {
+        90 -> intArrayOf(top, right, bottom, left)
+        180 -> intArrayOf(right, bottom, left, top)
+        270 -> intArrayOf(bottom, left, top, right)
+        else -> intArrayOf(left, top, right, bottom)
+    }
+
     /** Wraps a dialog view so it rotates like the activities; the dialog window must be full screen. */
     fun wrapDialogView(context: Context, view: View, orientation: Int, maxWidthDp: Int = DIALOG_MAX_WIDTH_DP): RotationLayout {
         (view.parent as? ViewGroup)?.removeView(view)
