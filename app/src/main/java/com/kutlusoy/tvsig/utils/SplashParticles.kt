@@ -17,6 +17,7 @@ data class Particle(
     val rise: Float,
     val drift: Float,
     val sway: Float,
+    val bob: Float,
     val phase: Float,
     val tint: Int,
     val alpha: Float,
@@ -33,8 +34,8 @@ object SplashParticles {
     const val TINT_BLUE = 1
     const val TINT_PINK = 2
 
-    private const val DUST_COUNT = 190
-    private const val GLITTER_COUNT = 54
+    private const val DUST_COUNT = 320
+    private const val GLITTER_COUNT = 90
     private const val SWEEP_START = 0.19f
     private const val SWEEP_END = 0.57f
     private const val SWEEP_LEFT = 655f
@@ -66,14 +67,15 @@ object SplashParticles {
                 x = random.between(-0.06f, 1.06f),
                 y = random.next(),
                 z = z,
-                size = if (glitter) 9f + z * 15f else 2.5f + z * z * 7.5f,
-                rise = 0.02f + z * 0.07f,
-                drift = random.between(-0.012f, 0.012f) * (0.4f + z),
-                sway = random.between(0.6f, 1.8f),
+                size = if (glitter) 11f + z * 17f else 3.5f + z * z * 7.5f,
+                rise = 0.006f + z * 0.02f,
+                drift = random.between(-0.008f, 0.008f) * (0.4f + z),
+                sway = random.between(0.7f, 1.7f),
+                bob = random.between(0.7f, 1.7f),
                 phase = random.next(),
                 tint = if (glitter && tint == TINT_PINK) TINT_WHITE else tint,
-                alpha = if (glitter) 0.55f + z * 0.35f else 0.22f + z * 0.3f,
-                appear = random.between(0.0f, 0.3f),
+                alpha = if (glitter) 0.75f + z * 0.25f else 0.5f + z * 0.4f,
+                appear = random.between(0.0f, 0.12f),
                 glitter = glitter,
                 rate = random.between(0.18f, 0.5f)
             )
@@ -98,10 +100,11 @@ object SplashParticles {
     }
 
     fun x(p: Particle, seconds: Float): Float =
-        p.x + p.drift * seconds + 0.02f * (0.5f + p.z) * sin(2.0 * PI * (seconds * 0.2f * p.sway + p.phase)).toFloat()
+        p.x + p.drift * seconds + 0.035f * (0.5f + p.z) * sin(2.0 * PI * (seconds * 0.16f * p.sway + p.phase)).toFloat()
 
     fun y(p: Particle, seconds: Float): Float {
-        val y = (p.y - p.rise * seconds) % 1f
+        val float = 0.03f * (0.5f + p.z) * sin(2.0 * PI * (seconds * 0.13f * p.bob + p.phase * 2.3f)).toFloat()
+        val y = (p.y - p.rise * seconds + float) % 1f
         return if (y < 0f) y + 1f else y
     }
 
@@ -110,7 +113,7 @@ object SplashParticles {
 
     /** Particles fade in one after the other. Dust twinkles softly, glitter flashes. */
     fun alpha(p: Particle, progress: Float, seconds: Float): Float {
-        val fade = ((progress - p.appear) / 0.15f).coerceIn(0f, 1f)
+        val fade = ((progress - p.appear) / 0.1f).coerceIn(0f, 1f)
         val wave = (0.5f + 0.5f * sin(2.0 * PI * (seconds * p.rate + p.phase * 3f)).toFloat())
         val shine = if (p.glitter) wave.pow(5) else 0.7f + 0.3f * wave
         return (p.alpha * fade * shine).coerceIn(0f, 1f)

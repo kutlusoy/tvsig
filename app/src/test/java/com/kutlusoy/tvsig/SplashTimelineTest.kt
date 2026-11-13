@@ -114,8 +114,8 @@ class SplashParticlesTest {
     @Test
     fun thereIsDustAndGlitterInEveryDepth() {
         val particles = com.kutlusoy.tvsig.utils.SplashParticles.particles
-        assertTrue(particles.count { it.glitter } >= 50)
-        assertTrue(particles.count { !it.glitter } >= 180)
+        assertTrue(particles.count { it.glitter } >= 80)
+        assertTrue(particles.count { !it.glitter } >= 300)
         assertTrue(particles.zipWithNext().all { it.first.z <= it.second.z })
     }
 
@@ -143,7 +143,7 @@ class SplashMotionTest {
             val dy = com.kutlusoy.tvsig.utils.SplashParticles.y(it, 5f) - com.kutlusoy.tvsig.utils.SplashParticles.y(it, 0f)
             kotlin.math.hypot(dx, dy)
         }
-        assertTrue(moved.average() > 0.1)
-        assertTrue(moved.min() > 0.05)
+        assertTrue(moved.average() > 0.04)
+        assertTrue(moved.count { it > 0.015 } > particles.size * 0.85)
     }
 }

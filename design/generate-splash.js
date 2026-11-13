@@ -90,7 +90,7 @@ const layers = {
   splash_particle: [DOT,
     `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,255,255,.55) 30%,rgba(255,255,255,.14) 65%,rgba(255,255,255,0) 100%)"></div>`],
   splash_dot_soft: [SHARP,
-    `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.75) 0%,rgba(255,255,255,.32) 28%,rgba(255,255,255,.09) 58%,rgba(255,255,255,0) 92%)"></div>`],
+    `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.95) 0%,rgba(255,255,255,.5) 30%,rgba(255,255,255,.14) 60%,rgba(255,255,255,0) 92%)"></div>`],
   splash_dot_sharp: [SHARP,
     `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,255,255,.95) 46%,rgba(255,255,255,.35) 68%,rgba(255,255,255,0) 82%)"></div>`],
   splash_star: [STAR,

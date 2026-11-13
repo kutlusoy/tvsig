@@ -203,7 +203,7 @@ class SplashAnimationView @JvmOverloads constructor(
             if ((particle.z >= SplashParticles.FRONT_DEPTH) != front) continue
             val alpha = SplashParticles.alpha(particle, progress, seconds)
             if (alpha <= 0.01f) continue
-            val radius = particle.size * unit * (1f + PUSH_IN * progress * (0.5f + particle.z)) * if (particle.glitter) 1.5f else 0.5f
+            val radius = particle.size * unit * (1f + PUSH_IN * progress * (0.5f + particle.z)) * if (particle.glitter) 1.5f else 0.75f
             val cx = (SplashParticles.x(particle, seconds) - pan * SplashParticles.parallax(particle)) * width
             val cy = SplashParticles.y(particle, seconds) * height
             particleTarget.set(cx - radius, cy - radius, cx + radius, cy + radius)
