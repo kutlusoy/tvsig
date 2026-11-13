@@ -40,7 +40,6 @@ class SplashAnimationView @JvmOverloads constructor(
     private val logo = load(R.drawable.splash_logo)
     private val spark = load(R.drawable.splash_spark)
     private val dot = load(R.drawable.splash_particle)
-    private val star = load(R.drawable.splash_star)
     private val dotSharp = load(R.drawable.splash_dot_sharp)
     private val dotSoft = load(R.drawable.splash_dot_soft)
     private val title = load(R.drawable.splash_title)
@@ -142,7 +141,7 @@ class SplashAnimationView @JvmOverloads constructor(
     /** Every bitmap is drawn once under the opaque background, so the textures are uploaded before the animation runs. */
     private fun warmUp(canvas: Canvas) {
         val target = RectF(0f, 0f, 16f, 16f)
-        listOf(glowWide, glowNear, logoWhite, logo, spark, title, subtitle) + listOf(star, dot, dotSharp, dotSoft).flatMap { sprites.getOrPut(it) { Array(tintColors.size) { tint -> tinted(it, tintColors[tint]) } }.toList() }.forEach {
+        listOf(glowWide, glowNear, logoWhite, logo, spark, title, subtitle) + listOf(dot, dotSharp, dotSoft).flatMap { sprites.getOrPut(it) { Array(tintColors.size) { tint -> tinted(it, tintColors[tint]) } }.toList() }.forEach {
             canvas.drawBitmap(it, null, target, paint)
         }
     }
@@ -187,7 +186,6 @@ class SplashAnimationView @JvmOverloads constructor(
         }
         draw(canvas, title, TITLE, frame.titleAlpha, frame.titleOffsetY)
         draw(canvas, subtitle, SUBTITLE, frame.subtitleAlpha, frame.subtitleOffsetY)
-        drawSparkles(canvas)
         canvas.restore()
         drawParticles(canvas, front = true)
     }
@@ -206,14 +204,7 @@ class SplashAnimationView @JvmOverloads constructor(
             )
             val tint = if (particle.z < HAZE_DEPTH) SplashParticles.TINT_BLUE else particle.tint
             spritePaint.alpha = (placement.alpha * 255).toInt().coerceIn(0, 255)
-            if (particle.glitter) {
-                canvas.save()
-                canvas.rotate(placement.alpha * 20f, placement.cx, placement.cy)
-                canvas.drawBitmap(sprite(star, tint), null, particleTarget, spritePaint)
-                canvas.restore()
-            } else {
-                canvas.drawBitmap(sprite(focus(particle.z), tint), null, particleTarget, spritePaint)
-            }
+            canvas.drawBitmap(sprite(focus(particle.z), tint), null, particleTarget, spritePaint)
         }
     }
 
@@ -235,21 +226,6 @@ class SplashAnimationView @JvmOverloads constructor(
         z >= SplashParticles.FRONT_DEPTH -> dotSharp
         z >= SHARPER_DEPTH -> dot
         else -> dotSoft
-    }
-
-    private fun drawSparkles(canvas: Canvas) {
-        val seconds = (progress * SplashTimeline.DURATION_MS + idleMs) / 1000f
-        for (sparkle in SplashParticles.sparkles) {
-            val alpha = SplashParticles.sparkleAlpha(sparkle, progress, seconds)
-            if (alpha <= 0.01f) continue
-            val half = SplashParticles.sparkleScale(sparkle, alpha) * 1.6f
-            particleTarget.set(sparkle.x - half, sparkle.y - half, sparkle.x + half, sparkle.y + half)
-            spritePaint.alpha = (alpha * 255).toInt().coerceIn(0, 255)
-            canvas.save()
-            canvas.rotate(alpha * 18f, sparkle.x, sparkle.y)
-            canvas.drawBitmap(sprite(star, sparkle.tint), null, particleTarget, spritePaint)
-            canvas.restore()
-        }
     }
 
     private fun drawBackground(canvas: Canvas) {

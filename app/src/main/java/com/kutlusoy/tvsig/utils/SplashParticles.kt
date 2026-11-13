@@ -7,7 +7,7 @@ import kotlin.math.sin
 /**
  * A particle in a space with depth. [z] is 0 far away and 1 close. Far particles are small, dim and move
  * little, close ones are a bit larger and move more, which gives the parallax. [x] and [y] are shares of the
- * screen, [size] is in design units. Glitter particles are stars that flash at their own pace.
+ * screen, [size] is in design units. Glitter particles are the same dots, but they flash at their own pace.
  */
 data class Particle(
     val x: Float,
@@ -34,27 +34,18 @@ class ParticlePlacement {
     var alpha = 0f
 }
 
-/** A glitter star on the stage, in design units. It flashes when the light sweep passes over it. */
-data class Sparkle(val x: Float, val y: Float, val size: Float, val phase: Float, val tint: Int, val trigger: Float)
-
 object SplashParticles {
     const val TINT_WHITE = 0
     const val TINT_BLUE = 1
     const val TINT_PINK = 2
 
     private const val MIN_VISIBLE_ALPHA = 0.01f
-    private const val DUST_COUNT = 320
-    private const val GLITTER_COUNT = 90
-    private const val SWEEP_START = 0.19f
-    private const val SWEEP_END = 0.57f
-    private const val SWEEP_LEFT = 655f
-    private const val SWEEP_WIDTH = 570f
-    private const val FLASH_LENGTH = 0.1f
+    private const val DUST_COUNT = 150
+    private const val GLITTER_COUNT = 36
 
     /** Particles from far to close. */
     val particles: List<Particle> = build()
     const val FRONT_DEPTH = 0.7f
-    val sparkles: List<Sparkle> = buildSparkles()
 
     private class Random(seed: Long) {
         private var state = seed
@@ -76,36 +67,20 @@ object SplashParticles {
                 x = random.between(-0.06f, 1.06f),
                 y = random.next(),
                 z = z,
-                size = if (glitter) 11f + z * 17f else 3.5f + z * z * 7.5f,
+                size = 3.5f + z * z * 7.5f,
                 rise = 0.006f + z * 0.02f,
                 drift = random.between(-0.008f, 0.008f) * (0.4f + z),
                 sway = random.between(0.7f, 1.7f),
                 bob = random.between(0.7f, 1.7f),
                 phase = random.next(),
                 tint = if (glitter && tint == TINT_PINK) TINT_WHITE else tint,
-                alpha = if (glitter) 0.75f + z * 0.25f else 0.5f + z * 0.4f,
+                alpha = if (glitter) 0.55f + z * 0.4f else 0.32f + z * 0.36f,
                 appear = random.between(0.0f, 0.12f),
                 glitter = glitter,
                 rate = random.between(0.18f, 0.5f)
             )
         }
         return result.sortedBy { it.z }
-    }
-
-    private fun buildSparkles(): List<Sparkle> {
-        val random = Random(23)
-        return List(14) {
-            val x = random.between(700f, 1230f)
-            val y = random.between(130f, 700f)
-            val reach = ((x - SWEEP_LEFT) / SWEEP_WIDTH).coerceIn(0f, 1f)
-            Sparkle(
-                x = x, y = y,
-                size = random.between(16f, 44f),
-                phase = random.next(),
-                tint = if (random.next() < 0.7f) TINT_WHITE else TINT_BLUE,
-                trigger = SWEEP_START + (SWEEP_END - SWEEP_START) * reach + 0.03f
-            )
-        }
     }
 
     fun x(p: Particle, seconds: Float): Float =
@@ -120,7 +95,7 @@ object SplashParticles {
     /** How far a particle follows the slow camera move. Close ones move more than the logo, far ones less. */
     fun parallax(p: Particle): Float = 0.15f + 1.7f * p.z
 
-    /** Particles fade in one after the other. Dust twinkles softly, glitter flashes. */
+    /** Particles fade in one after the other. Dust twinkles softly, glitter dots light up now and then. */
     fun alpha(p: Particle, progress: Float, seconds: Float): Float {
         val fade = ((progress - p.appear) / 0.1f).coerceIn(0f, 1f)
         val wave = (0.5f + 0.5f * sin(2.0 * PI * (seconds * p.rate + p.phase * 3f)).toFloat())
@@ -136,22 +111,9 @@ object SplashParticles {
         val pan = (progress - 0.5f) * SplashTimeline.PAN
         val zoom = 1f + SplashTimeline.PUSH_IN * progress * (0.5f + p.z)
         out.alpha = alpha
-        out.radius = p.size * unit * zoom * if (p.glitter) 1.5f else 0.75f
+        out.radius = p.size * unit * zoom * 0.75f
         out.cx = (x(p, seconds) - pan * parallax(p)) * width
         out.cy = y(p, seconds) * height
         return true
     }
-
-    /** A bright flash when the sweep arrives, then a faint slow twinkle. */
-    fun sparkleAlpha(s: Sparkle, progress: Float, seconds: Float): Float {
-        if (progress < s.trigger) return 0f
-        val since = (progress - s.trigger) / FLASH_LENGTH
-        val flash = if (since < 1f) (1f - since).pow(2) else 0f
-        val twinkle = (0.5f + 0.5f * sin(2.0 * PI * (seconds * 0.22f + s.phase)).toFloat()).pow(6) * 0.5f
-        val settle = ((progress - s.trigger) / 0.2f).coerceIn(0f, 1f)
-        return (flash + twinkle * settle).coerceIn(0f, 1f)
-    }
-
-    /** The star turns a little while it shines. */
-    fun sparkleScale(s: Sparkle, alpha: Float): Float = s.size * (0.55f + 0.45f * alpha)
 }

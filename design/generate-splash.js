@@ -20,7 +20,6 @@ const SPARK_CENTER = { x: 1162, y: 158 };
 const SPARK = { x: SPARK_CENTER.x - 150, y: SPARK_CENTER.y - 150, w: 300, h: 300, scale: 1 };
 const DOT = { x: 0, y: 0, w: 64, h: 64, scale: 1 };
 const SHARP = { x: 0, y: 0, w: 64, h: 64, scale: 1 };
-const STAR = { x: 0, y: 0, w: 128, h: 128, scale: 1 };
 
 const FONT = "Arial, Helvetica, 'Liberation Sans', sans-serif";
 
@@ -93,12 +92,6 @@ const layers = {
     `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.95) 0%,rgba(255,255,255,.5) 30%,rgba(255,255,255,.14) 60%,rgba(255,255,255,0) 92%)"></div>`],
   splash_dot_sharp: [SHARP,
     `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,255,255,.95) 46%,rgba(255,255,255,.35) 68%,rgba(255,255,255,0) 82%)"></div>`],
-  splash_star: [STAR,
-    `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,.9) 0%,rgba(255,255,255,.3) 14%,rgba(255,255,255,0) 40%)"></div>` +
-    `<div style="position:absolute;left:0;top:61px;width:128px;height:6px;border-radius:3px;filter:blur(.8px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>` +
-    `<div style="position:absolute;left:61px;top:0;width:6px;height:128px;border-radius:3px;filter:blur(.8px);background:linear-gradient(180deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>` +
-    `<div style="position:absolute;left:24px;top:62px;width:80px;height:4px;transform:rotate(45deg);opacity:.5;filter:blur(.8px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>` +
-    `<div style="position:absolute;left:24px;top:62px;width:80px;height:4px;transform:rotate(-45deg);opacity:.5;filter:blur(.8px);background:linear-gradient(90deg,rgba(255,255,255,0),#fff 50%,rgba(255,255,255,0))"></div>`],
 };
 
 (async () => {
@@ -109,7 +102,7 @@ const layers = {
     const w = Math.round(region.w * region.scale), h = Math.round(region.h * region.scale);
     await tab.setViewportSize({ width: w, height: h });
     await tab.setContent(`<html><body style="margin:0;width:${w}px;height:${h}px;position:relative;overflow:hidden;background:transparent">${body}</body></html>`);
-    if (name.startsWith('splash_p') || name === 'splash_star' || name.startsWith('splash_dot')) b64[name] = '';
+    if (name.startsWith('splash_p') || name.startsWith('splash_dot')) b64[name] = '';
     const file = path.join(out, `${name}.png`);
     await tab.screenshot({ path: file, omitBackground: true });
     b64[name] = fs.readFileSync(file).toString('base64');

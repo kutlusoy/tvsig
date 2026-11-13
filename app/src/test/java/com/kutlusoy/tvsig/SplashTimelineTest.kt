@@ -114,23 +114,9 @@ class SplashParticlesTest {
     @Test
     fun thereIsDustAndGlitterInEveryDepth() {
         val particles = com.kutlusoy.tvsig.utils.SplashParticles.particles
-        assertTrue(particles.count { it.glitter } >= 80)
-        assertTrue(particles.count { !it.glitter } >= 300)
+        assertTrue(particles.count { it.glitter } >= 30)
+        assertTrue(particles.count { !it.glitter } >= 120)
         assertTrue(particles.zipWithNext().all { it.first.z <= it.second.z })
-    }
-
-    @Test
-    fun sparklesFlashWhenTheSweepArrives() {
-        for (sparkle in com.kutlusoy.tvsig.utils.SplashParticles.sparkles) {
-            assertEquals(0f, com.kutlusoy.tvsig.utils.SplashParticles.sparkleAlpha(sparkle, sparkle.trigger - 0.01f, 1f), 0f)
-            assertTrue(com.kutlusoy.tvsig.utils.SplashParticles.sparkleAlpha(sparkle, sparkle.trigger + 0.005f, 1f) > 0.6f)
-        }
-    }
-
-    @Test
-    fun sparklesFollowTheSweepFromLeftToRight() {
-        val sorted = com.kutlusoy.tvsig.utils.SplashParticles.sparkles.sortedBy { it.x }
-        assertTrue(sorted.zipWithNext().all { it.first.trigger <= it.second.trigger })
     }
 }
 
@@ -158,6 +144,6 @@ class SplashVisibilityTest {
                 placement.alpha > 0.25f && placement.radius >= 2f &&
                 placement.cx in 0f..1280f && placement.cy in 0f..720f
         }
-        assertTrue("only ${visible.size} visible", visible.size >= 200)
+        assertTrue("only ${visible.size} visible", visible.size >= 80)
     }
 }
