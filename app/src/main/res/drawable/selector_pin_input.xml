@@ -5,7 +5,7 @@
             <corners android:radius="@dimen/button_corner_radius"/>
             <stroke
                 android:width="2dp"
-                android:color="?attr/colorPrimary"/>
+                android:color="@color/focus_ring"/>
             <solid android:color="?attr/colorSurface"/>
         </shape>
     </item>
