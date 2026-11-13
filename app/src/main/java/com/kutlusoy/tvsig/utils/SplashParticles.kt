@@ -4,17 +4,24 @@ import kotlin.math.PI
 import kotlin.math.pow
 import kotlin.math.sin
 
-/** Dust that drifts across the whole screen. Positions are shares of the screen, sizes are design units. */
-data class DustParticle(
+/**
+ * A particle in a space with depth. [z] is 0 far away and 1 close. Far particles are small, dim and move
+ * little, close ones are a bit larger and move more, which gives the parallax. [x] and [y] are shares of the
+ * screen, [size] is in design units. Glitter particles are stars that flash at their own pace.
+ */
+data class Particle(
     val x: Float,
     val y: Float,
+    val z: Float,
     val size: Float,
     val rise: Float,
     val sway: Float,
     val phase: Float,
     val tint: Int,
     val alpha: Float,
-    val appear: Float
+    val appear: Float,
+    val glitter: Boolean,
+    val rate: Float
 )
 
 /** A glitter star on the stage, in design units. It flashes when the light sweep passes over it. */
@@ -25,13 +32,17 @@ object SplashParticles {
     const val TINT_BLUE = 1
     const val TINT_PINK = 2
 
+    private const val DUST_COUNT = 78
+    private const val GLITTER_COUNT = 26
     private const val SWEEP_START = 0.19f
     private const val SWEEP_END = 0.57f
     private const val SWEEP_LEFT = 655f
     private const val SWEEP_WIDTH = 570f
     private const val FLASH_LENGTH = 0.1f
 
-    val dust: List<DustParticle> = build()
+    /** Particles from far to close. */
+    val particles: List<Particle> = build()
+    const val FRONT_DEPTH = 0.7f
     val sparkles: List<Sparkle> = buildSparkles()
 
     private class Random(seed: Long) {
@@ -43,23 +54,29 @@ object SplashParticles {
         fun between(low: Float, high: Float) = low + next() * (high - low)
     }
 
-    private fun build(): List<DustParticle> {
+    private fun build(): List<Particle> {
         val random = Random(11)
-        val result = ArrayList<DustParticle>()
-        repeat(34) {
-            val depth = random.next()
-            result += DustParticle(
-                x = random.next(), y = random.next(),
-                size = 3f + depth * depth * 16f,
-                rise = 0.006f + depth * 0.03f,
+        val result = ArrayList<Particle>()
+        repeat(DUST_COUNT + GLITTER_COUNT) { index ->
+            val glitter = index >= DUST_COUNT
+            val z = random.next().let { it * it * 0.4f + it * 0.6f }
+            val tint = when { random.next() < 0.5f -> TINT_BLUE; random.next() < 0.5f -> TINT_PINK; else -> TINT_WHITE }
+            result += Particle(
+                x = random.between(-0.06f, 1.06f),
+                y = random.next(),
+                z = z,
+                size = if (glitter) 9f + z * 15f else 2.5f + z * z * 7.5f,
+                rise = 0.004f + z * 0.022f,
                 sway = random.between(0.6f, 1.8f),
                 phase = random.next(),
-                tint = when { random.next() < 0.5f -> TINT_BLUE; random.next() < 0.5f -> TINT_PINK; else -> TINT_WHITE },
-                alpha = 0.16f + (1f - depth) * 0.3f,
-                appear = random.between(0.02f, 0.3f)
+                tint = if (glitter && tint == TINT_PINK) TINT_WHITE else tint,
+                alpha = if (glitter) 0.55f + z * 0.35f else 0.22f + z * 0.3f,
+                appear = random.between(0.0f, 0.3f),
+                glitter = glitter,
+                rate = random.between(0.18f, 0.5f)
             )
         }
-        return result
+        return result.sortedBy { it.z }
     }
 
     private fun buildSparkles(): List<Sparkle> {
@@ -78,19 +95,23 @@ object SplashParticles {
         }
     }
 
-    fun dustX(p: DustParticle, seconds: Float): Float =
+    fun x(p: Particle, seconds: Float): Float =
         p.x + 0.012f * sin(2.0 * PI * (seconds * 0.12f * p.sway + p.phase)).toFloat()
 
-    fun dustY(p: DustParticle, seconds: Float): Float {
+    fun y(p: Particle, seconds: Float): Float {
         val y = (p.y - p.rise * seconds) % 1f
         return if (y < 0f) y + 1f else y
     }
 
-    /** Dust fades in one after the other and keeps a soft twinkle. */
-    fun dustAlpha(p: DustParticle, progress: Float, seconds: Float): Float {
+    /** How far a particle follows the slow camera move. Close ones move more than the logo, far ones less. */
+    fun parallax(p: Particle): Float = 0.15f + 1.7f * p.z
+
+    /** Particles fade in one after the other. Dust twinkles softly, glitter flashes. */
+    fun alpha(p: Particle, progress: Float, seconds: Float): Float {
         val fade = ((progress - p.appear) / 0.15f).coerceIn(0f, 1f)
-        val twinkle = 0.75f + 0.25f * sin(2.0 * PI * (seconds * 0.35f * p.sway + p.phase * 3f)).toFloat()
-        return (p.alpha * fade * twinkle).coerceIn(0f, 1f)
+        val wave = (0.5f + 0.5f * sin(2.0 * PI * (seconds * p.rate + p.phase * 3f)).toFloat())
+        val shine = if (p.glitter) wave.pow(5) else 0.7f + 0.3f * wave
+        return (p.alpha * fade * shine).coerceIn(0f, 1f)
     }
 
     /** A bright flash when the sweep arrives, then a faint slow twinkle. */

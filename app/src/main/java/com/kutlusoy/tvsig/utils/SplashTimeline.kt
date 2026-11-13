@@ -8,8 +8,6 @@ data class SplashFrame(
     val aura: Float,
     val logoAlpha: Float,
     val logoOffsetY: Float,
-    val logoRotateY: Float,
-    val logoRotateX: Float,
     val logoScale: Float,
     val glowWide: Float,
     val glowNear: Float,
@@ -67,8 +65,6 @@ object SplashTimeline {
     private val aura = Track(ease, 0f to 0f, 0.06f to 0f, 0.27f to 0.65f, 0.70f to 0.35f, 1f to 0.35f)
     private val logoAlpha = Track(ease, 0f to 0f, 0.05f to 0f, 0.23f to 1f, 1f to 1f)
     private val logoOffsetY = Track(ease, 0f to 15f, 0.05f to 15f, 0.38f to 0f, 1f to 0f)
-    private val logoRotateY = Track(ease, 0f to -42f, 0.05f to -42f, 0.38f to 4f, 0.62f to 0f, 1f to 0f)
-    private val logoRotateX = Track(ease, 0f to 9f, 0.05f to 9f, 0.38f to 0f, 1f to 0f)
     private val logoScale = Track(ease, 0f to 0.88f, 0.05f to 0.88f, 0.38f to 1.018f, 0.62f to 1f, 1f to 1f)
     private val glow = Track(ease, 0f to 0f, 0.05f to 0f, 0.22f to 0.8f, 0.38f to 1f, 0.62f to 0.9f, 1f to 0.9f)
     private val sheenAlpha = Track(ease, 0f to 0f, 0.19f to 0f, 0.27f to 1f, 0.46f to 0.75f, 0.57f to 0f, 1f to 0f)
@@ -77,8 +73,8 @@ object SplashTimeline {
     private val titleOffset = Track(ease, 0f to 20f, 0.34f to 20f, 0.57f to 0f, 1f to 0f)
     private val subtitleAlpha = Track(ease, 0f to 0f, 0.45f to 0f, 0.66f to 1f, 1f to 1f)
     private val subtitleOffset = Track(ease, 0f to 13f, 0.45f to 13f, 0.66f to 0f, 1f to 0f)
-    private val sparkAlpha = Track(ease, 0f to 0f, 0.29f to 0f, 0.36f to 0.9f, 0.50f to 0f, 1f to 0f)
-    private val sparkScale = Track(ease, 0f to 0.6f, 0.29f to 0.6f, 0.36f to 1.1f, 0.50f to 0.8f, 1f to 0.8f)
+    private val sparkAlpha = Track(ease, 0f to 0f, 0.36f to 0f, 0.45f to 0.95f, 0.60f to 0f, 1f to 0f)
+    private val sparkScale = Track(ease, 0f to 0.6f, 0.36f to 0.6f, 0.45f to 1.1f, 0.60f to 0.8f, 1f to 0.8f)
 
     fun frame(progress: Float): SplashFrame {
         val p = progress.coerceIn(0f, 1f)
@@ -91,8 +87,6 @@ object SplashTimeline {
             aura = aura.at(p),
             logoAlpha = logoAlpha.at(p),
             logoOffsetY = logoOffsetY.at(p),
-            logoRotateY = logoRotateY.at(p),
-            logoRotateX = logoRotateX.at(p),
             logoScale = logoScale.at(p),
             glowWide = (glowBase * breath).coerceIn(0f, 1f),
             glowNear = (glowBase * 0.9f * breath + 0.3f * sheen).coerceIn(0f, 1f),

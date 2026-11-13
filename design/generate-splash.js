@@ -17,7 +17,8 @@ const GLOW = { x: LOGO.x - 130, y: LOGO.y - 130, w: LOGO.w + 260, h: LOGO.h + 26
 const TITLE = { x: 740, y: 515, w: 440, h: 165, scale: 2 };
 const SUB = { x: 760, y: 655, w: 400, h: 70, scale: 2 };
 const AURA = { x: 390, y: -55, w: 1140, h: 780, scale: 0.25 };
-const SPARK = { x: 860, y: 168, w: 430, h: 84, scale: 1 };
+const SPARK_CENTER = { x: 1162, y: 158 };
+const SPARK = { x: SPARK_CENTER.x - 215, y: SPARK_CENTER.y - 42, w: 430, h: 84, scale: 1 };
 const DOT = { x: 0, y: 0, w: 64, h: 64, scale: 1 };
 const STAR = { x: 0, y: 0, w: 128, h: 128, scale: 1 };
 
@@ -80,11 +81,11 @@ const layers = {
     `<div style="position:absolute;inset:0;background:radial-gradient(ellipse 50% 50% at 50% 50%,` +
     `rgba(52,104,214,.62) 0%,rgba(30,70,170,.34) 28%,rgba(16,45,111,.14) 55%,rgba(6,16,32,0) 100%)"></div>`],
   splash_spark: [SPARK,
-    `<div style="position:absolute;left:${1075 - SPARK.x - 115}px;top:${210 - SPARK.y - 36}px;width:230px;height:72px;background:radial-gradient(ellipse 50% 50% at 50% 50%,` +
+    `<div style="position:absolute;left:${SPARK_CENTER.x - SPARK.x - 115}px;top:${SPARK_CENTER.y - SPARK.y - 36}px;width:230px;height:72px;background:radial-gradient(ellipse 50% 50% at 50% 50%,` +
     `rgba(255,255,255,1) 0%,rgba(200,241,255,.85) 14%,rgba(120,183,255,.3) 50%,rgba(120,183,255,0) 100%)"></div>` +
-    `<div style="position:absolute;left:0;top:${210 - SPARK.y - 2}px;width:430px;height:4px;border-radius:2px;filter:blur(1.2px);` +
+    `<div style="position:absolute;left:0;top:${SPARK_CENTER.y - SPARK.y - 2}px;width:430px;height:4px;border-radius:2px;filter:blur(1.2px);` +
     `background:linear-gradient(90deg,rgba(80,170,255,0) 0%,rgba(120,200,255,.75) 38%,rgba(255,255,255,1) 50%,rgba(120,200,255,.75) 62%,rgba(80,170,255,0) 100%)"></div>` +
-    `<div style="position:absolute;left:0;top:${210 - SPARK.y - 9}px;width:430px;height:18px;border-radius:9px;filter:blur(7px);opacity:.55;` +
+    `<div style="position:absolute;left:0;top:${SPARK_CENTER.y - SPARK.y - 9}px;width:430px;height:18px;border-radius:9px;filter:blur(7px);opacity:.55;` +
     `background:linear-gradient(90deg,rgba(40,120,255,0) 0%,rgba(60,150,255,.8) 50%,rgba(40,120,255,0) 100%)"></div>`],
   splash_particle: [DOT,
     `<div style="position:absolute;inset:0;background:radial-gradient(circle,rgba(255,255,255,1) 0%,rgba(255,255,255,.55) 30%,rgba(255,255,255,.14) 65%,rgba(255,255,255,0) 100%)"></div>`],
@@ -137,14 +138,14 @@ svg *{transform-box:fill-box}
 #sheen{animation-name:sweep;animation-timing-function:ease-in-out}
 #title{animation-name:titleIn;animation-timing-function:cubic-bezier(.22,.72,.25,1)}
 #sub{animation-name:subIn;animation-timing-function:cubic-bezier(.22,.72,.25,1)}
-#spark{animation-name:sparkle;transform-origin:1075px 210px;transform-box:view-box}
+#spark{animation-name:sparkle;transform-origin:${SPARK_CENTER.x}px ${SPARK_CENTER.y}px;transform-box:view-box}
 @keyframes aura{0%,6%{opacity:0}27%{opacity:.65}70%,100%{opacity:.35}}
-@keyframes entrance{0%,5%{opacity:0;transform:translateY(15px) scale(.88,.88) skewY(-2deg)}23%{opacity:1}38%{transform:translateY(0) scale(1.018)}62%,100%{opacity:1;transform:none}}
+@keyframes entrance{0%,5%{opacity:0;transform:translateY(15px) scale(.88)}23%{opacity:1}38%{transform:translateY(0) scale(1.018)}62%,100%{opacity:1;transform:none}}
 @keyframes breathe{0%,100%{opacity:1}50%{opacity:.8}}
 @keyframes sweep{0%,19%{opacity:0;transform:translateX(-550px)}27%{opacity:1}46%{opacity:.75}57%,100%{opacity:0;transform:translateX(570px)}}
 @keyframes titleIn{0%,34%{opacity:0;transform:translateY(20px)}57%,100%{opacity:1;transform:translateY(0)}}
 @keyframes subIn{0%,45%{opacity:0;transform:translateY(13px)}66%,100%{opacity:1;transform:translateY(0)}}
-@keyframes sparkle{0%,29%{opacity:0;transform:scale(.6)}36%{opacity:.9;transform:scale(1.1)}50%,100%{opacity:0;transform:scale(.8)}}
+@keyframes sparkle{0%,36%{opacity:0;transform:scale(.6)}45%{opacity:.95;transform:scale(1.1)}60%,100%{opacity:0;transform:scale(.8)}}
 @media(prefers-reduced-motion:reduce){#aura,#glowWide,#glowNear,#logo,#title,#sub{animation:none;opacity:1;transform:none}#sheen,#spark{animation:none;opacity:0}}
 </style>
 </defs>

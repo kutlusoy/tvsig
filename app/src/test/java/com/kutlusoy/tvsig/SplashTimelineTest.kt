@@ -24,7 +24,6 @@ class SplashTimelineTest {
         assertEquals(1f, frame.titleAlpha, 0f)
         assertEquals(1f, frame.subtitleAlpha, 0f)
         assertEquals(0f, frame.logoOffsetY, 0f)
-        assertEquals(0f, frame.logoRotateY, 0f)
         assertEquals(1f, frame.logoScale, 0f)
         assertEquals(0f, frame.sheenAlpha, 0f)
         assertEquals(0f, frame.sparkAlpha, 0f)
@@ -61,7 +60,6 @@ class SplashTimelineTest {
         var last = SplashTimeline.frame(0f)
         for (i in 1..1000) {
             val frame = SplashTimeline.frame(i / 1000f)
-            assertTrue(kotlin.math.abs(frame.logoRotateY - last.logoRotateY) < 2f)
             assertTrue(kotlin.math.abs(frame.logoScale - last.logoScale) < 0.01f)
             last = frame
         }
@@ -83,22 +81,41 @@ class SplashTimelineTest {
 
 class SplashParticlesTest {
     @Test
-    fun dustStaysOnTheScreenAndInRange() {
-        for (particle in com.kutlusoy.tvsig.utils.SplashParticles.dust) {
+    fun particlesStayOnTheScreenAndInRange() {
+        for (particle in com.kutlusoy.tvsig.utils.SplashParticles.particles) {
             for (second in 0..60) {
-                val y = com.kutlusoy.tvsig.utils.SplashParticles.dustY(particle, second.toFloat())
+                val y = com.kutlusoy.tvsig.utils.SplashParticles.y(particle, second.toFloat())
                 assertTrue(y in 0f..1f)
-                val alpha = com.kutlusoy.tvsig.utils.SplashParticles.dustAlpha(particle, 0.5f, second.toFloat())
+                val alpha = com.kutlusoy.tvsig.utils.SplashParticles.alpha(particle, 0.5f, second.toFloat())
                 assertTrue(alpha in 0f..1f)
             }
         }
     }
 
     @Test
-    fun dustIsInvisibleAtTheStart() {
-        com.kutlusoy.tvsig.utils.SplashParticles.dust.forEach {
-            assertEquals(0f, com.kutlusoy.tvsig.utils.SplashParticles.dustAlpha(it, 0f, 0f), 0f)
+    fun particlesAreInvisibleAtTheStart() {
+        com.kutlusoy.tvsig.utils.SplashParticles.particles.forEach {
+            if (it.appear > 0f) assertEquals(0f, com.kutlusoy.tvsig.utils.SplashParticles.alpha(it, 0f, 0f), 0f)
         }
+    }
+
+    @Test
+    fun closeParticlesAreLargerAndMoveMore() {
+        val particles = com.kutlusoy.tvsig.utils.SplashParticles.particles
+        val far = particles.filter { !it.glitter && it.z < 0.3f }
+        val close = particles.filter { !it.glitter && it.z > 0.7f }
+        assertTrue(far.isNotEmpty() && close.isNotEmpty())
+        assertTrue(far.map { it.size }.average() < close.map { it.size }.average())
+        assertTrue(far.maxOf { it.size } < 6f && close.maxOf { it.size } < 12f)
+        assertTrue(com.kutlusoy.tvsig.utils.SplashParticles.parallax(far.first()) < com.kutlusoy.tvsig.utils.SplashParticles.parallax(close.first()))
+    }
+
+    @Test
+    fun thereIsDustAndGlitterInEveryDepth() {
+        val particles = com.kutlusoy.tvsig.utils.SplashParticles.particles
+        assertTrue(particles.count { it.glitter } >= 20)
+        assertTrue(particles.count { !it.glitter } >= 60)
+        assertTrue(particles.zipWithNext().all { it.first.z <= it.second.z })
     }
 
     @Test

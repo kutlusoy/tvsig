@@ -6,7 +6,6 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Camera
 import android.graphics.Canvas
 import android.graphics.LinearGradient
 import android.graphics.Matrix
@@ -43,7 +42,7 @@ class SplashAnimationView @JvmOverloads constructor(
     private val glowNear = load(R.drawable.splash_glow_near)
     private val logo = load(R.drawable.splash_logo)
     private val spark = load(R.drawable.splash_spark)
-    private val particle = load(R.drawable.splash_particle)
+    private val dot = load(R.drawable.splash_particle)
     private val star = load(R.drawable.splash_star)
     private val title = load(R.drawable.splash_title)
     private val subtitle = load(R.drawable.splash_subtitle)
@@ -61,7 +60,6 @@ class SplashAnimationView @JvmOverloads constructor(
         Paint(Paint.FILTER_BITMAP_FLAG).apply { colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN) }
     }
     private val particleTarget = RectF()
-    private val camera = Camera().apply { setLocation(0f, 0f, -CAMERA_DISTANCE / 72f) }
     private val logoMatrix = Matrix()
     private val stage = Matrix()
     private val backgroundTarget = RectF()
@@ -121,12 +119,15 @@ class SplashAnimationView @JvmOverloads constructor(
         val frame = SplashTimeline.frame(progress)
         drawBackground(canvas)
 
-        drawDust(canvas, frame)
+        drawParticles(canvas, front = false)
 
         val push = 1f + PUSH_IN * progress
         val scale = min(width / FIT_WIDTH, height / FIT_HEIGHT) * push
         stage.setScale(scale, scale)
-        stage.postTranslate(width / 2f - CONTENT_CENTER_X * scale, height / 2f - CONTENT_CENTER_Y * scale)
+        stage.postTranslate(
+            width / 2f - CONTENT_CENTER_X * scale - pan() * width * STAGE_PARALLAX,
+            height / 2f - CONTENT_CENTER_Y * scale
+        )
         canvas.save()
         canvas.concat(stage)
 
@@ -150,21 +151,34 @@ class SplashAnimationView @JvmOverloads constructor(
         draw(canvas, subtitle, SUBTITLE, frame.subtitleAlpha, frame.subtitleOffsetY)
         drawSparkles(canvas)
         canvas.restore()
+        drawParticles(canvas, front = true)
     }
 
-    private fun drawDust(canvas: Canvas, frame: SplashFrame) {
+    /** The slow camera move across the intro, as a share of the screen width. */
+    private fun pan(): Float = (progress - 0.5f) * PAN
+
+    private fun drawParticles(canvas: Canvas, front: Boolean) {
         val seconds = progress * SplashTimeline.DURATION_MS / 1000f
         val unit = min(width / FIT_WIDTH, height / FIT_HEIGHT)
-        for (dust in SplashParticles.dust) {
-            val alpha = SplashParticles.dustAlpha(dust, progress, seconds)
-            if (alpha <= 0f) continue
-            val radius = dust.size * unit * 0.5f
-            val cx = SplashParticles.dustX(dust, seconds) * width
-            val cy = SplashParticles.dustY(dust, seconds) * height
+        val pan = pan()
+        for (particle in SplashParticles.particles) {
+            if ((particle.z >= SplashParticles.FRONT_DEPTH) != front) continue
+            val alpha = SplashParticles.alpha(particle, progress, seconds)
+            if (alpha <= 0.01f) continue
+            val radius = particle.size * unit * (1f + PUSH_IN * progress * (0.5f + particle.z)) * if (particle.glitter) 1.5f else 0.5f
+            val cx = (SplashParticles.x(particle, seconds) - pan * SplashParticles.parallax(particle)) * width
+            val cy = SplashParticles.y(particle, seconds) * height
             particleTarget.set(cx - radius, cy - radius, cx + radius, cy + radius)
-            val tint = tintPaints[dust.tint]
+            val tint = tintPaints[particle.tint]
             tint.alpha = (alpha * 255).toInt()
-            canvas.drawBitmap(particle, null, particleTarget, tint)
+            if (particle.glitter) {
+                canvas.save()
+                canvas.rotate(alpha * 20f, cx, cy)
+                canvas.drawBitmap(star, null, particleTarget, tint)
+                canvas.restore()
+            } else {
+                canvas.drawBitmap(dot, null, particleTarget, tint)
+            }
         }
     }
 
@@ -196,14 +210,8 @@ class SplashAnimationView @JvmOverloads constructor(
     }
 
     private fun updateLogoMatrix(frame: SplashFrame) {
-        camera.save()
-        camera.rotateX(frame.logoRotateX)
-        camera.rotateY(frame.logoRotateY)
-        camera.getMatrix(logoMatrix)
-        camera.restore()
-        logoMatrix.preTranslate(-LOGO_CENTER_X, -LOGO_CENTER_Y)
-        logoMatrix.postScale(frame.logoScale, frame.logoScale)
-        logoMatrix.postTranslate(LOGO_CENTER_X, LOGO_CENTER_Y + frame.logoOffsetY)
+        logoMatrix.setScale(frame.logoScale, frame.logoScale, LOGO_CENTER_X, LOGO_CENTER_Y)
+        logoMatrix.postTranslate(0f, frame.logoOffsetY)
     }
 
     private fun drawSheen(canvas: Canvas, frame: SplashFrame) {
@@ -240,24 +248,25 @@ class SplashAnimationView @JvmOverloads constructor(
 
     private companion object {
         const val PUSH_IN = 0.045f
+        const val PAN = 0.05f
+        const val STAGE_PARALLAX = 1f
         const val FIT_WIDTH = 900f
         const val FIT_HEIGHT = 700f
         const val CONTENT_CENTER_X = 960f
         const val CONTENT_CENTER_Y = 410f
-        const val CAMERA_DISTANCE = 900f
         const val SHEEN_SKEW = -0.25f
         const val REDUCED_MOTION_HOLD_MS = 1500L
 
         val LOGO = RectF(744f, 147f, 1176f, 465.3f)
         val GLOW = RectF(614f, 17f, 1306f, 595.3f)
         val AURA = RectF(390f, -55f, 1530f, 725f)
-        val SPARK = RectF(860f, 168f, 1290f, 252f)
+        val SPARK = RectF(947f, 116f, 1377f, 200f)
         val TITLE = RectF(740f, 515f, 1180f, 680f)
         val SUBTITLE = RectF(760f, 655f, 1160f, 725f)
         val SHEEN = RectF(655f, 122f, 1225f, 527f)
         const val LOGO_CENTER_X = 960f
         const val LOGO_CENTER_Y = 306f
-        const val SPARK_CENTER_X = 1075f
-        const val SPARK_CENTER_Y = 210f
+        const val SPARK_CENTER_X = 1162f
+        const val SPARK_CENTER_Y = 158f
     }
 }
