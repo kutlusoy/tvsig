@@ -3,10 +3,10 @@
     <style name="Theme.TVSig" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primary_dark</item>
         <item name="colorPrimaryVariant">@color/primary_variant_dark</item>
-        <item name="colorOnPrimary">@color/button_text_on_primary</item>
+        <item name="colorOnPrimary">@color/background_dark</item>
         <item name="colorSecondary">@color/secondary_dark</item>
         <item name="colorSecondaryVariant">@color/tertiary_dark</item>
-        <item name="colorOnSecondary">@color/button_text_on_secondary</item>
+        <item name="colorOnSecondary">@color/background_dark</item>
 
         <item name="android:statusBarColor">@color/transparent</item>
         <item name="android:navigationBarColor">@color/transparent</item>
@@ -29,6 +29,7 @@
 
         <item name="colorControlHighlight">@color/ripple_dark</item>
 
+        <item name="android:windowBackground">@drawable/bg_window</item>
         <item name="android:windowContentOverlay">@null</item>
         <item name="elevation">0dp</item>
     </style>

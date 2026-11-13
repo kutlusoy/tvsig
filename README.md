@@ -5,7 +5,7 @@
 Android digital signage app for phones, tablets and Android TV. It plays images and videos from a folder on your own web server or from a publicly shared Google Drive folder. There is no Google account, no API key, no Firebase and no license check. It keeps playing without a network, can be set up from a smartphone and can update itself on request.
 
 - **Application ID:** `com.kutlusoy.tvsig`
-- **Version:** 0.0.2
+- **Version:** 0.0.3
 - **Min SDK:** 24 (Android 7.0)
 - **License:** MIT
 
@@ -144,7 +144,7 @@ On a TV remote, left and right skip to the previous or next item.
 
 ### Phones and TVs
 
-The app tells the two apart: TVs, TV boxes and every device without a touchscreen count as TVs. On a TV the interface gets the same size on every screen (a layout of 960 by 540 dp, with safe margins), whatever density the device reports, so a 720p box, a 1080p TV and a 4K TV look alike. On phones and tablets the density of the system is kept and the dialogs switch to a compact side by side layout when the screen is low, for example a phone in landscape. On the first start without a source the settings open by themselves, and the message on the player screen can be tapped to open the PIN dialog.
+The app tells the two apart: TVs, TV boxes and every device without a touchscreen count as TVs. On a TV the interface gets the same size on every screen (a layout of 960 by 540 dp, with safe margins), whatever density the device reports, so a 720p box, a 1080p TV and a 4K TV look alike. On phones and tablets the density of the system is kept and the dialogs switch to a compact side by side layout when the screen is low, for example a phone in landscape. On the first start without a source the settings open by themselves. As long as no source is set up, the splash screen stays and shows the instruction at the bottom (Back key or a tap opens the PIN dialog); once a source is saved, the player starts.
 
 ### Rotated screens
 
@@ -194,7 +194,7 @@ Classes that are read or written with Gson (the settings of the phone setup, the
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `CI` | every push, pull requests, manual | Unit tests, lint, keep rules check, debug APK as build artifact |
-| `Release` | tag `v*` (for example `v0.0.2`) | Checks the tag against `app/version.txt`, runs the tests, builds the signed APK and AAB, verifies the APK (application ID, version, certificate), publishes a GitHub release. The release page lists the signing certificate (SHA-256 and SHA-1), the SHA-256 of the APK and the bundle, the version code, the Android versions and the source commit, and offers `SHA256SUMS.txt` (tags with a suffix such as `-rc1` become pre-releases) |
+| `Release` | tag `v*` (for example `v0.0.3`) | Checks the tag against `app/version.txt`, runs the tests, builds the signed APK and AAB, verifies the APK (application ID, version, certificate), publishes a GitHub release. The release page lists the signing certificate (SHA-256 and SHA-1), the SHA-256 of the APK and the bundle, the version code, the Android versions and the source commit, and offers `SHA256SUMS.txt` (tags with a suffix such as `-rc1` become pre-releases) |
 
 The release workflow needs these repository secrets (Settings, Secrets and variables, Actions):
 
@@ -208,13 +208,13 @@ The release workflow needs these repository secrets (Settings, Secrets and varia
 
 The full step by step guide (creating the keystore, setting the secrets on Windows, Linux and macOS, running a release, troubleshooting) is in [doc/guideline-release-signing.md](doc/guideline-release-signing.md).
 
-The version of the app is in one file, **`app/version.txt`** (for example `0.0.2`, or `0.1.0-rc1` for a pre-release). The Android version name is that text, the version code is derived from it (`major * 1,000,000 + minor * 1,000 + patch`, so `0.0.2` is 2, `0.1.0` is 1000 and `1.0.0` is 1000000). `tools/version.py` checks the file and the release workflow compares it with the tag.
+The version of the app is in one file, **`app/version.txt`** (for example `0.0.3`, or `0.1.0-rc1` for a pre-release). The Android version name is that text, the version code is derived from it (`major * 1,000,000 + minor * 1,000 + patch`, so `0.0.3` is 2, `0.1.0` is 1000 and `1.0.0` is 1000000). `tools/version.py` checks the file and the release workflow compares it with the tag.
 
 To release: change `app/version.txt`, commit, then push the matching tag.
 
 ```bash
-git tag v0.0.2
-git push origin v0.0.2
+git tag v0.0.3
+git push origin v0.0.3
 ```
 
 ## Updates from inside the app
@@ -282,7 +282,7 @@ Press the back key, enter the PIN and choose "Quit". This stops the app and its 
 
 ## Android developer verification
 
-Google asks for a registration of package name and signing key for apps on certified devices. The repository is prepared: the release workflow checks the proof file `app/src/main/assets/adi-registration.properties`, and the release page says whether it is part of the APK. The file holds the snippet of your developer account and is added once, see [doc/guideline-android-developer-verification.md](doc/guideline-android-developer-verification.md).
+Google asks for a registration of package name and signing key for apps on certified devices. The repository is prepared: the release workflow checks the proof file `app/src/main/assets/adi-registration.properties`, and the release page says whether it is part of the APK. The file is in the repository and holds the ID of the developer account, see [doc/guideline-android-developer-verification.md](doc/guideline-android-developer-verification.md).
 
 ## Graphics
 
@@ -294,6 +294,14 @@ node design/generate-assets.js
 ```
 
 The script also writes a debug variant of the launcher icons and the TV banner (orange background and a red "DEBUG" label) into `app/src/debug/res/`, so the debug app is easy to tell apart from the release app. The script writes the launcher icons (adaptive, monochrome and legacy), the Android TV banner, the splash logo, the notification icon, the store icon and the repository graphics (`doc/logo.png`, `doc/social-preview.png`). The social preview image can be uploaded in the repository settings under "Social preview".
+
+### Splash screen
+
+The start screen is a short intro (5 seconds) that is drawn by the app itself: `ui/views/SplashAnimationView.kt` plays the timeline of `utils/SplashTimeline.kt` (logo turning in, glow, light sweep, title, subtitle, a slow push in) and the particles of `utils/SplashParticles.kt` (drifting dust in three depths and glitter stars that flash when the light sweep passes). The glow is blurred once when the graphics are made, so the app only moves and fades finished layers, which keeps the animation smooth on weak TV boxes. Any key or touch skips the intro, and it is shown as a still image when the system animations are turned off. `design/generate-splash.js` writes the layers (`app/src/main/res/drawable-nodpi/splash_*`) and a preview with the same animation as a browser file, `design/TVSig_splash.svg` (without the particles):
+
+```bash
+node design/generate-splash.js
+```
 
 ## License
 

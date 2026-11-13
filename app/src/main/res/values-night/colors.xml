@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="row_stroke">#664D6FB8</color>
+    <color name="focus_ring">#BFE0FF</color>
+
+    <color name="btn_primary_start">#2B64F0</color>
+    <color name="btn_primary_end">#7C4DEB</color>
+    <color name="btn_primary_text">#FFFFFF</color>
+    <color name="btn_tonal_bg">#16295F</color>
+    <color name="btn_tonal_stroke">#3A5BB0</color>
+    <color name="btn_tonal_text">#BBD5FF</color>
+    <color name="btn_ghost_stroke">#4D6FB8</color>
+    <color name="btn_ghost_text">#A9BCE0</color>
+    <color name="btn_exit_bg">#2B1745</color>
+    <color name="btn_exit_stroke">#7A3F9E</color>
+    <color name="btn_exit_text">#F9A8FF</color>
+    <color name="btn_disabled_bg">#26FFFFFF</color>
+    <color name="btn_disabled_text">#66EAF2FF</color>
+    <color name="window_top">#050B22</color>
+    <color name="window_bottom">#0A1038</color>
+</resources>

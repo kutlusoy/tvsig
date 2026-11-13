@@ -1,24 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#1b8387</color>    <color name="primary_variant">#facd60</color>    <color name="secondary">#e74645</color>    <color name="tertiary">#fb7756</color>
-    <color name="background_light">#FFFFFF</color>
+    <color name="primary">#1E4FD8</color>
+    <color name="primary_variant">#3B82F6</color>
+    <color name="secondary">#9333EA</color>
+    <color name="tertiary">#7C3AED</color>
+    <color name="background_light">#F3F6FF</color>
     <color name="surface_light">#FFFFFF</color>
-    <color name="error_light">#FFB4AB</color>
-    <color name="text_primary_light">#1C1B1F</color>
-    <color name="text_secondary_light">#49454F</color>
+    <color name="error_light">#B3261E</color>
+    <color name="text_primary_light">#0B1633</color>
+    <color name="text_secondary_light">#46557A</color>
 
-    <color name="background_dark">#000000</color>    <color name="surface_dark">#000000</color>    <color name="dialog_dark">#1C1B1F</color>    <color name="error_dark">#56FFB4AB</color>
-    <color name="text_primary_dark">#FFFFFF</color>    <color name="text_secondary_dark">#E0E0E0</color>
-    <color name="primary_dark">#4DB8BC</color>    <color name="primary_variant_dark">#FFE082</color>    <color name="secondary_dark">#EF5350</color>    <color name="tertiary_dark">#FF8A65</color>
-    <color name="button_text_on_primary">#FFFFFF</color>    <color name="button_text_on_secondary">#FFFFFF</color>    <color name="button_text_on_tertiary">#FFFFFF</color>    <color name="button_text_on_variant">#000000</color>
-    <color name="ripple_light">#33000000</color>    <color name="ripple_dark">#66FFFFFF</color>
-    <color name="success">#1b8387</color>
-    <color name="warning">#facd60</color>
-    <color name="error">#e74645</color>
+    <color name="background_dark">#050B22</color>
+    <color name="surface_dark">#0C1840</color>
+    <color name="dialog_dark">#0F1B47</color>
+    <color name="error_dark">#FF8A9B</color>
+    <color name="text_primary_dark">#EAF2FF</color>
+    <color name="text_secondary_dark">#A9BCE0</color>
+    <color name="primary_dark">#8EC2FF</color>
+    <color name="primary_variant_dark">#5B8CFF</color>
+    <color name="secondary_dark">#F9A8FF</color>
+    <color name="tertiary_dark">#9B6CFF</color>
+    <color name="button_text_on_primary">#FFFFFF</color>
+    <color name="button_text_on_secondary">#FFFFFF</color>
+    <color name="button_text_on_tertiary">#FFFFFF</color>
+    <color name="button_text_on_variant">#FFFFFF</color>
+    <color name="ripple_light">#33143A99</color>
+    <color name="ripple_dark">#44BFD9FF</color>
+    <color name="success">#1E4FD8</color>
+    <color name="warning">#F59E0B</color>
+    <color name="error">#B3261E</color>
 
     <color name="scrim">#62000000</color>
     <color name="dialog_overlay">#99000000</color>
-
     <color name="transparent">#00000000</color>
-    <color name="row_stroke">#66808080</color>
+    <color name="splash_background">#040A1F</color>
+
+    <color name="row_stroke">#33143A99</color>
+    <color name="focus_ring">#0B3BD6</color>
+
+    <color name="btn_primary_start">#2459E8</color>
+    <color name="btn_primary_end">#7C3AED</color>
+    <color name="btn_primary_text">#FFFFFF</color>
+    <color name="btn_tonal_bg">#E3ECFF</color>
+    <color name="btn_tonal_stroke">#B7C9F5</color>
+    <color name="btn_tonal_text">#1B3FA8</color>
+    <color name="btn_ghost_stroke">#A9B8DC</color>
+    <color name="btn_ghost_text">#33446E</color>
+    <color name="btn_exit_bg">#F8E7FF</color>
+    <color name="btn_exit_stroke">#E2B6F5</color>
+    <color name="btn_exit_text">#8B24B8</color>
+    <color name="btn_disabled_bg">#1F0B1633</color>
+    <color name="btn_disabled_text">#660B1633</color>
+    <color name="window_top">#F6F8FF</color>
+    <color name="window_bottom">#E6EDFF</color>
 </resources>
