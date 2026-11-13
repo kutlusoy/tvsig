@@ -57,7 +57,7 @@ class RemoteSetupServerTest {
     }
 
     /** The values that the setup page sends when the phone presses save. */
-    private val pagePayload = """{"sourceType":0,"baseUrl":"https://h.com/s","subfolder":"Filiale Nord/Etage 2","driveId":"1AbCdEf","drivePath":"Lobby","slideDelay":10,"transition":8,"backdrop":0,"orientation":90}"""
+    private val pagePayload = """{"sourceType":0,"baseUrl":"https://h.com/s","subfolder":"Filiale Nord/Etage 2","driveId":"1AbCdEf","drivePath":"Lobby","slideDelay":10,"transition":8,"backdrop":0,"language":2,"orientation":90}"""
 
     @Test
     fun servesThePageOnlyWithTheToken() {
@@ -70,7 +70,7 @@ class RemoteSetupServerTest {
     fun theStateUsesTheFieldNamesOfThePage() {
         val (code, body) = call("GET", "/api/state")
         assertEquals(200, code)
-        listOf("sourceType", "baseUrl", "subfolder", "driveId", "drivePath", "slideDelay", "transition", "backdrop", "orientation")
+        listOf("sourceType", "baseUrl", "subfolder", "driveId", "drivePath", "slideDelay", "transition", "backdrop", "language", "orientation")
             .forEach { assertTrue("missing $it in $body", body.contains("\"$it\"")) }
     }
 
@@ -84,6 +84,7 @@ class RemoteSetupServerTest {
         assertEquals("Filiale Nord/Etage 2", result.subfolder)
         assertEquals(90, result.orientation)
         assertEquals(8, result.transition)
+        assertEquals(2, result.language)
         assertEquals("4711", result.pin)
     }
 

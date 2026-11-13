@@ -2,6 +2,7 @@ package com.kutlusoy.tvsig.remote
 
 import com.google.gson.Gson
 import com.kutlusoy.tvsig.models.AppSettings
+import com.kutlusoy.tvsig.models.ErrorMessages
 import com.kutlusoy.tvsig.models.MediaFile
 import com.kutlusoy.tvsig.models.Result
 import com.kutlusoy.tvsig.models.Source
@@ -21,7 +22,7 @@ class RemoteRouter(
     suspend fun route(request: HttpRequest): ByteArray {
         val provided = request.query["t"] ?: request.headers["x-token"]
         if (!RemoteHttp.tokenMatches(token, provided)) {
-            return RemoteHttp.response(403, "text/plain; charset=utf-8", "Link ungueltig. Bitte den QR-Code am Fernseher erneut scannen.".toByteArray())
+            return RemoteHttp.response(403, "text/plain; charset=utf-8", "Invalid link. Scan the QR code on the TV again. | Ungueltiger Link. Bitte den QR-Code am Fernseher erneut scannen. | Gecersiz baglanti. QR kodu televizyonda tekrar okutun.".toByteArray())
         }
 
         return when {
@@ -43,23 +44,23 @@ class RemoteRouter(
 
     private suspend fun folders(request: HttpRequest): ByteArray {
         val source = sourceOf(request, "")
-        if (!source.isConfigured) return json(200, mapOf("ok" to false, "error" to "Quelle fehlt"))
+        if (!source.isConfigured) return json(200, mapOf("ok" to false, "error" to "source_missing"))
         return when (val result = listFolders(source, request.query["path"].orEmpty())) {
             is Result.Success -> json(200, mapOf("ok" to true, "folders" to result.data))
-            is Result.Error -> json(200, mapOf("ok" to false, "error" to (result.exception.message ?: "Fehler")))
+            is Result.Error -> json(200, failure(result.exception))
             else -> json(200, mapOf("ok" to false))
         }
     }
 
     private suspend fun test(request: HttpRequest): ByteArray {
         val source = sourceOf(request, request.query["path"].orEmpty())
-        if (!source.isConfigured) return json(200, mapOf("ok" to false, "error" to "Quelle fehlt"))
+        if (!source.isConfigured) return json(200, mapOf("ok" to false, "error" to "source_missing"))
         return when (val result = testSource(source)) {
             is Result.Success -> json(
                 200,
                 mapOf("ok" to true, "images" to result.data.count { it.isImage() }, "videos" to result.data.count { it.isVideo() })
             )
-            is Result.Error -> json(200, mapOf("ok" to false, "error" to (result.exception.message ?: "Fehler")))
+            is Result.Error -> json(200, failure(result.exception))
             else -> json(200, mapOf("ok" to false))
         }
     }
@@ -69,12 +70,16 @@ class RemoteRouter(
             gson.fromJson(String(request.body, Charsets.UTF_8), RemoteSettings::class.java)
         } catch (e: Exception) {
             null
-        } ?: return json(400, mapOf("ok" to false, "error" to "Ungueltige Daten"))
+        } ?: return json(400, mapOf("ok" to false, "error" to "invalid_data"))
 
-        val updated = remote.applyTo(currentSettings()) ?: return json(400, mapOf("ok" to false, "error" to "Ungueltige Werte"))
+        val updated = remote.applyTo(currentSettings()) ?: return json(400, mapOf("ok" to false, "error" to "invalid_values"))
         onSave(updated)
         return json(200, mapOf("ok" to true))
     }
+
+    /** The page shows known errors in its own language, the message is the fallback. */
+    private fun failure(error: Throwable): Map<String, Any?> =
+        mapOf("ok" to false, "error" to (error.message ?: "error"), "code" to ErrorMessages.codeOf(error.message))
 
     private fun json(status: Int, body: Any): ByteArray =
         RemoteHttp.response(status, "application/json; charset=utf-8", gson.toJson(body).toByteArray(Charsets.UTF_8))

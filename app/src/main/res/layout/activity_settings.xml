@@ -173,8 +173,15 @@
                 android:id="@+id/themeRow"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="0dp"
+                android:layout_marginBottom="@dimen/margin_small"
                 app:optionTitle="@string/settings_theme" />
+
+            <com.kutlusoy.tvsig.ui.views.OptionRow
+                android:id="@+id/languageRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="0dp"
+                app:optionTitle="@string/settings_language" />
 
             <TextView
                 style="@style/TextAppearance.TVSig.Section"

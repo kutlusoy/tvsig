@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import com.kutlusoy.tvsig.models.AppLanguage
 import com.kutlusoy.tvsig.models.BackdropMode
 import com.kutlusoy.tvsig.models.FolderPath
 import com.kutlusoy.tvsig.models.Source
@@ -22,6 +23,7 @@ class PreferenceHelper private constructor(context: Context) {
         private const val KEY_ORIENTATION = "orientation"
         private const val KEY_TRANSITION = "transition"
         private const val KEY_BACKDROP = "backdrop"
+        private const val KEY_LANGUAGE = "language"
         private const val KEY_DARK_MODE = "dark_mode"
         private const val KEY_PIN = "pin"
         private const val KEY_CLEAR_CACHE = "clear_cache"
@@ -100,6 +102,12 @@ class PreferenceHelper private constructor(context: Context) {
 
     fun setBackdrop(id: Int) {
         preferences.edit { putInt(KEY_BACKDROP, id) }
+    }
+
+    fun getLanguage(): Int = preferences.getInt(KEY_LANGUAGE, AppLanguage.DEFAULT.id)
+
+    fun setLanguage(id: Int) {
+        preferences.edit { putInt(KEY_LANGUAGE, id) }
     }
 
     fun getOrientation(): Int = preferences.getInt(KEY_ORIENTATION, OrientationHelper.ORIENTATION_LANDSCAPE)

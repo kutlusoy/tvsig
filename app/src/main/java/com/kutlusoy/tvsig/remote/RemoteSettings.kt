@@ -1,5 +1,6 @@
 package com.kutlusoy.tvsig.remote
 
+import com.kutlusoy.tvsig.models.AppLanguage
 import com.kutlusoy.tvsig.models.AppSettings
 import com.kutlusoy.tvsig.models.BackdropMode
 import com.kutlusoy.tvsig.models.FolderPath
@@ -16,6 +17,7 @@ data class RemoteSettings(
     val slideDelay: Int = 10,
     val transition: Int = 1,
     val backdrop: Int = 0,
+    val language: Int = 0,
     val orientation: Int = 0
 ) {
     /** Returns the settings with the values of this request, or null when a value is not valid. */
@@ -23,6 +25,7 @@ data class RemoteSettings(
         if (SourceType.values().none { it.id == sourceType }) return null
         if (TransitionType.values().none { it.id == transition }) return null
         if (BackdropMode.values().none { it.id == backdrop }) return null
+        if (AppLanguage.values().none { it.id == language }) return null
         if (orientation !in ORIENTATIONS) return null
         if (slideDelay !in MIN_DELAY..MAX_DELAY) return null
         if (listOf(baseUrl, subfolder, driveId, drivePath).any { it.length > MAX_TEXT }) return null
@@ -36,6 +39,7 @@ data class RemoteSettings(
             slideDelay = slideDelay,
             transition = transition,
             backdrop = backdrop,
+            language = language,
             orientation = orientation
         )
     }
@@ -55,6 +59,7 @@ data class RemoteSettings(
             slideDelay = settings.slideDelay,
             transition = settings.transition,
             backdrop = settings.backdrop,
+            language = settings.language,
             orientation = settings.orientation
         )
     }

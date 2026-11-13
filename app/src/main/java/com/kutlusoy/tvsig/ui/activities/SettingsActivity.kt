@@ -13,11 +13,13 @@ import androidx.lifecycle.lifecycleScope
 import com.kutlusoy.tvsig.BuildConfig
 import com.kutlusoy.tvsig.R
 import com.kutlusoy.tvsig.databinding.ActivitySettingsBinding
+import com.kutlusoy.tvsig.models.AppLanguage
 import com.kutlusoy.tvsig.models.Constants
 import com.kutlusoy.tvsig.models.SourceType
 import com.kutlusoy.tvsig.ui.dialogs.ChangePinDialog
 import com.kutlusoy.tvsig.ui.dialogs.FolderPickerDialog
 import com.kutlusoy.tvsig.ui.dialogs.RemoteSetupDialog
+import com.kutlusoy.tvsig.utils.LanguageHelper
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
 import com.kutlusoy.tvsig.viewmodels.SettingsViewModel
@@ -110,6 +112,12 @@ class SettingsActivity : AppCompatActivity() {
             themeRow.setOptions(listOf(getString(R.string.theme_light), getString(R.string.theme_dark)), if (settings.isDarkMode) 1 else 0)
             themeRow.onSelectionChanged = { viewModel.updateSettings(isDarkMode = it == 1) }
 
+            languageRow.setOptions(
+                listOf(getString(R.string.language_auto), getString(R.string.language_en), getString(R.string.language_de), getString(R.string.language_tr)),
+                settings.language
+            )
+            languageRow.onSelectionChanged = { viewModel.updateSettings(language = it) }
+
             btnRemoteSetup.setOnClickListener { RemoteSetupDialog.show(supportFragmentManager) }
             btnPickFolder.setOnClickListener {
                 val source = viewModel.settings.value.toSource()
@@ -155,6 +163,7 @@ class SettingsActivity : AppCompatActivity() {
                     AppCompatDelegate.setDefaultNightMode(
                         if (viewModel.settings.value.isDarkMode) AppCompatDelegate.MODE_NIGHT_YES else AppCompatDelegate.MODE_NIGHT_NO
                     )
+                    LanguageHelper.apply(AppLanguage.fromId(viewModel.settings.value.language))
                     finish()
                 }
             }

@@ -1,127 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TVSig</string>
+    <string name="app_name" translatable="false">TVSig</string>
     <string name="app_contact" translatable="false">kutlusoy.dev@gmail.com</string>
     <string name="about_author_name" translatable="false">Ali Kutlusoy</string>
     <string name="about_repo_url" translatable="false">github.com/kutlusoy/tvsig</string>
-    <string name="about_title">Über TVSig</string>
+    <string name="arrow_left" translatable="false">‹</string>
+    <string name="arrow_right" translatable="false">›</string>
+    <string name="language_en" translatable="false">English</string>
+    <string name="language_de" translatable="false">Deutsch</string>
+    <string name="language_tr" translatable="false">Türkçe</string>
+    <string name="about_title">About TVSig</string>
     <string name="about_version">Version: %1$s (%2$d)</string>
-    <string name="about_author">Autor: %s</string>
+    <string name="about_author">Author: %s</string>
     <string name="about_repo">Repository: %s</string>
-    <string name="about_license">Lizenz: MIT</string>
-    <string name="about_contact">Kontakt: %s</string>
-
-    <string name="pin_enter">PIN eingeben</string>
-    <string name="pin_confirm">PIN bestätigen</string>
-    <string name="pin_incorrect">Falsche PIN</string>
-    <string name="pin_default">0000</string>
-    <string name="button_exit">Beenden</string>
-
-    <string name="settings_pin">PIN-Code</string>
-    <string name="button_change_pin">PIN ändern</string>
-    <string name="pin_changed">PIN wurde erfolgreich geändert</string>
-    <string name="pin_current">Aktuelle PIN</string>
-    <string name="pin_new">Neue PIN</string>
-    <string name="pin_confirm_new">Neue PIN bestätigen</string>
-    <string name="error_invalid_pin">Ungültige PIN</string>
-    <string name="error_pins_dont_match">PINs stimmen nicht überein</string>
-
-    <string name="settings_title">Einstellungen</string>
-    <string name="settings_base_url">Basis-URL des Webservers</string>
-    <string name="settings_base_url_helper">z. B. https://example.com/signage</string>
-    <string name="settings_drive_id">ID des Drive-Hauptordners</string>
-    <string name="settings_drive_id_helper">Die ID steht im Ordnerlink hinter /folders/</string>
-    <string name="settings_source_type">Art der Quelle</string>
-    <string name="source_web">Webserver</string>
+    <string name="about_license">License: MIT</string>
+    <string name="about_contact">Contact: %s</string>
+    <string name="pin_enter">Enter PIN</string>
+    <string name="pin_incorrect">Wrong PIN</string>
+    <string name="button_exit">Quit</string>
+    <string name="button_change_pin">Change PIN</string>
+    <string name="pin_changed">PIN changed</string>
+    <string name="pin_current">Current PIN</string>
+    <string name="pin_new">New PIN</string>
+    <string name="pin_confirm_new">Confirm new PIN</string>
+    <string name="error_pins_dont_match">The PINs do not match</string>
+    <string name="settings_title">Settings</string>
+    <string name="settings_base_url">Base URL of the web server</string>
+    <string name="settings_base_url_helper">e.g. https://example.com/signage</string>
+    <string name="settings_drive_id">ID of the main Drive folder</string>
+    <string name="settings_drive_id_helper">The ID is in the folder link after /folders/</string>
+    <string name="settings_source_type">Type of source</string>
+    <string name="source_web">Web server</string>
     <string name="source_drive">Google Drive</string>
-    <string name="settings_folder_helper">Mit „Ordner auswählen“ aus einer Liste wählbar</string>
-    <string name="settings_subfolder">Ordner (Pfad)</string>
-    <string name="settings_delay">Anzeigedauer pro Bild</string>
-    <string name="option_previous">Vorheriger Wert</string>
-    <string name="option_next">Nächster Wert</string>
-    <string name="arrow_left">‹</string>
-    <string name="arrow_right">›</string>
-    <string name="seconds_format">%d Sekunden</string>
-    <string name="settings_remote_hint">Pfeiltasten links und rechts ändern den Wert, OK schaltet weiter, Zurück bricht ab.</string>
-    <string name="settings_section_source">Quelle</string>
-    <string name="settings_section_playback">Wiedergabe</string>
-    <string name="settings_section_display">Anzeige</string>
-    <string name="settings_section_security">Sicherheit und Wartung</string>
-    <string name="settings_pick_folder">Ordner auswählen</string>
-    <string name="folder_picker_title">Ordner wählen</string>
-    <string name="folder_picker_loading">Lade Ordner…</string>
-    <string name="folder_picker_root">Hauptordner</string>
-    <string name="folder_picker_use">✓  Diesen Ordner verwenden</string>
-    <string name="folder_picker_up">↑  Eine Ebene höher</string>
+    <string name="settings_folder_helper">Can be chosen from a list with \"Choose folder\"</string>
+    <string name="settings_subfolder">Folder (path)</string>
+    <string name="settings_delay">Display time per image</string>
+    <string name="option_previous">Previous value</string>
+    <string name="option_next">Next value</string>
+    <string name="seconds_format">%d seconds</string>
+    <string name="settings_remote_hint">Left and right arrow keys change the value, OK steps forward, Back cancels.</string>
+    <string name="settings_section_source">Source</string>
+    <string name="settings_section_playback">Playback</string>
+    <string name="settings_section_display">Display</string>
+    <string name="settings_section_security">Security and maintenance</string>
+    <string name="settings_pick_folder">Choose folder</string>
+    <string name="folder_picker_title">Choose a folder</string>
+    <string name="folder_picker_loading">Loading folders…</string>
+    <string name="folder_picker_root">Main folder</string>
+    <string name="folder_picker_use">✓  Use this folder</string>
+    <string name="folder_picker_up">↑  One level up</string>
     <string name="folder_picker_folder">›  %s</string>
-    <string name="folder_picker_empty">Keine weiteren Unterordner</string>
-    <string name="folder_picker_max_depth">Größte Tiefe erreicht (%d Ebenen)</string>
-    <string name="folder_picker_error">Ordner konnten nicht geladen werden: %s</string>
-    <string name="settings_remote_setup">Einrichtung per Smartphone</string>
-    <string name="remote_title">Einrichtung per Smartphone</string>
-    <string name="remote_hint">Smartphone mit demselben WLAN oder Netzwerk verbinden, QR-Code mit der Kamera scannen und die Einstellungen dort eintragen.</string>
-    <string name="remote_no_network">Keine Netzwerkverbindung. Bitte den Fernseher mit dem Netzwerk verbinden.</string>
-    <string name="remote_failed">Die Einrichtung konnte nicht gestartet werden.</string>
-    <string name="settings_test_connection">Verbindung testen</string>
-    <string name="test_running">Teste…</string>
-    <string name="test_ok">%1$d Dateien gefunden (%2$d Bilder, %3$d Videos)</string>
-    <string name="test_failed">Fehlgeschlagen: %s</string>
-    <string name="test_no_url">Bitte zuerst die Basis-URL eintragen</string>
-    <string name="settings_transition">Übergangseffekt</string>
+    <string name="folder_picker_empty">No more subfolders</string>
+    <string name="folder_picker_max_depth">Maximum depth reached (%d levels)</string>
+    <string name="folder_picker_error">Folders could not be loaded: %s</string>
+    <string name="settings_remote_setup">Set up with a smartphone</string>
+    <string name="remote_title">Set up with a smartphone</string>
+    <string name="remote_hint">Connect the smartphone to the same Wi-Fi or network, scan the QR code with the camera and enter the settings there.</string>
+    <string name="remote_no_network">No network connection. Please connect the TV to the network.</string>
+    <string name="remote_failed">The setup could not be started.</string>
+    <string name="settings_test_connection">Test connection</string>
+    <string name="test_running">Testing…</string>
+    <string name="test_ok">%1$d files found (%2$d images, %3$d videos)</string>
+    <string name="test_failed">Failed: %s</string>
+    <string name="test_no_url">Please enter the source first</string>
+    <string name="settings_transition">Transition effect</string>
+    <string name="settings_backdrop">Background behind images</string>
+    <string name="backdrop_zoom">Zoomed and blurred</string>
+    <string name="backdrop_mirror">Mirrored and blurred</string>
+    <string name="settings_orientation">Screen orientation</string>
+    <string name="settings_theme">App theme</string>
+    <string name="settings_language">Language</string>
+    <string name="language_auto">Automatic</string>
+    <string name="orientation_auto">Automatic (mobile only)</string>
+    <string name="orientation_landscape">Landscape</string>
+    <string name="orientation_90">Rotated 90°</string>
+    <string name="orientation_180">Rotated 180°</string>
+    <string name="orientation_270">Rotated 270°</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="cache_clear">Clear cache</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_save">Save</string>
+    <string name="button_close">Close</string>
+    <string name="error_no_base_url">No source has been set up yet.\n\nPress the Back key or tap here, enter the PIN and open the settings.</string>
+    <string name="error_load_failed">Media could not be loaded: %s</string>
+    <string name="error_no_playable_media">No playable media found</string>
+    <string name="error_offline">No network connection</string>
+    <string name="error_no_media">No images or videos found in the folder</string>
+    <string name="error_blocked">The server sent a web page instead of the file (access or download limit)</string>
+    <string name="error_drive_link">No Google Drive folder ID found</string>
+    <string name="error_drive_folder">Drive folder not found or not shared with everyone who has the link</string>
+    <string name="error_listing">The folder listing is not available on the server</string>
+    <string name="foreground_service_notification_text">Signage is running in the background</string>
+    <string name="foreground_service_channel_name">TVSig Signage service</string>
+    <string name="foreground_service_channel_description">Keeps the TVSig Signage app running</string>
     <string-array name="transition_options">
-        <item>Keiner</item>
-        <item>Überblenden</item>
-        <item>Schieben nach links</item>
-        <item>Schieben nach rechts</item>
-        <item>Schieben nach oben</item>
-        <item>Schieben nach unten</item>
-        <item>Zoom hinein</item>
-        <item>Zoom heraus</item>
-        <item>Zufall</item>
+        <item>None</item>
+        <item>Fade</item>
+        <item>Slide left</item>
+        <item>Slide right</item>
+        <item>Slide up</item>
+        <item>Slide down</item>
+        <item>Zoom in</item>
+        <item>Zoom out</item>
+        <item>Random</item>
     </string-array>
-    <string name="settings_backdrop">Hintergrund bei Bildern</string>
-    <string name="backdrop_zoom">Gezoomt und unscharf</string>
-    <string name="backdrop_mirror">Gespiegelt und unscharf</string>
-    <string name="settings_orientation">Bildschirmausrichtung</string>
-    <string name="settings_theme">App-Theme</string>
-
-    <string name="orientation_auto">Automatisch (nur Mobile)</string>
-    <string name="orientation_landscape">Querformat</string>
-    <string name="orientation_portrait">Hochformat</string>
-    <string name="orientation_90">90° gedreht</string>
-    <string name="orientation_180">180° gedreht</string>
-    <string name="orientation_270">270° gedreht</string>
-
-    <string name="theme_light">Hell</string>
-    <string name="theme_dark">Dunkel</string>
-
-    <string name="cache_clear">Cache leeren</string>
-    <string name="cache_clearing">Cache wird geleert</string>
-    <string name="cache_cleared">Cache wurde geleert</string>
-    <string name="cache_restart_required">Neustart erforderlich</string>
-
-    <string name="button_ok">OK</string>
-    <string name="button_cancel">Abbrechen</string>
-    <string name="button_save">Speichern</string>
-    <string name="button_close">Schließen</string>
-    <string name="button_retry">Wiederholen</string>
-    <string name="button_settings">Einstellungen</string>
-
-
-    <string name="msg_loading">Laden…</string>
-    <string name="msg_no_connection">Keine Internetverbindung</string>
-    <string name="msg_error_loading">Fehler beim Laden</string>
-    <string name="msg_settings_saved">Einstellungen gespeichert</string>
-    <string name="msg_restart_required">Bitte App neu starten</string>
-
-    <string name="error_no_base_url">Es ist noch keine Quelle eingerichtet.
-
-Zurück-Taste drücken oder hier tippen, die PIN eingeben und die Einstellungen öffnen.</string>
-    <string name="error_load_failed">Medien konnten nicht geladen werden: %s</string>
-    <string name="error_no_playable_media">Keine abspielbaren Medien gefunden</string>
-
-    <string name="foreground_service_notification_title">TVSig Signage läuft</string>
-    <string name="foreground_service_notification_text">Signage wird im Hintergrund ausgeführt</string>
-    <string name="foreground_service_channel_name">TVSig Signage Service</string>
-    <string name="foreground_service_channel_description">Hält die TVSig Signage App am Laufen</string>
 </resources>

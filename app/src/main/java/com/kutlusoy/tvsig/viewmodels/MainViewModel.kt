@@ -12,6 +12,7 @@ import com.kutlusoy.tvsig.models.PresentationState
 import com.kutlusoy.tvsig.models.Result
 import com.kutlusoy.tvsig.repositories.MediaRepository
 import com.kutlusoy.tvsig.utils.CacheManager
+import com.kutlusoy.tvsig.utils.ErrorText
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.NetworkHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
@@ -94,7 +95,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 is Result.Error -> {
                     _presentationState.value = PresentationState.Error(
-                        string(R.string.error_load_failed, result.exception.message ?: "")
+                        string(R.string.error_load_failed, ErrorText.of(getApplication(), result.exception))
                     )
                     scheduleRetry()
                 }

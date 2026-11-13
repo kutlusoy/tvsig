@@ -16,6 +16,7 @@ import com.kutlusoy.tvsig.models.FolderPath
 import com.kutlusoy.tvsig.models.Result
 import com.kutlusoy.tvsig.models.Source
 import com.kutlusoy.tvsig.repositories.MediaRepository
+import com.kutlusoy.tvsig.utils.ErrorText
 import com.kutlusoy.tvsig.utils.Logger
 import com.kutlusoy.tvsig.utils.OrientationHelper
 import com.kutlusoy.tvsig.utils.PreferenceHelper
@@ -104,10 +105,7 @@ class FolderPickerDialog : DialogFragment() {
                     showItems(folders.data, selectName)
                 }
                 is Result.Error -> {
-                    binding.folderStatus.text = getString(
-                        R.string.folder_picker_error,
-                        folders.exception.message ?: folders.exception.javaClass.simpleName
-                    )
+                    binding.folderStatus.text = getString(R.string.folder_picker_error, ErrorText.of(requireContext(), folders.exception))
                     showItems(emptyList(), selectName)
                 }
                 else -> {}

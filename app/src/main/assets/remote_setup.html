@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="de">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TVSig Einrichtung</title>
+<title>TVSig</title>
 <style>
   :root { color-scheme: light dark; --bg:#f6f7fb; --card:#fff; --text:#1a1a1a; --muted:#666; --line:#d5d8e2; --primary:#114fee; --ok:#0a7d33; --err:#c62828; }
   @media (prefers-color-scheme: dark) { :root { --bg:#12131a; --card:#1c1e28; --text:#f0f1f6; --muted:#a0a4b5; --line:#353849; --primary:#7a9bff; --ok:#5fd68a; --err:#ff7b7b; } }
@@ -28,71 +28,164 @@
 </head>
 <body>
 <main>
-  <h1>TVSig einrichten</h1>
+  <h1 data-i18n="title"></h1>
 
   <div class="card">
-    <h2>Quelle</h2>
-    <label for="source">Art der Quelle</label>
-    <select id="source">
-      <option value="0">Webserver</option>
-      <option value="1">Google Drive</option>
-    </select>
+    <h2 data-i18n="card_source"></h2>
+    <label for="source" data-i18n="label_source"></label>
+    <select id="source"></select>
 
-    <label for="base" id="baseLabel">Basis-URL</label>
+    <label for="base" id="baseLabel"></label>
     <input id="base" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
     <div class="hint" id="baseHint"></div>
 
-    <label for="path">Ordner (Pfad)</label>
+    <label for="path" data-i18n="label_path"></label>
     <input id="path" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <button class="secondary" id="browse" type="button">Ordner auswählen</button>
-    <button class="secondary" id="test" type="button">Verbindung testen</button>
+    <button class="secondary" id="browse" type="button" data-i18n="btn_browse"></button>
+    <button class="secondary" id="test" type="button" data-i18n="btn_test"></button>
     <div class="msg" id="testMsg"></div>
 
     <div id="browser" class="hidden">
       <div class="crumb" id="crumb"></div>
-      <button id="useFolder" type="button">Diesen Ordner verwenden</button>
-      <button class="secondary" id="upFolder" type="button">Eine Ebene höher</button>
+      <button id="useFolder" type="button" data-i18n="use_folder"></button>
+      <button class="secondary" id="upFolder" type="button" data-i18n="up_folder"></button>
       <div id="folders"></div>
       <div class="hint" id="browserMsg"></div>
     </div>
   </div>
 
   <div class="card">
-    <h2>Wiedergabe</h2>
-    <label for="delay">Anzeigedauer pro Bild</label>
+    <h2 data-i18n="card_playback"></h2>
+    <label for="delay" data-i18n="label_delay"></label>
     <select id="delay"></select>
-    <label for="transition">Übergangseffekt</label>
+    <label for="transition" data-i18n="label_transition"></label>
     <select id="transition"></select>
-    <label for="backdrop">Hintergrund bei Bildern</label>
-    <select id="backdrop">
-      <option value="0">Gezoomt und unscharf</option>
-      <option value="1">Gespiegelt und unscharf</option>
-    </select>
+    <label for="backdrop" data-i18n="label_backdrop"></label>
+    <select id="backdrop"></select>
   </div>
 
   <div class="card">
-    <h2>Anzeige</h2>
-    <label for="orientation">Bildschirmausrichtung</label>
-    <select id="orientation">
-      <option value="-1">Automatisch (nur Handy und Tablet)</option>
-      <option value="0">Querformat</option>
-      <option value="90">90° gedreht</option>
-      <option value="180">180° gedreht</option>
-      <option value="270">270° gedreht</option>
-    </select>
+    <h2 data-i18n="card_display"></h2>
+    <label for="orientation" data-i18n="label_orientation"></label>
+    <select id="orientation"></select>
+    <label for="language" data-i18n="label_language"></label>
+    <select id="language"></select>
   </div>
 
-  <button class="wide" id="save" type="button">Auf dem Fernseher speichern</button>
+  <button class="wide" id="save" type="button" data-i18n="btn_save"></button>
   <div class="msg" id="saveMsg"></div>
 </main>
 
 <script>
-var token = new URLSearchParams(location.search).get('t') || '';
+var TEXTS = {
+  en: {
+    title: 'Set up TVSig', card_source: 'Source', label_source: 'Type of source', source_web: 'Web server', source_drive: 'Google Drive',
+    base_web: 'Base URL of the web server', base_drive: 'ID of the main Drive folder',
+    hint_web: 'e.g. https://example.com/signage', hint_drive: 'The ID is in the folder link after /folders/. The whole link works too.',
+    label_path: 'Folder (path)', btn_browse: 'Choose folder', btn_test: 'Test connection', testing: 'Testing …',
+    test_ok: '{n} files found ({i} images, {v} videos)', failed: 'Failed: ', need_source: 'Please enter the source first',
+    main_folder: 'Main folder', use_folder: 'Use this folder', up_folder: 'One level up', loading: 'Loading …', no_sub: 'No more subfolders',
+    max_depth: 'Maximum depth reached ({n} levels)', folders_failed: 'Folders could not be loaded: ',
+    card_playback: 'Playback', label_delay: 'Display time per image', seconds: '{n} seconds', label_transition: 'Transition effect',
+    transitions: ['None', 'Fade', 'Slide left', 'Slide right', 'Slide up', 'Slide down', 'Zoom in', 'Zoom out', 'Random'],
+    label_backdrop: 'Background behind images', backdrop: ['Zoomed and blurred', 'Mirrored and blurred'],
+    card_display: 'Display', label_orientation: 'Screen orientation',
+    orientations: { '-1': 'Automatic (mobile only)', '0': 'Landscape', '90': 'Rotated 90°', '180': 'Rotated 180°', '270': 'Rotated 270°' },
+    label_language: 'Language', lang_auto: 'Automatic',
+    btn_save: 'Save on the TV', saving: 'Saving …', saved: 'Saved. The TV starts the playback now.', not_saved: 'Not saved: ', no_connection: 'No connection to the TV',
+    errors: { offline: 'No network connection', listing: 'The folder listing is not available on the server', no_media: 'No images or videos found in the folder',
+      blocked: 'The server sent a web page instead of the file (access or download limit)', drive_link: 'No Google Drive folder ID found',
+      drive_folder: 'Drive folder not found or not shared with everyone who has the link', source_missing: 'Please enter the source first',
+      invalid_data: 'Invalid data', invalid_values: 'Invalid values' }
+  },
+  de: {
+    title: 'TVSig einrichten', card_source: 'Quelle', label_source: 'Art der Quelle', source_web: 'Webserver', source_drive: 'Google Drive',
+    base_web: 'Basis-URL des Webservers', base_drive: 'ID des Drive-Hauptordners',
+    hint_web: 'z. B. https://example.com/signage', hint_drive: 'Die ID steht im Ordnerlink hinter /folders/. Der ganze Link geht auch.',
+    label_path: 'Ordner (Pfad)', btn_browse: 'Ordner auswählen', btn_test: 'Verbindung testen', testing: 'Teste …',
+    test_ok: '{n} Dateien gefunden ({i} Bilder, {v} Videos)', failed: 'Fehlgeschlagen: ', need_source: 'Bitte zuerst die Quelle eintragen',
+    main_folder: 'Hauptordner', use_folder: 'Diesen Ordner verwenden', up_folder: 'Eine Ebene höher', loading: 'Lade …', no_sub: 'Keine weiteren Unterordner',
+    max_depth: 'Größte Tiefe erreicht ({n} Ebenen)', folders_failed: 'Ordner konnten nicht geladen werden: ',
+    card_playback: 'Wiedergabe', label_delay: 'Anzeigedauer pro Bild', seconds: '{n} Sekunden', label_transition: 'Übergangseffekt',
+    transitions: ['Keiner', 'Überblenden', 'Schieben nach links', 'Schieben nach rechts', 'Schieben nach oben', 'Schieben nach unten', 'Zoom hinein', 'Zoom heraus', 'Zufall'],
+    label_backdrop: 'Hintergrund bei Bildern', backdrop: ['Gezoomt und unscharf', 'Gespiegelt und unscharf'],
+    card_display: 'Anzeige', label_orientation: 'Bildschirmausrichtung',
+    orientations: { '-1': 'Automatisch (nur Mobile)', '0': 'Querformat', '90': '90° gedreht', '180': '180° gedreht', '270': '270° gedreht' },
+    label_language: 'Sprache', lang_auto: 'Automatisch',
+    btn_save: 'Auf dem Fernseher speichern', saving: 'Speichere …', saved: 'Gespeichert. Der Fernseher startet jetzt die Wiedergabe.', not_saved: 'Nicht gespeichert: ', no_connection: 'Keine Verbindung zum Fernseher',
+    errors: { offline: 'Keine Netzwerkverbindung', listing: 'Die Ordnerliste ist auf dem Server nicht verfügbar', no_media: 'Keine Bilder oder Videos im Ordner gefunden',
+      blocked: 'Der Server hat statt der Datei eine Webseite geschickt (Zugriffs- oder Downloadlimit)', drive_link: 'Keine Google-Drive-Ordner-ID gefunden',
+      drive_folder: 'Drive-Ordner nicht gefunden oder nicht für alle mit dem Link freigegeben', source_missing: 'Bitte zuerst die Quelle eintragen',
+      invalid_data: 'Ungültige Daten', invalid_values: 'Ungültige Werte' }
+  },
+  tr: {
+    title: 'TVSig kurulumu', card_source: 'Kaynak', label_source: 'Kaynak türü', source_web: 'Web sunucusu', source_drive: 'Google Drive',
+    base_web: 'Web sunucusunun temel URL\'si', base_drive: 'Ana Drive klasörünün kimliği',
+    hint_web: 'örn. https://example.com/signage', hint_drive: 'Kimlik, klasör bağlantısında /folders/ ifadesinden sonra yer alır. Bağlantının tamamı da olur.',
+    label_path: 'Klasör (yol)', btn_browse: 'Klasör seç', btn_test: 'Bağlantıyı test et', testing: 'Test ediliyor …',
+    test_ok: '{n} dosya bulundu ({i} görsel, {v} video)', failed: 'Başarısız: ', need_source: 'Lütfen önce kaynağı girin',
+    main_folder: 'Ana klasör', use_folder: 'Bu klasörü kullan', up_folder: 'Bir üst seviye', loading: 'Yükleniyor …', no_sub: 'Başka alt klasör yok',
+    max_depth: 'En fazla derinliğe ulaşıldı ({n} seviye)', folders_failed: 'Klasörler yüklenemedi: ',
+    card_playback: 'Oynatma', label_delay: 'Görsel başına gösterim süresi', seconds: '{n} saniye', label_transition: 'Geçiş efekti',
+    transitions: ['Yok', 'Solma', 'Sola kaydır', 'Sağa kaydır', 'Yukarı kaydır', 'Aşağı kaydır', 'Yakınlaştır', 'Uzaklaştır', 'Rastgele'],
+    label_backdrop: 'Görsellerin arka planı', backdrop: ['Yakınlaştırılmış ve bulanık', 'Yansıtılmış ve bulanık'],
+    card_display: 'Görünüm', label_orientation: 'Ekran yönü',
+    orientations: { '-1': 'Otomatik (yalnızca mobil)', '0': 'Yatay', '90': '90° döndürülmüş', '180': '180° döndürülmüş', '270': '270° döndürülmüş' },
+    label_language: 'Dil', lang_auto: 'Otomatik',
+    btn_save: 'Televizyonda kaydet', saving: 'Kaydediliyor …', saved: 'Kaydedildi. Televizyon oynatmayı şimdi başlatıyor.', not_saved: 'Kaydedilmedi: ', no_connection: 'Televizyonla bağlantı yok',
+    errors: { offline: 'Ağ bağlantısı yok', listing: 'Klasör listesi sunucuda kullanılamıyor', no_media: 'Klasörde görsel veya video bulunamadı',
+      blocked: 'Sunucu dosya yerine bir web sayfası gönderdi (erişim veya indirme sınırı)', drive_link: 'Google Drive klasör kimliği bulunamadı',
+      drive_folder: 'Drive klasörü bulunamadı veya bağlantıya sahip herkesle paylaşılmadı', source_missing: 'Lütfen önce kaynağı girin',
+      invalid_data: 'Geçersiz veri', invalid_values: 'Geçersiz değerler' }
+  }
+};
+var LANGUAGES = ['', 'en', 'de', 'tr'];
+var LANGUAGE_NAMES = ['', 'English', 'Deutsch', 'Türkçe'];
+var DELAYS = [3, 5, 8, 10, 15, 20, 30, 45, 60, 90, 120, 180, 300];
 var MAX_DEPTH = 5;
-var path = '';
+
+var token = new URLSearchParams(location.search).get('t') || '';
 var state = {};
+var path = '';
+var currentType = 0;
+var lang = 'en';
 
 function el(id) { return document.getElementById(id); }
+function t(key) { return (TEXTS[lang] && TEXTS[lang][key] !== undefined) ? TEXTS[lang][key] : TEXTS.en[key]; }
+function fill(text, values) { return text.replace(/\{(\w+)\}/g, function (m, k) { return values[k]; }); }
+function errorText(r) {
+  var errors = t('errors');
+  var known = errors[r.code] || errors[r.error];
+  return known || r.error || '';
+}
+
+function chooseLanguage(setting) {
+  var wanted = LANGUAGES[setting] || (navigator.language || 'en').slice(0, 2).toLowerCase();
+  lang = TEXTS[wanted] ? wanted : 'en';
+  document.documentElement.lang = lang;
+}
+
+function option(select, value, label) { var o = document.createElement('option'); o.value = value; o.textContent = label; select.appendChild(o); }
+
+function fillSelect(id, entries, selected) {
+  var select = el(id);
+  var keep = selected !== undefined ? selected : select.value;
+  select.textContent = '';
+  entries.forEach(function (e) { option(select, e[0], e[1]); });
+  if (keep !== undefined && keep !== null && keep !== '') select.value = keep;
+}
+
+function applyLanguage() {
+  document.querySelectorAll('[data-i18n]').forEach(function (node) { node.textContent = t(node.getAttribute('data-i18n')); });
+  fillSelect('source', [[0, t('source_web')], [1, t('source_drive')]]);
+  fillSelect('delay', DELAYS.map(function (s) { return [s, fill(t('seconds'), { n: s })]; }));
+  fillSelect('transition', t('transitions').map(function (name, i) { return [i, name]; }));
+  fillSelect('backdrop', t('backdrop').map(function (name, i) { return [i, name]; }));
+  var orientations = t('orientations');
+  fillSelect('orientation', ['-1', '0', '90', '180', '270'].map(function (k) { return [k, orientations[k]]; }));
+  fillSelect('language', [[0, t('lang_auto')], [1, LANGUAGE_NAMES[1]], [2, LANGUAGE_NAMES[2]], [3, LANGUAGE_NAMES[3]]]);
+  updateLabels(false);
+}
 
 function api(method, url, body) {
   var options = { method: method, headers: { 'X-Token': token } };
@@ -108,60 +201,63 @@ function query(extraPath) {
 
 function segments(p) { return p.split('/').map(function (s) { return s.trim(); }).filter(Boolean); }
 
-function updateLabels() {
+function updateLabels(loadValues) {
   var drive = sourceType() === 1;
-  el('baseLabel').textContent = drive ? 'ID des Drive-Hauptordners' : 'Basis-URL des Webservers';
-  el('baseHint').textContent = drive ? 'Die ID steht im Ordnerlink hinter /folders/. Der ganze Link geht auch.' : 'z. B. https://example.com/signage';
-  el('base').value = drive ? (state.driveId || '') : (state.baseUrl || '');
-  el('path').value = drive ? (state.drivePath || '') : (state.subfolder || '');
+  el('baseLabel').textContent = drive ? t('base_drive') : t('base_web');
+  el('baseHint').textContent = drive ? t('hint_drive') : t('hint_web');
+  if (loadValues) {
+    el('base').value = drive ? (state.driveId || '') : (state.baseUrl || '');
+    el('path').value = drive ? (state.drivePath || '') : (state.subfolder || '');
+  }
 }
 
-function rememberFields() {
-  if (sourceType() === 1) { state.driveId = el('base').value; state.drivePath = el('path').value; }
+function rememberFields(type) {
+  if (type === 1) { state.driveId = el('base').value; state.drivePath = el('path').value; }
   else { state.baseUrl = el('base').value; state.subfolder = el('path').value; }
 }
 
-var currentType = 0;
 el('source').addEventListener('change', function () {
-  var next = sourceType();
-  var save = state;
-  if (currentType === 1) { save.driveId = el('base').value; save.drivePath = el('path').value; }
-  else { save.baseUrl = el('base').value; save.subfolder = el('path').value; }
-  currentType = next;
-  updateLabels();
+  rememberFields(currentType);
+  currentType = sourceType();
+  updateLabels(true);
   el('browser').classList.add('hidden');
   el('testMsg').textContent = '';
 });
 
+el('language').addEventListener('change', function () {
+  chooseLanguage(parseInt(el('language').value, 10));
+  applyLanguage();
+});
+
 el('test').addEventListener('click', function () {
   var msg = el('testMsg');
-  msg.className = 'msg'; msg.textContent = 'Teste …';
+  msg.className = 'msg'; msg.textContent = t('testing');
   api('GET', '/api/test?' + query(el('path').value.trim())).then(function (r) {
-    if (r.ok) { msg.className = 'msg ok'; msg.textContent = (r.images + r.videos) + ' Dateien gefunden (' + r.images + ' Bilder, ' + r.videos + ' Videos)'; }
-    else { msg.className = 'msg err'; msg.textContent = 'Fehlgeschlagen: ' + (r.error || ''); }
-  }).catch(function () { msg.className = 'msg err'; msg.textContent = 'Keine Verbindung zum Fernseher'; });
+    if (r.ok) { msg.className = 'msg ok'; msg.textContent = fill(t('test_ok'), { n: r.images + r.videos, i: r.images, v: r.videos }); }
+    else { msg.className = 'msg err'; msg.textContent = t('failed') + errorText(r); }
+  }).catch(function () { msg.className = 'msg err'; msg.textContent = t('no_connection'); });
 });
 
 function showFolders() {
-  el('crumb').textContent = ['Hauptordner'].concat(segments(path)).join(' / ');
+  el('crumb').textContent = [t('main_folder')].concat(segments(path)).join(' / ');
   el('upFolder').classList.toggle('hidden', segments(path).length === 0);
   var list = el('folders'); list.textContent = '';
-  var msg = el('browserMsg'); msg.textContent = 'Lade …';
-  if (segments(path).length >= MAX_DEPTH) { msg.textContent = 'Größte Tiefe erreicht (' + MAX_DEPTH + ' Ebenen)'; return; }
+  var msg = el('browserMsg'); msg.textContent = t('loading');
+  if (segments(path).length >= MAX_DEPTH) { msg.textContent = fill(t('max_depth'), { n: MAX_DEPTH }); return; }
   api('GET', '/api/folders?' + query(path)).then(function (r) {
-    if (!r.ok) { msg.textContent = 'Ordner konnten nicht geladen werden: ' + (r.error || ''); return; }
-    msg.textContent = r.folders.length ? '' : 'Keine weiteren Unterordner';
+    if (!r.ok) { msg.textContent = t('folders_failed') + errorText(r); return; }
+    msg.textContent = r.folders.length ? '' : t('no_sub');
     r.folders.forEach(function (name) {
       var b = document.createElement('button');
       b.className = 'folder'; b.type = 'button'; b.textContent = '› ' + name;
       b.addEventListener('click', function () { path = segments(path).concat([name]).join('/'); showFolders(); });
       list.appendChild(b);
     });
-  }).catch(function () { msg.textContent = 'Keine Verbindung zum Fernseher'; });
+  }).catch(function () { msg.textContent = t('no_connection'); });
 }
 
 el('browse').addEventListener('click', function () {
-  if (!el('base').value.trim()) { el('testMsg').className = 'msg err'; el('testMsg').textContent = 'Bitte zuerst die Quelle eintragen'; return; }
+  if (!el('base').value.trim()) { el('testMsg').className = 'msg err'; el('testMsg').textContent = t('need_source'); return; }
   path = '';
   el('browser').classList.remove('hidden');
   showFolders();
@@ -171,7 +267,7 @@ el('useFolder').addEventListener('click', function () { el('path').value = path;
 
 el('save').addEventListener('click', function () {
   var msg = el('saveMsg');
-  rememberFields();
+  rememberFields(sourceType());
   var body = {
     sourceType: sourceType(),
     baseUrl: state.baseUrl || '', subfolder: state.subfolder || '',
@@ -179,31 +275,32 @@ el('save').addEventListener('click', function () {
     slideDelay: parseInt(el('delay').value, 10),
     transition: parseInt(el('transition').value, 10),
     backdrop: parseInt(el('backdrop').value, 10),
+    language: parseInt(el('language').value, 10),
     orientation: parseInt(el('orientation').value, 10)
   };
-  msg.className = 'msg'; msg.textContent = 'Speichere …';
+  msg.className = 'msg'; msg.textContent = t('saving');
   api('POST', '/api/save', body).then(function (r) {
-    if (r.ok) { msg.className = 'msg ok'; msg.textContent = 'Gespeichert. Der Fernseher startet jetzt die Wiedergabe.'; }
-    else { msg.className = 'msg err'; msg.textContent = 'Nicht gespeichert: ' + (r.error || ''); }
-  }).catch(function () { msg.className = 'msg err'; msg.textContent = 'Keine Verbindung zum Fernseher'; });
+    if (r.ok) { msg.className = 'msg ok'; msg.textContent = t('saved'); }
+    else { msg.className = 'msg err'; msg.textContent = t('not_saved') + errorText(r); }
+  }).catch(function () { msg.className = 'msg err'; msg.textContent = t('no_connection'); });
 });
 
-var delays = [3, 5, 8, 10, 15, 20, 30, 45, 60, 90, 120, 180, 300];
-var transitions = ['Keiner', 'Überblenden', 'Schieben nach links', 'Schieben nach rechts', 'Schieben nach oben', 'Schieben nach unten', 'Zoom hinein', 'Zoom heraus', 'Zufall'];
-delays.forEach(function (s) { var o = document.createElement('option'); o.value = s; o.textContent = s + ' Sekunden'; el('delay').appendChild(o); });
-transitions.forEach(function (t, i) { var o = document.createElement('option'); o.value = i; o.textContent = t; el('transition').appendChild(o); });
-
+chooseLanguage(0);
+applyLanguage();
 api('GET', '/api/state').then(function (s) {
   state = s;
   currentType = s.sourceType;
+  chooseLanguage(s.language);
+  applyLanguage();
   el('source').value = s.sourceType;
-  var nearest = delays.reduce(function (a, b) { return Math.abs(b - s.slideDelay) < Math.abs(a - s.slideDelay) ? b : a; });
+  var nearest = DELAYS.reduce(function (a, b) { return Math.abs(b - s.slideDelay) < Math.abs(a - s.slideDelay) ? b : a; });
   el('delay').value = nearest;
   el('transition').value = s.transition;
   el('backdrop').value = s.backdrop;
   el('orientation').value = s.orientation;
-  updateLabels();
-}).catch(function () { el('saveMsg').className = 'msg err'; el('saveMsg').textContent = 'Keine Verbindung zum Fernseher'; });
+  el('language').value = s.language;
+  updateLabels(true);
+}).catch(function () { el('saveMsg').className = 'msg err'; el('saveMsg').textContent = t('no_connection'); });
 </script>
 </body>
 </html>
