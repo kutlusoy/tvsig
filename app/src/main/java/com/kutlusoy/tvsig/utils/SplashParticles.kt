@@ -26,6 +26,14 @@ data class Particle(
     val rate: Float
 )
 
+/** Where and how a particle is drawn in one frame, in screen pixels. */
+class ParticlePlacement {
+    var cx = 0f
+    var cy = 0f
+    var radius = 0f
+    var alpha = 0f
+}
+
 /** A glitter star on the stage, in design units. It flashes when the light sweep passes over it. */
 data class Sparkle(val x: Float, val y: Float, val size: Float, val phase: Float, val tint: Int, val trigger: Float)
 
@@ -34,6 +42,7 @@ object SplashParticles {
     const val TINT_BLUE = 1
     const val TINT_PINK = 2
 
+    private const val MIN_VISIBLE_ALPHA = 0.01f
     private const val DUST_COUNT = 320
     private const val GLITTER_COUNT = 90
     private const val SWEEP_START = 0.19f
@@ -117,6 +126,20 @@ object SplashParticles {
         val wave = (0.5f + 0.5f * sin(2.0 * PI * (seconds * p.rate + p.phase * 3f)).toFloat())
         val shine = if (p.glitter) wave.pow(5) else 0.7f + 0.3f * wave
         return (p.alpha * fade * shine).coerceIn(0f, 1f)
+    }
+
+    /** Fills [out] with the place of the particle. Returns false when it is not visible in this frame. */
+    fun place(p: Particle, progress: Float, seconds: Float, width: Int, height: Int, out: ParticlePlacement): Boolean {
+        val alpha = alpha(p, progress, seconds)
+        if (alpha <= MIN_VISIBLE_ALPHA) return false
+        val unit = minOf(width / SplashTimeline.FIT_WIDTH, height / SplashTimeline.FIT_HEIGHT)
+        val pan = (progress - 0.5f) * SplashTimeline.PAN
+        val zoom = 1f + SplashTimeline.PUSH_IN * progress * (0.5f + p.z)
+        out.alpha = alpha
+        out.radius = p.size * unit * zoom * if (p.glitter) 1.5f else 0.75f
+        out.cx = (x(p, seconds) - pan * parallax(p)) * width
+        out.cy = y(p, seconds) * height
+        return true
     }
 
     /** A bright flash when the sweep arrives, then a faint slow twinkle. */

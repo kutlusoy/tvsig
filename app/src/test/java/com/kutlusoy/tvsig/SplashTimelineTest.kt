@@ -147,3 +147,17 @@ class SplashMotionTest {
         assertTrue(moved.count { it > 0.015 } > particles.size * 0.85)
     }
 }
+
+class SplashVisibilityTest {
+    @Test
+    fun manyParticlesAreVisibleOnA720pScreen() {
+        val placement = com.kutlusoy.tvsig.utils.ParticlePlacement()
+        val seconds = 2.5f
+        val visible = com.kutlusoy.tvsig.utils.SplashParticles.particles.filter {
+            com.kutlusoy.tvsig.utils.SplashParticles.place(it, 0.5f, seconds, 1280, 720, placement) &&
+                placement.alpha > 0.25f && placement.radius >= 2f &&
+                placement.cx in 0f..1280f && placement.cy in 0f..720f
+        }
+        assertTrue("only ${visible.size} visible", visible.size >= 200)
+    }
+}

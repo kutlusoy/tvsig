@@ -11,7 +11,6 @@ import android.graphics.Matrix
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
 import android.graphics.RectF
 import android.provider.Settings
 import android.util.AttributeSet
@@ -19,6 +18,7 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.annotation.DrawableRes
 import com.kutlusoy.tvsig.R
+import com.kutlusoy.tvsig.utils.ParticlePlacement
 import com.kutlusoy.tvsig.utils.SplashFrame
 import com.kutlusoy.tvsig.utils.SplashParticles
 import com.kutlusoy.tvsig.utils.SplashTimeline
@@ -47,14 +47,14 @@ class SplashAnimationView @JvmOverloads constructor(
     private val subtitle = load(R.drawable.splash_subtitle)
 
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG or Paint.ANTI_ALIAS_FLAG or Paint.DITHER_FLAG)
-    private val silhouette = Paint(Paint.FILTER_BITMAP_FLAG).apply {
-        colorFilter = PorterDuffColorFilter(0xFFFFFFFF.toInt(), PorterDuff.Mode.SRC_IN)
-    }
+    private val silhouette = Paint(Paint.FILTER_BITMAP_FLAG)
+    private val logoWhite = tinted(logo, 0xFFFFFFFF.toInt())
     private val sheenPath = Path()
-    private val tintPaints = listOf(0xFFFFFFFF.toInt(), 0xFF8EC2FF.toInt(), 0xFFF9A8FF.toInt()).map { color ->
-        Paint(Paint.FILTER_BITMAP_FLAG).apply { colorFilter = PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN) }
-    }
+    private val tintColors = intArrayOf(0xFFFFFFFF.toInt(), 0xFF8EC2FF.toInt(), 0xFFF9A8FF.toInt())
+    private val sprites = HashMap<Bitmap, Array<Bitmap>>()
+    private val spritePaint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val particleTarget = RectF()
+    private val placement = ParticlePlacement()
     private val logoMatrix = Matrix()
     private val stage = Matrix()
     private val backgroundTarget = RectF()
@@ -142,7 +142,7 @@ class SplashAnimationView @JvmOverloads constructor(
     /** Every bitmap is drawn once under the opaque background, so the textures are uploaded before the animation runs. */
     private fun warmUp(canvas: Canvas) {
         val target = RectF(0f, 0f, 16f, 16f)
-        listOf(glowWide, glowNear, logo, spark, star, dot, dotSharp, dotSoft, title, subtitle).forEach {
+        listOf(glowWide, glowNear, logoWhite, logo, spark, title, subtitle) + listOf(star, dot, dotSharp, dotSoft).flatMap { sprites.getOrPut(it) { Array(tintColors.size) { tint -> tinted(it, tintColors[tint]) } }.toList() }.forEach {
             canvas.drawBitmap(it, null, target, paint)
         }
     }
@@ -159,8 +159,8 @@ class SplashAnimationView @JvmOverloads constructor(
 
         drawParticles(canvas, front = false)
 
-        val push = 1f + PUSH_IN * progress
-        val scale = min(width / FIT_WIDTH, height / FIT_HEIGHT) * push
+        val push = 1f + SplashTimeline.PUSH_IN * progress
+        val scale = min(width / SplashTimeline.FIT_WIDTH, height / SplashTimeline.FIT_HEIGHT) * push
         stage.setScale(scale, scale)
         stage.postTranslate(
             width / 2f - CONTENT_CENTER_X * scale - pan() * width * STAGE_PARALLAX,
@@ -193,31 +193,41 @@ class SplashAnimationView @JvmOverloads constructor(
     }
 
     /** The slow camera move across the intro, as a share of the screen width. */
-    private fun pan(): Float = (progress - 0.5f) * PAN
+    private fun pan(): Float = (progress - 0.5f) * SplashTimeline.PAN
 
     private fun drawParticles(canvas: Canvas, front: Boolean) {
         val seconds = (progress * SplashTimeline.DURATION_MS + idleMs) / 1000f
-        val unit = min(width / FIT_WIDTH, height / FIT_HEIGHT)
-        val pan = pan()
         for (particle in SplashParticles.particles) {
             if ((particle.z >= SplashParticles.FRONT_DEPTH) != front) continue
-            val alpha = SplashParticles.alpha(particle, progress, seconds)
-            if (alpha <= 0.01f) continue
-            val radius = particle.size * unit * (1f + PUSH_IN * progress * (0.5f + particle.z)) * if (particle.glitter) 1.5f else 0.75f
-            val cx = (SplashParticles.x(particle, seconds) - pan * SplashParticles.parallax(particle)) * width
-            val cy = SplashParticles.y(particle, seconds) * height
-            particleTarget.set(cx - radius, cy - radius, cx + radius, cy + radius)
-            val tint = tintPaints[if (particle.z < HAZE_DEPTH) SplashParticles.TINT_BLUE else particle.tint]
-            tint.alpha = (alpha * 255).toInt()
+            if (!SplashParticles.place(particle, progress, seconds, width, height, placement)) continue
+            particleTarget.set(
+                placement.cx - placement.radius, placement.cy - placement.radius,
+                placement.cx + placement.radius, placement.cy + placement.radius
+            )
+            val tint = if (particle.z < HAZE_DEPTH) SplashParticles.TINT_BLUE else particle.tint
+            spritePaint.alpha = (placement.alpha * 255).toInt().coerceIn(0, 255)
             if (particle.glitter) {
                 canvas.save()
-                canvas.rotate(alpha * 20f, cx, cy)
-                canvas.drawBitmap(star, null, particleTarget, tint)
+                canvas.rotate(placement.alpha * 20f, placement.cx, placement.cy)
+                canvas.drawBitmap(sprite(star, tint), null, particleTarget, spritePaint)
                 canvas.restore()
             } else {
-                canvas.drawBitmap(focus(particle.z), null, particleTarget, tint)
+                canvas.drawBitmap(sprite(focus(particle.z), tint), null, particleTarget, spritePaint)
             }
         }
+    }
+
+    /** The colors are put into the bitmaps once, so drawing needs no color filter. */
+    private fun sprite(bitmap: Bitmap, tint: Int): Bitmap =
+        sprites.getOrPut(bitmap) { Array(tintColors.size) { tinted(bitmap, tintColors[it]) } }[tint]
+
+    private fun tinted(source: Bitmap, color: Int): Bitmap {
+        val copy = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
+        Canvas(copy).apply {
+            drawBitmap(source, 0f, 0f, null)
+            drawColor(color, PorterDuff.Mode.SRC_IN)
+        }
+        return copy
     }
 
     /** Depth of field: far particles are soft, the closest ones are almost sharp. */
@@ -234,11 +244,10 @@ class SplashAnimationView @JvmOverloads constructor(
             if (alpha <= 0.01f) continue
             val half = SplashParticles.sparkleScale(sparkle, alpha) * 1.6f
             particleTarget.set(sparkle.x - half, sparkle.y - half, sparkle.x + half, sparkle.y + half)
-            val tint = tintPaints[sparkle.tint]
-            tint.alpha = (alpha * 255).toInt()
+            spritePaint.alpha = (alpha * 255).toInt().coerceIn(0, 255)
             canvas.save()
             canvas.rotate(alpha * 18f, sparkle.x, sparkle.y)
-            canvas.drawBitmap(star, null, particleTarget, tint)
+            canvas.drawBitmap(sprite(star, sparkle.tint), null, particleTarget, spritePaint)
             canvas.restore()
         }
     }
@@ -272,7 +281,7 @@ class SplashAnimationView @JvmOverloads constructor(
             canvas.save()
             canvas.clipPath(sheenPath)
             silhouette.alpha = (frame.sheenAlpha * share * 255).toInt()
-            canvas.drawBitmap(logo, null, LOGO, silhouette)
+            canvas.drawBitmap(logoWhite, null, LOGO, silhouette)
             canvas.restore()
         }
     }
@@ -297,13 +306,9 @@ class SplashAnimationView @JvmOverloads constructor(
         Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
 
     private companion object {
-        const val PUSH_IN = 0.045f
         const val HAZE_DEPTH = 0.25f
         const val SHARPER_DEPTH = 0.4f
-        const val PAN = 0.05f
         const val STAGE_PARALLAX = 1f
-        const val FIT_WIDTH = 900f
-        const val FIT_HEIGHT = 700f
         const val CONTENT_CENTER_X = 960f
         const val CONTENT_CENTER_Y = 410f
         const val SHEEN_SLANT = 16f

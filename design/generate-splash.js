@@ -43,7 +43,7 @@ const subText = (fill) =>
 const BG = { w: 960, h: 540 };
 let seed = 7;
 const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-const dots = Array.from({ length: 22 }, () => {
+const dots = Array.from({ length: 0 }, () => {
   const x = rnd() * BG.w, y = rnd() * BG.h, r = 1.5 + rnd() * 4.5;
   const near = Math.hypot((x - 480) / 330, (y - 205) / 190) < 1;
   const c = rnd() < 0.55 ? '120,170,255' : '249,138,254';
