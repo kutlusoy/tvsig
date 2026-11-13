@@ -38,11 +38,11 @@ A screen that should show the same content as another screen can use the same su
 A TV has no copy and paste, so the app only asks for the short ID of the main folder and lets you browse everything below it.
 
 1. Find the ID of the main folder: it is the text behind `/folders/` in the folder link, for example `1AbCdEfGhIjKlMnOpQrStUvWxYz012345` in `https://drive.google.com/drive/folders/1AbCdEfGhIjKlMnOpQrStUvWxYz012345?usp=sharing`. Write it down once, for example in a message to yourself, so you can read it while typing. The whole link is accepted as well.
-2. Open the settings (back key, PIN) and set **Art der Quelle** to **Google Drive**.
-3. Type the ID into **ID des Drive-Hauptordners**. This is the only text that has to be typed. If your keyboard has a microphone, dictating the ID letter by letter is possible.
-4. Press **Ordner auswählen**. The list shows the subfolders of the main folder. Press OK on a folder to open it, up to five levels deep. **Eine Ebene höher** goes back, **Diesen Ordner verwenden** chooses the folder you are in.
-5. Press **Verbindung testen**. The app reports how many images and videos it found.
-6. Press **Speichern**.
+2. Open the settings (back key, PIN) and set **Type of source** to **Google Drive**.
+3. Type the ID into **ID of the main Drive folder**. This is the only text that has to be typed. If your keyboard has a microphone, dictating the ID letter by letter is possible.
+4. Press **Choose folder**. The list shows the subfolders of the main folder. Press OK on a folder to open it, up to five levels deep. **One level up** goes back, **Use this folder** chooses the folder you are in.
+5. Press **Test connection**. The app reports how many images and videos it found.
+6. Press **Save**.
 
 The web server and Google Drive keep their own values, switching the source does not delete the other one.
 

@@ -2,16 +2,16 @@
 
 # TVSig
 
-Android digital signage app for phones, tablets and Android TV. It plays images and videos from a folder on your own web server. There is no Google account, no Google Drive and no license check.
+Android digital signage app for phones, tablets and Android TV. It plays images and videos from a folder on your own web server or from a publicly shared Google Drive folder. There is no Google account, no API key, no Firebase and no license check. It keeps playing without a network, can be set up from a smartphone and can update itself on request.
 
 - **Application ID:** `com.kutlusoy.tvsig`
-- **Version:** 0.0.1
+- **Version:** 0.0.2
 - **Min SDK:** 24 (Android 7.0)
 - **License:** MIT
 
 ## How it works
 
-The app is configured with two values:
+The app is configured with a source, a web server or Google Drive. For a web server it needs two values:
 
 | Setting | Example | Meaning |
 |---|---|---|
@@ -20,7 +20,7 @@ The app is configured with two values:
 
 The media are loaded from `<Base URL>/<Subfolder>/`, here `https://example.com/signage/lobby-screen/`. Use a different subfolder per screen to give every device its own content.
 
-"Verbindung testen" in the settings checks the source and reports how many images and videos were found.
+"Test connection" in the settings checks the source and reports how many images and videos were found.
 
 ### Google Drive
 
@@ -28,11 +28,11 @@ Instead of a web server, a publicly shared Google Drive folder ("Anyone with the
 
 ### Setup from a smartphone
 
-For screens that only have a remote control, the settings offer "Einrichtung per Smartphone": the TV shows a QR code, the phone opens a setup page in the browser, and the source, the folder and the playback settings are entered there, with copy and paste. The page is served by the app only while the dialog is open and is protected by a one-time code in the QR code. See [doc/guideline-remote-setup.md](doc/guideline-remote-setup.md).
+For screens that only have a remote control, the settings offer "Set up with a smartphone": the TV shows a QR code, the phone opens a setup page in the browser, and the source, the folder and the playback settings are entered there, with copy and paste. The page is served by the app only while the dialog is open and is protected by a one-time code in the QR code. See [doc/guideline-remote-setup.md](doc/guideline-remote-setup.md).
 
 ### Choosing the folder
 
-Because a TV has no copy and paste, only the base URL (web server) or the ID of the main folder (Google Drive) is typed. "Ordner auswählen" then browses the folders level by level, up to five levels deep, and takes the chosen folder. Both sources work the same way. For a web server the list comes from the directory listing, or from a `folders.txt` (one folder name per line) in each folder if the server does not allow directory listings.
+Because a TV has no copy and paste, only the base URL (web server) or the ID of the main folder (Google Drive) is typed. "Choose folder" then browses the folders level by level, up to five levels deep, and takes the chosen folder. Both sources work the same way. For a web server the list comes from the directory listing, or from a `folders.txt` (one folder name per line) in each folder if the server does not allow directory listings.
 
 ### Playlist
 
@@ -85,10 +85,11 @@ The app speaks English (default), German and Turkish. "Automatic" follows the la
 
 The settings are made for remote controls (and can be filled in from a smartphone, see below): arrow keys move the focus, left and right change a value, OK confirms, and no touch or keyboard is needed except for typing the base URL. The PIN is entered on an on-screen number pad, so remotes without number keys work. The settings also show the app version, author and repository.
 
-Press the back key (or the back button of a TV remote) and enter the PIN. The default PIN is `0000`; change it in the settings.
+Press the back key (or the back button of a TV remote) and enter the PIN. The default PIN is `0000`; change it in the settings. After the PIN the choices are "Settings", "Quit" and "Cancel".
 
-- Base URL and subfolder
-- Display duration per image
+- Source type: web server or Google Drive
+- Base URL and subfolder (web server) or ID of the main Drive folder and folder (Drive), "Choose folder", "Test connection" and "Set up with a smartphone"
+- Display time per image: 3, 5, 8, 10, 15, 20, 30, 45, 60, 90, 120, 180 or 300 seconds
 - Language: automatic (the language of the device), English, German or Turkish
 - Backdrop around images: zoomed and blurred, or mirrored and blurred
 - Transition effect: none, fade, slide (left, right, up, down), zoom in, zoom out or random (a different effect for every change)
@@ -96,6 +97,7 @@ Press the back key (or the back button of a TV remote) and enter the PIN. The de
 - Light or dark theme
 - PIN
 - Clear cache (deletes all downloaded media and loads them again)
+- Updates: check for a newer version and install it, see below
 
 On a TV remote, left and right skip to the previous or next item.
 
@@ -150,8 +152,8 @@ Classes that are read or written with Gson (the settings of the phone setup, the
 
 | Workflow | Trigger | What it does |
 |---|---|---|
-| `CI` | push to `main` or `integration`, pull requests | Unit tests, lint, debug APK as build artifact |
-| `Release` | tag `v*` (for example `v0.0.1`) | Checks the tag against `app/version.txt`, runs the tests, builds the signed APK and AAB, verifies the APK (application ID, version, certificate), publishes a GitHub release. The release page lists the signing certificate (SHA-256 and SHA-1), the SHA-256 of the APK and the bundle, the version code, the Android versions and the source commit, and offers `SHA256SUMS.txt` (tags with a suffix such as `-rc1` become pre-releases) |
+| `CI` | every push, pull requests, manual | Unit tests, lint, keep rules check, debug APK as build artifact |
+| `Release` | tag `v*` (for example `v0.0.2`) | Checks the tag against `app/version.txt`, runs the tests, builds the signed APK and AAB, verifies the APK (application ID, version, certificate), publishes a GitHub release. The release page lists the signing certificate (SHA-256 and SHA-1), the SHA-256 of the APK and the bundle, the version code, the Android versions and the source commit, and offers `SHA256SUMS.txt` (tags with a suffix such as `-rc1` become pre-releases) |
 
 The release workflow needs these repository secrets (Settings, Secrets and variables, Actions):
 
@@ -165,13 +167,13 @@ The release workflow needs these repository secrets (Settings, Secrets and varia
 
 The full step by step guide (creating the keystore, setting the secrets on Windows, Linux and macOS, running a release, troubleshooting) is in [doc/guideline-release-signing.md](doc/guideline-release-signing.md).
 
-The version of the app is in one file, **`app/version.txt`** (for example `0.0.1`, or `0.1.0-rc1` for a pre-release). The Android version name is that text, the version code is derived from it (`major * 1,000,000 + minor * 1,000 + patch`, so `0.0.1` is 1, `0.1.0` is 1000 and `1.0.0` is 1000000). `tools/version.py` checks the file and the release workflow compares it with the tag.
+The version of the app is in one file, **`app/version.txt`** (for example `0.0.2`, or `0.1.0-rc1` for a pre-release). The Android version name is that text, the version code is derived from it (`major * 1,000,000 + minor * 1,000 + patch`, so `0.0.2` is 2, `0.1.0` is 1000 and `1.0.0` is 1000000). `tools/version.py` checks the file and the release workflow compares it with the tag.
 
 To release: change `app/version.txt`, commit, then push the matching tag.
 
 ```bash
-git tag v0.0.1
-git push origin v0.0.1
+git tag v0.0.2
+git push origin v0.0.2
 ```
 
 ## Updates from inside the app
@@ -190,7 +192,7 @@ The app downloads the APK of the release, checks its SHA-256 against `SHA256SUMS
 
 | Permission | Why |
 |---|---|
-| `INTERNET`, `ACCESS_NETWORK_STATE` | Load the media from your web server and detect when the network is back |
+| `INTERNET`, `ACCESS_NETWORK_STATE` | Load the media from your web server or Google Drive, check for updates, and detect when the network is back |
 | `WAKE_LOCK`, `FOREGROUND_SERVICE`, `FOREGROUND_SERVICE_SPECIAL_USE` | Keep playing around the clock |
 | `RECEIVE_BOOT_COMPLETED` | Start after a reboot |
 | `REQUEST_INSTALL_PACKAGES` | Install an update that was started with the button in the settings |
@@ -225,7 +227,7 @@ The system can still decide to stop an app, especially on cheap TV boxes and pho
 
 ### Leaving the app on purpose
 
-Press the back key, enter the PIN and choose "Beenden". This stops the app and its service for good, so the watchdog does not bring it back. It runs again after you start TVSig yourself or after the next reboot.
+Press the back key, enter the PIN and choose "Quit". This stops the app and its service for good, so the watchdog does not bring it back. It runs again after you start TVSig yourself or after the next reboot.
 
 ### If a device still stops
 
